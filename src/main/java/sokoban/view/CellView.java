@@ -11,7 +11,13 @@ import javafx.scene.layout.StackPane;
 
 class CellView extends StackPane {
 
-    private static final Image xImage = new Image("X.png");
+    private static final Image playerImage = new Image("player.png");
+    private static final Image boxImage = new Image("box.png");
+    private static final Image goalImage = new Image("goal.png");
+    private static final Image groundImage = new Image("ground.png");
+
+
+    private static final Image wallImage = new Image("wall.png");
 
     private final CellViewModel viewModel;
     private final DoubleBinding widthProperty;
@@ -34,7 +40,7 @@ class CellView extends StackPane {
 
         zoomer = new ZoomerView(viewModel);
 
-        getChildren().addAll(imageView, zoomer);
+        getChildren().addAll(imageView);
     }
 
     private void configureBindings() {
@@ -60,8 +66,28 @@ class CellView extends StackPane {
     }
 
     private void setImage(ImageView imageView, CellValue cellValue) {
-        imageView.setImage(cellValue == CellValue.EMPTY ? null : xImage);
+        switch (cellValue) {
+            case WALL:
+                imageView.setImage(wallImage);
+                break;
+            case PLAYER:
+                imageView.setImage(playerImage);
+                break;
+            case BOX:
+                imageView.setImage(boxImage);
+                break;
+            case GOAL:
+                imageView.setImage(goalImage);
+                break;
+            case GROUND:
+                imageView.setImage(groundImage);
+                break;
+            case EMPTY:
+                imageView.setImage(null); // Aucune image pour une cellule vide
+                break;
+        }
     }
+
 
     private void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
         // si on arrête le survol de la cellule, on remet l'échelle à sa valeur par défaut

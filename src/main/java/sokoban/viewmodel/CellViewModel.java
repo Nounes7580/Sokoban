@@ -21,10 +21,11 @@ public class CellViewModel {
         this.line = line;
         this.col = col;
         this.board = board;
+
     }
 
     public void play() {
-        if (board.play(line, col) == CellValue.EMPTY)
+        if (board.play(line, col) == CellValue.GROUND)
             scale.set(DEFAULT_SCALE);
     }
 

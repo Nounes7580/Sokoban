@@ -18,6 +18,7 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
         for (int i = 0; i < GRID_WIDTH; i++) {
             for (int j = 0; j < GRID_HEIGHT; j++) {
                 matrix[i][j] = new Cell();
+
             }
         }
 

@@ -5,7 +5,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
 class Cell { //Représente une cellule dans la grille
-    private final ObjectProperty<CellValue> value = new SimpleObjectProperty<>(CellValue.EMPTY);
+    private final ObjectProperty<CellValue> value = new SimpleObjectProperty<>(CellValue.GROUND);
 
     CellValue getValue() {
         return value.getValue();
