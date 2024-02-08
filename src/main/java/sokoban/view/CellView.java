@@ -1,5 +1,6 @@
 package sokoban.view;
 
+import javafx.scene.effect.ColorAdjust;
 import sokoban.model.CellValue;
 import sokoban.viewmodel.CellViewModel;
 import javafx.beans.binding.DoubleBinding;
@@ -24,6 +25,8 @@ class CellView extends StackPane {
 
     private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
     private final ImageView imageView = new ImageView();
+    // Effet pour assombrir l'image lorsque la souris survole la cellule
+    private final ColorAdjust darkenEffect = new ColorAdjust();
     private ZoomerView zoomer;
 
     CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty) {
@@ -69,6 +72,19 @@ class CellView extends StackPane {
         zoomer.visibleProperty().bind(viewModel
                 .valueProperty().isEqualTo(CellValue.X)
                 .and(hoverProperty()));
+
+        // Lier l'effet d'assombrissement à la propriété hover de la cellule
+        hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {
+            if (isNowHovered) {
+                darkenEffect.setBrightness(-0.1); // Assombrir l'image
+                backgroundImageView.setEffect(darkenEffect);
+                imageView.setEffect(darkenEffect);
+            } else {
+                darkenEffect.setBrightness(0); // Retour à la normale
+                backgroundImageView.setEffect(null);
+                imageView.setEffect(null);
+            }
+        });
     }
 
     private void setImage(ImageView imageView, CellValue cellValue) {
