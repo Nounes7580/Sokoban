@@ -22,6 +22,8 @@ class CellView extends StackPane {
     private final CellViewModel viewModel;
     private final DoubleBinding widthProperty;
 
+    private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
+
     private final ImageView imageView = new ImageView();
     private ZoomerView zoomer;
 
@@ -36,11 +38,14 @@ class CellView extends StackPane {
     }
 
     private void layoutControls() {
+        backgroundImageView.setFitWidth(50); // Ajustez la taille selon vos besoins
+        backgroundImageView.setPreserveRatio(true);
+        backgroundImageView.setSmooth(true);
         imageView.setPreserveRatio(true);
 
         zoomer = new ZoomerView(viewModel);
 
-        getChildren().addAll(imageView);
+        getChildren().addAll( backgroundImageView, imageView);
     }
 
     private void configureBindings() {
