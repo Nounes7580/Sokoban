@@ -20,16 +20,15 @@ class CellView extends StackPane {
     private static final Image wallImage = new Image("wall.png");
 
     private final CellViewModel viewModel;
-    private final DoubleBinding widthProperty;
+    private final DoubleBinding sizeProperty;
 
     private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
-
     private final ImageView imageView = new ImageView();
     private ZoomerView zoomer;
 
-    CellView(CellViewModel cellViewModel, DoubleBinding cellWidthProperty) {
+    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty) {
         this.viewModel = cellViewModel;
-        this.widthProperty = cellWidthProperty;
+        this.sizeProperty = sizeProperty;
 
         setAlignment(Pos.CENTER);
 
@@ -38,8 +37,8 @@ class CellView extends StackPane {
     }
 
     private void layoutControls() {
-        backgroundImageView.setFitWidth(50); // Ajustez la taille selon vos besoins
-        backgroundImageView.setPreserveRatio(true);
+
+        backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
         imageView.setPreserveRatio(true);
 
@@ -49,11 +48,13 @@ class CellView extends StackPane {
     }
 
     private void configureBindings() {
-        minWidthProperty().bind(widthProperty);
-        minHeightProperty().bind(widthProperty);
+        backgroundImageView.fitWidthProperty().bind(sizeProperty);
+        backgroundImageView.fitHeightProperty().bind(sizeProperty);
+        minWidthProperty().bind(sizeProperty);
+        minHeightProperty().bind(sizeProperty);
 
         // adapte la largeur de l'image à celle de la cellule multipliée par l'échelle
-        imageView.fitWidthProperty().bind(widthProperty.multiply(viewModel.scaleProperty()));
+        imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
 
         // un clic sur la cellule permet de jouer celle-ci
         this.setOnMouseClicked(e -> viewModel.play());
