@@ -27,7 +27,6 @@ class CellView extends StackPane {
     private final ImageView imageView = new ImageView();
     // Effet pour assombrir l'image lorsque la souris survole la cellule
     private final ColorAdjust darkenEffect = new ColorAdjust();
-    private ZoomerView zoomer;
 
     CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty) {
         this.viewModel = cellViewModel;
@@ -45,7 +44,6 @@ class CellView extends StackPane {
         backgroundImageView.setSmooth(true);
         imageView.setPreserveRatio(true);
 
-        zoomer = new ZoomerView(viewModel);
 
         getChildren().addAll( backgroundImageView, imageView);
     }
@@ -68,10 +66,6 @@ class CellView extends StackPane {
         // gère le survol de la cellule avec la souris
         hoverProperty().addListener(this::hoverChanged);
 
-        // le zoomer n'est visible que si la case contient X et est survolée
-        zoomer.visibleProperty().bind(viewModel
-                .valueProperty().isEqualTo(CellValue.X)
-                .and(hoverProperty()));
 
         // Lier l'effet d'assombrissement à la propriété hover de la cellule
         hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {

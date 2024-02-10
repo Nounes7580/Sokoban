@@ -7,7 +7,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
 public class CellViewModel {
-    private static final double DEFAULT_SCALE = 0.5;
+    private static final double DEFAULT_SCALE = 1;
     private static final double EPSILON = 1e-3;
     private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel
 
