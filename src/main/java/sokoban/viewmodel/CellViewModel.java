@@ -54,13 +54,7 @@ public class CellViewModel {
         return mayDecrementScale;
     }
 
-    public void incrementScale() {
-        scale.set(Math.min(1, scale.get() + 0.1));
-    }
 
-    public void decrementScale() {
-        scale.set(Math.max(0.1, scale.get() - 0.1));
-    }
 
     public void resetScale() {
         scale.set(DEFAULT_SCALE);

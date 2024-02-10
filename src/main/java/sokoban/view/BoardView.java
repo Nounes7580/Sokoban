@@ -28,8 +28,6 @@ public class BoardView extends BorderPane {
     // Constantes de mise en page
     private static final int GRID_WIDTH = BoardViewModel.gridWidth();
     private static final int GRID_HEIGHT = BoardViewModel.gridHeight();
-    //private static final int TOOLBAR_HEIGHT = 1000;
-   // private static final int TOOLBAR_WIDTH = 1000;
 
     private static final int SCENE_MIN_WIDTH = 1000;
     private static final int SCENE_MIN_HEIGHT = 420;
@@ -119,34 +117,9 @@ public class BoardView extends BorderPane {
     private void initializeToolBar(Stage primaryStage) {
         // Définit l'alignement des outils à l'intérieur de la VBox
         toolBar.setAlignment(Pos.CENTER);
-       /* DoubleBinding toolBarWidth = Bindings.createDoubleBinding(
-                () -> {
-                    var width = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(width / TOOLBAR_WIDTH) * TOOLBAR_WIDTH;
-                },
-                widthProperty(),
-                heightProperty(),
-                headerBox.heightProperty());
+        toolBar.setPadding(new Insets(0, 0, 0, 50)); // Ajoute un padding à gauche de la toolBar
+        toolBar.setSpacing(10);
 
-        // Liaison pour la hauteur de la toolBar
-        DoubleBinding toolBarHeight = Bindings.createDoubleBinding(
-                () -> {
-                    var height = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(height / TOOLBAR_HEIGHT) * TOOLBAR_HEIGHT;
-                },
-                widthProperty(),
-                heightProperty(),
-                headerBox.heightProperty());
-
-        toolBar.minWidthProperty().bind(toolBarWidth);
-        toolBar.prefWidthProperty().bind(toolBarWidth);
-        toolBar.maxWidthProperty().bind(toolBarWidth);
-
-        toolBar.minWidthProperty().bind(toolBarWidth);
-        toolBar.prefWidthProperty().bind(toolBarWidth);
-        toolBar.maxWidthProperty().bind(toolBarWidth);
-        
-        */
         // Création des ImageView pour chaque outil
         ImageView terrainTool = createImageView("/ground.png", ToolType.TERRAIN);
         ImageView wallTool = createImageView("/wall.png", ToolType.MUR);
@@ -181,6 +154,7 @@ public class BoardView extends BorderPane {
 
             // Ajoutez le conteneur à la barre d'outils au lieu de l'ImageView directement
             toolBar.getChildren().add(container);
+            tool.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1));
         }
 
         }
