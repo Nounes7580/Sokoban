@@ -14,11 +14,12 @@ public class Board {
         isFull = grid.filledCellsCountProperty().isEqualTo(Board.MAX_FILLED_CELLS);
     }
 
-    public CellValue play(int line, int col) {
-        if (grid.getValue(line, col) == CellValue.EMPTY && isFull())
-            return CellValue.EMPTY;
-
-        grid.play(line, col, grid.getValue(line, col) == CellValue.EMPTY ? CellValue.X : CellValue.EMPTY);
+    public CellValue play(int line, int col, CellValue toolValue) {
+        if (grid.getValue(line, col) == CellValue.EMPTY && !isFull()) {
+            grid.play(line, col, toolValue);
+        } else if (grid.getValue(line, col) != CellValue.EMPTY) {
+            grid.play(line, col, CellValue.EMPTY); // Clear the cell if it's not empty
+        }
         return grid.getValue(line, col);
     }
 
