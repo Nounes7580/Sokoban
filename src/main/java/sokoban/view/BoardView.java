@@ -65,6 +65,11 @@ public class BoardView extends BorderPane {
         initializeToolBar(stage);
         createGrid();
         createHeader();
+        Label validationLabel = new Label();
+        validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
+        // Add the label to the UI
+        headerBox.getChildren().add(validationLabel);
+
     }
 
     private void createHeader() {

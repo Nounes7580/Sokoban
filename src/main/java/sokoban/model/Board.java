@@ -2,17 +2,23 @@ package sokoban.model;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
 
 public class Board {
     static final int MAX_FILLED_CELLS = 75;
 
     private final Grid grid = new Grid();
     private final BooleanBinding isFull;
+    private final LongProperty filledCellsCount = new SimpleLongProperty();
+
 
     public Board() {
         isFull = grid.filledCellsCountProperty().isEqualTo(Board.MAX_FILLED_CELLS);
     }
+
+
 
     public CellValue play(int line, int col, CellValue toolValue) {
         CellValue currentValue = grid.getValue(line, col);
@@ -25,7 +31,16 @@ public class Board {
             // l'outil sélectionné remplace simplement la valeur existante.
             grid.play(line, col, toolValue);
         }
+        // After play actions, call the updateValidationMessage to refresh the validation messages
+        filledCellsCount.set(calculateFilledCells()); // You'd implement calculateFilledCells to return the correct count
         return grid.getValue(line, col);
+
+
+    }
+
+    private long calculateFilledCells() {
+        return grid.filledCellsCountProperty().get();
+
     }
 
     public static int maxFilledCells() {
@@ -34,6 +49,9 @@ public class Board {
 
     public Boolean isFull() {
         return isFull.get();
+    }
+    public Grid getGrid() {
+        return grid;
     }
 
     public ReadOnlyObjectProperty<CellValue> valueProperty(int line, int col) {

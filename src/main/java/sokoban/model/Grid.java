@@ -118,4 +118,17 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
     public boolean isEmpty(int line, int col) {
         return matrix[line][col].isEmpty();
     }
+
+    public boolean hasPlayer() {
+        return findPlayerPosition() != null;
+    }
+
+    public boolean hasAtLeastOneTarget() {
+        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.GOAL);
+    }
+
+    public boolean hasAtLeastOneBox() {
+        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.BOX);
+    }
+
 }
