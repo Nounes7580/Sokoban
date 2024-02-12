@@ -29,6 +29,19 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
                 .filter(cell -> cell.getValue() != CellValue.EMPTY && cell.getValue() != CellValue.GROUND)
                 .count());
     }
+    // Cette méthode retourne les coordonnées du joueur sous forme d'un tableau [x, y]
+    // ou null si aucun joueur n'est trouvé.
+    public int[] findPlayerPosition() {
+        for (int i = 0; i < GRID_WIDTH; i++) {
+            for (int j = 0; j < GRID_HEIGHT; j++) {
+                if (matrix[i][j].getValue() == CellValue.PLAYER) {
+                    return new int[]{i, j}; // Retourne les coordonnées du joueur
+                }
+            }
+        }
+        return null; // Aucun joueur trouvé
+    }
+
 
     public static int getGridWidth() {
         return GRID_WIDTH;
@@ -46,9 +59,21 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
     }
 
     void play(int line, int col, CellValue playerValue) {
-        matrix[line][col].setValue(playerValue);
-        filledCellsCount.invalidate(); // Cela forcera le recalcul du nombre de cellules remplies.
+        if (playerValue == CellValue.PLAYER) {
+            int[] playerPos = findPlayerPosition();
+            if (playerPos != null) {
+                // Joueur déjà présent, le déplacer
+                matrix[playerPos[0]][playerPos[1]].setValue(CellValue.EMPTY); // Efface l'ancienne position du joueur
+            }
+            // Place le joueur à la nouvelle position
+            matrix[line][col].setValue(playerValue);
+        } else {
+            // Votre logique existante pour les autres types de cellules
+            matrix[line][col].setValue(playerValue);
+        }
+        filledCellsCount.invalidate(); // Recalculer le nombre de cellules remplies
     }
+
 
     public LongBinding filledCellsCountProperty() {
         return filledCellsCount;
