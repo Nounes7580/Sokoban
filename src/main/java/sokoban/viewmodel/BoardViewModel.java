@@ -21,6 +21,7 @@ public class BoardViewModel {
         this.board = board;
         this.gridViewModel = new GridViewModel(board);
         this.gridViewModel.setBoardViewModel(this); // Establish the link after GridViewModel is constructed
+        updateValidationMessage();
         board.filledCellsCountProperty().addListener((observable, oldValue, newValue) -> {
             updateValidationMessage();
         });

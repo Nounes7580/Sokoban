@@ -1,5 +1,6 @@
 package sokoban.view;
 
+import javafx.beans.binding.Bindings;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.GridViewModel;
 import javafx.beans.binding.DoubleBinding;
@@ -28,11 +29,11 @@ class GridView extends GridPane {
                 .subtract(PADDING * 2)
                 .divide(GRID_WIDTH);
 
-        // Remplissage de la grille
+        DoubleBinding cellSize = (DoubleBinding) Bindings.min(gridWidth.divide(GRID_WIDTH), gridHeight.divide(GRID_HEIGHT));
         for (int i = 0; i < GRID_WIDTH; ++i) {
             for (int j = 0; j < GRID_HEIGHT; ++j) {
-                CellView cellView = new CellView(gridViewModel.getCellViewModel(i, j), cellWidth);
-                add(cellView, j, i); // lignes/colonnes inversées dans gridpane
+                CellView cellView = new CellView(gridViewModel.getCellViewModel(i, j), cellSize, cellSize);
+                add(cellView, j, i); // Note: Ensure that CellView constructor accepts size parameters
             }
         }
     }

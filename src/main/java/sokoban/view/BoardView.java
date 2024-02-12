@@ -7,6 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import sokoban.model.CellValue;
 
 import sokoban.viewmodel.BoardViewModel;
@@ -32,17 +33,22 @@ public class BoardView extends BorderPane {
     private static final int GRID_HEIGHT = BoardViewModel.gridHeight();
 
     private static final int SCENE_MIN_WIDTH = 1000;
-    private static final int SCENE_MIN_HEIGHT = 420;
+    private static final int SCENE_MIN_HEIGHT = 400;
 
     // Composants principaux
     private final Label headerLabel = new Label("");
     private final HBox headerBox = new HBox();
     private final VBox toolBar = new VBox(); // La VBox pour la barre d'outils avec un espacement de 10
+    // Label pour les messages de validation
+    private final Label validationLabel = new Label();
+
 
     public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
         this.boardViewModel = boardViewModel;
 
         setLeft(toolBar);
+        createHeader(); // Ajoutez le label de validation dans cette méthode
+        createGrid();
         start(primaryStage);
     }
 
@@ -63,8 +69,7 @@ public class BoardView extends BorderPane {
     private void configMainComponents(Stage stage) {
         stage.setTitle("Grid");
         initializeToolBar(stage);
-        createGrid();
-        createHeader();
+
         Label validationLabel = new Label();
         validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
         // Add the label to the UI
@@ -76,9 +81,25 @@ public class BoardView extends BorderPane {
         headerLabel.textProperty().bind(boardViewModel.filledCellsCountProperty()
                 .asString("Number of filled cells: %d of " + boardViewModel.maxFilledCells()));
         headerLabel.getStyleClass().add("header");
-        headerBox.getChildren().add(headerLabel);
-        headerBox.setAlignment(Pos.CENTER);
-        setTop(headerBox);
+
+        // Configuration du label de validation
+        validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
+        validationLabel.setTextFill(Color.RED);
+
+        // Vérifiez que le texte n'est pas null avant d'appeler isEmpty()
+        validationLabel.visibleProperty().bind(
+                Bindings.createBooleanBinding(
+                        () -> validationLabel.getText() != null && !validationLabel.getText().isEmpty(),
+                        validationLabel.textProperty()
+                )
+        );
+
+        // Ajoutez le label de validation sous le headerLabel
+        VBox headerContainer = new VBox(headerLabel, validationLabel);
+        headerContainer.setAlignment(Pos.CENTER);
+        headerContainer.setPadding(new Insets(10));
+
+        setTop(headerContainer);
     }
 
     private void createGrid() {

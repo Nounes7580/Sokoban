@@ -7,7 +7,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 
 public class Board {
-    static final int MAX_FILLED_CELLS = 75;
+    static final int MAX_FILLED_CELLS = 75; //TODO: ca doit etre la moitie du nombre de cellules
 
     private final Grid grid = new Grid();
     private final BooleanBinding isFull;

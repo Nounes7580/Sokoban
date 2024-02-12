@@ -1,6 +1,5 @@
 package sokoban.view;
 
-import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
 import sokoban.model.CellValue;
 import sokoban.viewmodel.CellViewModel;
@@ -30,7 +29,7 @@ class CellView extends StackPane {
     // Effet pour assombrir l'image lorsque la souris survole la cellule
     private final ColorAdjust darkenEffect = new ColorAdjust();
 
-    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty) {
+    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty, DoubleBinding cellSize) {
         this.viewModel = cellViewModel;
         this.sizeProperty = sizeProperty;
 
