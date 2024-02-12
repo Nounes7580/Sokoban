@@ -26,7 +26,7 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
         filledCellsCount = Bindings.createLongBinding(() -> Arrays
                 .stream(matrix)
                 .flatMap(Arrays::stream)
-                .filter(cell -> !cell.isEmpty())
+                .filter(cell -> cell.getValue() != CellValue.EMPTY && cell.getValue() != CellValue.GROUND)
                 .count());
     }
 

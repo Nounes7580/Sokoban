@@ -14,11 +14,18 @@ public class Board {
         isFull = grid.filledCellsCountProperty().isEqualTo(Board.MAX_FILLED_CELLS);
     }
 
-    public CellValue play(int line, int col) {
-        if (grid.getValue(line, col) == CellValue.EMPTY && isFull())
-            return CellValue.EMPTY;
-
-        grid.play(line, col, grid.getValue(line, col) == CellValue.EMPTY ? CellValue.X : CellValue.EMPTY);
+    public CellValue play(int line, int col, CellValue toolValue) {
+        // If the selected tool is ground (which represents clearing a cell),
+        // and the cell is not already empty, clear the cell.
+        if (toolValue == CellValue.GROUND && grid.getValue(line, col) != CellValue.EMPTY) {
+            grid.play(line, col, CellValue.EMPTY);
+        }
+        // If the cell is empty and we are not trying to 'clear' it with ground (i.e., we are placing something),
+        // and the board is not full, place the selected tool.
+        else if (grid.getValue(line, col) == CellValue.EMPTY && !isFull() && toolValue != CellValue.GROUND) {
+            grid.play(line, col, toolValue);
+        }
+        // Otherwise, do not change the cell.
         return grid.getValue(line, col);
     }
 
