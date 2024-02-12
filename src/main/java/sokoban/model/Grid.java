@@ -2,13 +2,17 @@ package sokoban.model;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 
 import java.util.Arrays;
 
 public class Grid { //gérerait la structure de la grille de jeu qui contient les cellules(Cell)
     static int GRID_WIDTH = 10;
     static int GRID_HEIGHT = 15; // Renommé et utilisé
+    private BooleanProperty gridChanged = new SimpleBooleanProperty();
+
 
     private final Cell[][] matrix;
     private final LongBinding filledCellsCount;
@@ -20,6 +24,7 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
                 matrix[i][j] = new Cell();
 
             }
+
         }
 
         // Calcul du nombre de cellules remplies. Pas de dépendances supplémentaires nécessaires ici.
@@ -29,6 +34,13 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
                 .filter(cell -> cell.getValue() != CellValue.EMPTY && cell.getValue() != CellValue.GROUND)
                 .count());
     }
+    public BooleanProperty gridChangedProperty() {
+        return gridChanged;
+    }
+    private void triggerGridChange() {
+        gridChanged.set(!gridChanged.get()); // Change la valeur pour déclencher l'écouteur
+    }
+
     // Cette méthode retourne les coordonnées du joueur sous forme d'un tableau [x, y]
     // ou null si aucun joueur n'est trouvé.
     public int[] findPlayerPosition() {
@@ -108,6 +120,8 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
         }
 
         filledCellsCount.invalidate(); // Recalcule le nombre de cellules remplies après chaque changement.
+        triggerGridChange(); // Appelé après modification de la grille
+
     }
 
 
@@ -124,11 +138,21 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
     }
 
     public boolean hasAtLeastOneTarget() {
-        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.GOAL);
+        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.GOAL || cell.getValue() == CellValue.PLAYER_ON_GOAL|| cell.getValue() == CellValue.BOX_ON_GOAL);
     }
 
     public boolean hasAtLeastOneBox() {
-        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.BOX);
+        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.BOX || cell.getValue() == CellValue.BOX_ON_GOAL);
+    }
+
+    public long getTargetCount() {
+        return Arrays.stream(matrix).flatMap(Arrays::stream).filter(cell -> cell.getValue() == CellValue.GOAL || cell.getValue() == CellValue.PLAYER_ON_GOAL|| cell.getValue() == CellValue.BOX_ON_GOAL).count();
+    }
+    public long getBoxCount() {
+        return Arrays.stream(matrix)
+                .flatMap(Arrays::stream)
+                .filter(cell -> cell.getValue() == CellValue.BOX || cell.getValue() == CellValue.BOX_ON_GOAL)
+                .count();
     }
 
 }

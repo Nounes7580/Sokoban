@@ -24,6 +24,10 @@ public class BoardViewModel {
         board.filledCellsCountProperty().addListener((observable, oldValue, newValue) -> {
             updateValidationMessage();
         });
+        board.getGrid().gridChangedProperty().addListener((observable, oldValue, newValue) -> {
+            updateValidationMessage();
+        });
+
 
     }
     public ObjectProperty<CellValue> selectedToolProperty() {
@@ -85,6 +89,11 @@ public class BoardViewModel {
         if (!board.getGrid().hasAtLeastOneBox()) {
             message.append("\n• At least one box is required");
         }
+
+    if (board.getGrid().getTargetCount() != board.getGrid().getBoxCount()) {
+        message.append("\n• The number of targets and boxes must be equal");
+    }
+
 
         validationMessage.set(message.toString());
     }
