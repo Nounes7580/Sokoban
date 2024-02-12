@@ -26,6 +26,12 @@ class CellView extends StackPane {
     private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
     private final ImageView imageView = new ImageView();
     // Effet pour assombrir l'image lorsque la souris survole la cellule
+    private final ImageView terrainImageView = new ImageView(groundImage); // Pour l'image de fond du terrain
+    private final ImageView wallImageView = new ImageView(); // Pour l'image du mur
+    private final ImageView playerImageView = new ImageView(); // Pour l'image du joueur
+    private final ImageView boxImageView = new ImageView(); // Pour l'image de la caisse
+    private final ImageView goalImageView = new ImageView(); // Pour l'image de la cible
+
     private final ColorAdjust darkenEffect = new ColorAdjust();
 
     CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty) {
