@@ -2,11 +2,13 @@ package sokoban.view;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Cell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import sokoban.model.ToolType;
+import sokoban.model.CellValue;
+
 import sokoban.viewmodel.BoardViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -107,7 +109,7 @@ public class BoardView extends BorderPane {
 
         setCenter(gridView);
     }
-    private ImageView createImageView(String resourcePath, ToolType toolType) {
+    private ImageView createImageView(String resourcePath, CellValue toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
         imageView.setPreserveRatio(true);
         imageView.fitWidthProperty().bind(toolBar.prefWidthProperty()); // Lie la largeur de l'ImageView à celle de la VBox
@@ -121,21 +123,21 @@ public class BoardView extends BorderPane {
         toolBar.setSpacing(10);
 
         // Création des ImageView pour chaque outil
-        ImageView terrainTool = createImageView("/ground.png", ToolType.TERRAIN);
-        ImageView wallTool = createImageView("/wall.png", ToolType.MUR);
-        ImageView playerTool = createImageView("/player.png", ToolType.JOUEUR);
-        ImageView boxTool = createImageView("/box.png", ToolType.CAISSE);
-        ImageView goalTool = createImageView("/goal.png", ToolType.CIBLE);
+        ImageView terrainTool = createImageView("/ground.png", CellValue.GROUND);
+        ImageView wallTool = createImageView("/wall.png", CellValue.WALL);
+        ImageView playerTool = createImageView("/player.png", CellValue.PLAYER);
+        ImageView boxTool = createImageView("/box.png", CellValue.BOX);
+        ImageView goalTool = createImageView("/goal.png", CellValue.GOAL);
 
         // Ajout des ImageView à la VBox
         toolBar.getChildren().addAll(terrainTool, wallTool, playerTool, boxTool, goalTool);
 
         // Configuration des événements de sélection d'outil
-        terrainTool.setOnMouseClicked(event -> selectTool(ToolType.TERRAIN));
-        wallTool.setOnMouseClicked(event -> selectTool(ToolType.MUR));
-        playerTool.setOnMouseClicked(event -> selectTool(ToolType.JOUEUR));
-        boxTool.setOnMouseClicked(event -> selectTool(ToolType.CAISSE));
-        goalTool.setOnMouseClicked(event -> selectTool(ToolType.CIBLE));
+        terrainTool.setOnMouseClicked(event -> selectTool(CellValue.GROUND));
+        wallTool.setOnMouseClicked(event -> selectTool(CellValue.WALL));
+        playerTool.setOnMouseClicked(event -> selectTool(CellValue.PLAYER));
+        boxTool.setOnMouseClicked(event -> selectTool(CellValue.BOX));
+        goalTool.setOnMouseClicked(event -> selectTool(CellValue.GOAL));
 
         // Assurez-vous que les proportions sont préservées et que les images sont ajustées correctement
         for (ImageView tool : Arrays.asList(terrainTool, wallTool, playerTool, boxTool, goalTool)) {
@@ -160,7 +162,7 @@ public class BoardView extends BorderPane {
         }
 
 
-    private void selectTool(ToolType tool) {
+    private void selectTool(CellValue tool) {
         boardViewModel.setSelectedTool(tool); // Mettez à jour l'outil sélectionné dans le ViewModel
         updateToolHighlights(); // Optionnel: Mettez à jour l'interface utilisateur pour refléter l'outil sélectionné
     }
