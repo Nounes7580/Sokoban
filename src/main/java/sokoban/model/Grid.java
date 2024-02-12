@@ -29,6 +29,19 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
                 .filter(cell -> cell.getValue() != CellValue.EMPTY && cell.getValue() != CellValue.GROUND)
                 .count());
     }
+    // Cette méthode retourne les coordonnées du joueur sous forme d'un tableau [x, y]
+    // ou null si aucun joueur n'est trouvé.
+    public int[] findPlayerPosition() {
+        for (int i = 0; i < GRID_WIDTH; i++) {
+            for (int j = 0; j < GRID_HEIGHT; j++) {
+                if (matrix[i][j].getValue() == CellValue.PLAYER) {
+                    return new int[]{i, j}; // Retourne les coordonnées du joueur
+                }
+            }
+        }
+        return null; // Aucun joueur trouvé
+    }
+
 
     public static int getGridWidth() {
         return GRID_WIDTH;
@@ -48,30 +61,40 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
     void play(int line, int col, CellValue toolValue) {
         CellValue currentValue = getValue(line, col);
 
-        if (toolValue == CellValue.WALL) {
-            // Un mur remplace tout contenu existant.
+        // Gestion du déplacement du joueur
+        if (toolValue == CellValue.PLAYER) {
+            int[] playerPos = findPlayerPosition();
+            if (playerPos != null) {
+                // Efface l'ancienne position du joueur
+                matrix[playerPos[0]][playerPos[1]].setValue(CellValue.EMPTY);
+            }
+            // Place le joueur à la nouvelle position
+            matrix[line][col].setValue(CellValue.PLAYER);
+        } else if (toolValue == CellValue.WALL) {
+            // Un mur remplace tout contenu existant
             matrix[line][col].setValue(CellValue.WALL);
         } else if (toolValue == CellValue.GOAL) {
             if (currentValue == CellValue.PLAYER) {
-                // Si un goal est placé sur un joueur, définissez l'état à PLAYER_ON_GOAL.
+                // Si un goal est placé sur un joueur, définissez l'état à PLAYER_ON_GOAL
                 matrix[line][col].setValue(CellValue.PLAYER_ON_GOAL);
             } else if (currentValue == CellValue.BOX) {
-                // Si un goal est placé sur une boîte, définissez l'état à BOX_ON_GOAL.
+                // Si un goal est placé sur une boîte, définissez l'état à BOX_ON_GOAL
                 matrix[line][col].setValue(CellValue.BOX_ON_GOAL);
             } else {
-                // Si un goal est placé sur une cellule vide ou contenant déjà un goal, placez simplement le goal.
+                // Placez simplement le goal si aucun joueur ou boîte n'est présent
                 matrix[line][col].setValue(CellValue.GOAL);
             }
-        } else if ((toolValue == CellValue.PLAYER || toolValue == CellValue.BOX) && currentValue == CellValue.GOAL) {
-            // Si un joueur ou une boîte est placé sur un goal, gardez l'état à GOAL pour conserver la superposition visuelle.
-            // Note: Vous pouvez choisir de définir explicitement à PLAYER_ON_GOAL ou BOX_ON_GOAL ici si cela correspond à votre logique d'affichage.
+        } else if ((toolValue == CellValue.BOX) && currentValue == CellValue.GOAL) {
+            // Si une boîte est placée sur un goal, définissez l'état à BOX_ON_GOAL
+            matrix[line][col].setValue(CellValue.BOX_ON_GOAL);
         } else {
-            // Dans tous les autres cas, placez l'élément sélectionné.
+            // Pour tous les autres cas (cellule vide ou contenant un goal), placez l'élément sélectionné
             matrix[line][col].setValue(toolValue);
         }
 
         filledCellsCount.invalidate(); // Recalcule le nombre de cellules remplies.
     }
+
 
     public LongBinding filledCellsCountProperty() {
         return filledCellsCount;
