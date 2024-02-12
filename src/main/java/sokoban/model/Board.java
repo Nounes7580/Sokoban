@@ -15,17 +15,16 @@ public class Board {
     }
 
     public CellValue play(int line, int col, CellValue toolValue) {
-        // If the selected tool is ground (which represents clearing a cell),
-        // and the cell is not already empty, clear the cell.
-        if (toolValue == CellValue.GROUND && grid.getValue(line, col) != CellValue.EMPTY) {
-            grid.play(line, col, CellValue.EMPTY);
-        }
-        // If the cell is empty and we are not trying to 'clear' it with ground (i.e., we are placing something),
-        // and the board is not full, place the selected tool.
-        else if (grid.getValue(line, col) == CellValue.EMPTY && !isFull() && toolValue != CellValue.GROUND) {
+        CellValue currentValue = grid.getValue(line, col);
+        // Si l'outil sélectionné est un goal et que la cellule contient déjà un joueur ou une boîte,
+        // nous superposons le goal sur l'élément existant.
+        if (toolValue == CellValue.GOAL && (currentValue == CellValue.PLAYER || currentValue == CellValue.BOX)) {
+            grid.play(line, col, CellValue.GOAL); // Ici, vous devrez gérer la superposition.
+        } else {
+            // Dans les autres cas, si l'outil sélectionné n'est pas un goal ou si la cellule ne contient pas de joueur/boîte,
+            // l'outil sélectionné remplace simplement la valeur existante.
             grid.play(line, col, toolValue);
         }
-        // Otherwise, do not change the cell.
         return grid.getValue(line, col);
     }
 
