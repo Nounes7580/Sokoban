@@ -10,6 +10,8 @@ public class CellViewModel {
     private static final double DEFAULT_SCALE = 1;
     private static final double EPSILON = 1e-3;
     private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel
+    private CellValue baseElement = CellValue.EMPTY; // Pour l'élément de base (joueur ou boîte)
+    private boolean hasGoal = false; // Pour savoir si un goal est présent
 
     private final int line, col;
     private final Board board;

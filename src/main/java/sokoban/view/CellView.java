@@ -1,5 +1,6 @@
 package sokoban.view;
 
+import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
 import sokoban.model.CellValue;
 import sokoban.viewmodel.CellViewModel;
@@ -24,14 +25,9 @@ class CellView extends StackPane {
     private final DoubleBinding sizeProperty;
 
     private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
+    private final ImageView goalImageView = new ImageView(goalImage);
     private final ImageView imageView = new ImageView();
     // Effet pour assombrir l'image lorsque la souris survole la cellule
-    private final ImageView terrainImageView = new ImageView(groundImage); // Pour l'image de fond du terrain
-    private final ImageView wallImageView = new ImageView(); // Pour l'image du mur
-    private final ImageView playerImageView = new ImageView(); // Pour l'image du joueur
-    private final ImageView boxImageView = new ImageView(); // Pour l'image de la caisse
-    private final ImageView goalImageView = new ImageView(); // Pour l'image de la cible
-
     private final ColorAdjust darkenEffect = new ColorAdjust();
 
     CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty) {
@@ -45,14 +41,71 @@ class CellView extends StackPane {
     }
 
     private void layoutControls() {
-
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
+
+        // Assume that the ground image is the default background.
+        backgroundImageView.setImage(groundImage);
+
         imageView.setPreserveRatio(true);
 
+        // Ajouter le backgroundImageView en tant qu'enfant de la StackPane
+        getChildren().add(backgroundImageView);
 
-        getChildren().addAll( backgroundImageView, imageView);
+        // Écouter les changements sur la valeur de la cellule pour mettre à jour la vue
+        viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
+
+    private void updateView(CellValue cellValue) {
+        getChildren().clear();
+        getChildren().add(backgroundImageView); // Toujours ajouter le fond.
+
+        // Gérer l'affichage basé sur l'état de la cellule.
+        switch (cellValue) {
+            case PLAYER:
+            case BOX:
+            case WALL:
+                addImageViewForCellValue(cellValue);
+                break;
+            case GOAL:
+                addImageView(goalImage);
+                break;
+            case PLAYER_ON_GOAL:
+                addImageView(playerImage);
+                addImageView(goalImage); // Superposition explicite.
+                break;
+            case BOX_ON_GOAL:
+                addImageView(boxImage);
+                addImageView(goalImage); // Superposition explicite.
+                break;
+        }
+    }
+
+    private void addImageViewForCellValue(CellValue cellValue) {
+        Image image = switch (cellValue) {
+            case PLAYER -> playerImage;
+            case BOX -> boxImage;
+            case WALL -> wallImage;
+            default -> null;
+        };
+        if (image != null) {
+            addImageView(image);
+        }
+    }
+
+    private void addImageView(Image image) {
+        ImageView imageView = new ImageView(image);
+        configureImageView(imageView);
+        getChildren().add(imageView);
+    }
+
+    private void configureImageView(ImageView imageView) {
+        imageView.fitWidthProperty().bind(this.widthProperty());
+        imageView.fitHeightProperty().bind(this.heightProperty());
+        imageView.setPreserveRatio(true);
+    }
+
+
 
     private void configureBindings() {
         backgroundImageView.fitWidthProperty().bind(sizeProperty);
