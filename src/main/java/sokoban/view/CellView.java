@@ -28,10 +28,9 @@ class CellView extends StackPane {
     private final ColorAdjust darkenEffect = new ColorAdjust();
     private final int line; // La ligne de cette CellView dans la grille
     private final int col;
-    double gridTopLeftX = 15; // Obtenir le décalage X du Pane
-    double gridTopLeftY = 10;
-    double cellWidth = 8; // Largeur de chaque cellule
-    double cellHeight = 8;
+    double initialDragX;
+    double initialDragY;
+
 
     CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty, DoubleBinding cellSize,int line, int col) {
         this.viewModel = cellViewModel;
@@ -178,14 +177,30 @@ class CellView extends StackPane {
     private void setupMouseEvents() {
         this.setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown()) {
-                viewModel.handleMousePressed(getLine(), getColumn()); // Supposant que getLine() et getColumn() renvoient la position de la cellule
+                initialDragX = event.getX();
+                initialDragY = event.getY();
+                System.out.println("Initial Drag X: " + initialDragX);
+                System.out.println("Initial Drag Y: " + initialDragY);
             }
         });
 
         this.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
-                int newLine = (int) ((event.getY() - gridTopLeftY) / cellHeight);
-                int newCol = (int) ((event.getX() - gridTopLeftX) / cellWidth);
+                double gridTopLeftX = 10; // Obtenir le décalage X du Pane
+                double gridTopLeftY = 15;
+                double cellWidth = 15; // Largeur de chaque cellule
+                double cellHeight = 15;
+
+                double offsetX = event.getX() - initialDragX;
+                double offsetY = event.getY() - initialDragY;
+                System.out.println("Offset X: " + offsetX);
+                System.out.println("Offset Y: " + offsetY);
+
+                // Calculer les nouvelles coordonnées en fonction de la position initiale
+                int newLine = (int) ((initialDragY + offsetY - gridTopLeftY) / cellHeight);
+                int newCol = (int) ((initialDragX + offsetX - gridTopLeftX) / cellWidth);
+                System.out.println("New Line: " + newLine);
+                System.out.println("New Column: " + newCol);
                 viewModel.handleMouseDragged(newLine, newCol);
             }
         });
