@@ -6,6 +6,9 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
+import static sokoban.model.Grid.GRID_HEIGHT;
+import static sokoban.model.Grid.GRID_WIDTH;
+
 public class CellViewModel {
     private static final double DEFAULT_SCALE = 1;
     private static final double EPSILON = 1e-3;
@@ -13,7 +16,8 @@ public class CellViewModel {
     private CellValue baseElement = CellValue.EMPTY; // Pour l'élément de base (joueur ou boîte)
     private boolean hasGoal = false; // Pour savoir si un goal est présent
 
-    private final int line, col;
+    private int line;
+    private int col;
     private final Board board;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
@@ -57,7 +61,24 @@ public class CellViewModel {
     }
 
 
+    public void handleMousePressed(int line, int column) {
 
+        play();
+    }
+
+    public void handleMouseDragged(int newLine, int newCol) {
+
+
+            // Mettez à jour les coordonnées de la cellule actuelle pour les nouvelles valeurs.
+            this.line = newLine;
+            this.col = newCol;
+            System.out.println("Dragging to cell: " + newLine + ", " + newCol);
+            play();
+        }
+
+    public void handleMouseReleased() {
+
+    }
     public void resetScale() {
         scale.set(DEFAULT_SCALE);
     }

@@ -30,10 +30,10 @@ class GridView extends GridPane {
                 .divide(GRID_WIDTH);
 
         DoubleBinding cellSize = (DoubleBinding) Bindings.min(gridWidth.divide(GRID_WIDTH), gridHeight.divide(GRID_HEIGHT));
-        for (int i = 0; i < GRID_WIDTH; ++i) {
-            for (int j = 0; j < GRID_HEIGHT; ++j) {
-                CellView cellView = new CellView(gridViewModel.getCellViewModel(i, j), cellSize, cellSize);
-                add(cellView, j, i); // Note: Ensure that CellView constructor accepts size parameters
+        for (int line = 0; line < GRID_WIDTH; ++line) {
+            for (int col = 0; col < GRID_HEIGHT; ++col) {
+                CellView cellView = new CellView(gridViewModel.getCellViewModel(line, col), cellSize, cellSize, line, col);
+                add(cellView, col, line); // Note: Ensure that CellView constructor accepts size parameters
             }
         }
     }

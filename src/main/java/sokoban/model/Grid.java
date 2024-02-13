@@ -9,8 +9,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import java.util.Arrays;
 
 public class Grid { //gérerait la structure de la grille de jeu qui contient les cellules(Cell)
-    static int GRID_WIDTH = 10;
-    static int GRID_HEIGHT = 15; // Renommé et utilisé
+    public static int GRID_WIDTH = 10;
+    public static int GRID_HEIGHT = 15; // Renommé et utilisé
     private BooleanProperty gridChanged = new SimpleBooleanProperty();
 
 

@@ -11,12 +11,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
 class CellView extends StackPane {
-
     private static final Image playerImage = new Image("player.png");
     private static final Image boxImage = new Image("box.png");
     private static final Image goalImage = new Image("goal.png");
     private static final Image groundImage = new Image("ground.png");
-
 
     private static final Image wallImage = new Image("wall.png");
 
@@ -28,15 +26,31 @@ class CellView extends StackPane {
     private final ImageView imageView = new ImageView();
     // Effet pour assombrir l'image lorsque la souris survole la cellule
     private final ColorAdjust darkenEffect = new ColorAdjust();
+    private final int line; // La ligne de cette CellView dans la grille
+    private final int col;
+    double gridTopLeftX = 15; // Obtenir le décalage X du Pane
+    double gridTopLeftY = 10;
+    double cellWidth = 8; // Largeur de chaque cellule
+    double cellHeight = 8;
 
-    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty, DoubleBinding cellSize) {
+    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty, DoubleBinding cellSize,int line, int col) {
         this.viewModel = cellViewModel;
         this.sizeProperty = sizeProperty;
+        this.line = line;
+        this.col = col;
 
         setAlignment(Pos.CENTER);
 
         layoutControls();
         configureBindings();
+        setupMouseEvents();
+    }
+    public int getLine() {
+        return line;
+    }
+
+    public int getColumn() {
+        return col;
     }
 
     private void layoutControls() {
@@ -160,6 +174,25 @@ class CellView extends StackPane {
                 imageView.setImage(null); // Aucune image pour une cellule vide
                 break;
         }
+    }
+    private void setupMouseEvents() {
+        this.setOnMousePressed(event -> {
+            if (event.isPrimaryButtonDown()) {
+                viewModel.handleMousePressed(getLine(), getColumn()); // Supposant que getLine() et getColumn() renvoient la position de la cellule
+            }
+        });
+
+        this.setOnMouseDragged(event -> {
+            if (event.isPrimaryButtonDown()) {
+                int newLine = (int) ((event.getY() - gridTopLeftY) / cellHeight);
+                int newCol = (int) ((event.getX() - gridTopLeftX) / cellWidth);
+                viewModel.handleMouseDragged(newLine, newCol);
+            }
+        });
+
+        this.setOnMouseReleased(event -> {
+            viewModel.handleMouseReleased();
+        });
     }
 
 
