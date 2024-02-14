@@ -21,6 +21,10 @@ public class Board {
 
 
     public CellValue play(int line, int col, CellValue toolValue) {
+        if (line < 0 || line >= Grid.getGridWidth() || col < 0 || col >= Grid.getGridHeight()) {
+            System.out.println("Indices hors limites : line=" + line + ", col=" + col);
+            return null; // Ou gérer autrement
+        }
         CellValue currentValue = grid.getValue(line, col);
         // Si l'outil sélectionné est un goal et que la cellule contient déjà un joueur ou une boîte,
         // nous superposons le goal sur l'élément existant.

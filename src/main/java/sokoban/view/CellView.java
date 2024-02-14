@@ -1,7 +1,11 @@
 package sokoban.view;
 
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
+import sokoban.model.Grid;
 import sokoban.viewmodel.CellViewModel;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
@@ -30,19 +34,19 @@ class CellView extends StackPane {
     private final int col;
     double initialDragX;
     double initialDragY;
+    private GridPane gridPane;
 
-
-    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty, DoubleBinding cellSize,int line, int col) {
+    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty,GridPane gridPane,  DoubleBinding cellWidth, DoubleBinding cellHeight,int line, int col) {
         this.viewModel = cellViewModel;
         this.sizeProperty = sizeProperty;
         this.line = line;
         this.col = col;
-
+        this.gridPane = gridPane;
         setAlignment(Pos.CENTER);
 
         layoutControls();
         configureBindings();
-        setupMouseEvents();
+        setupMouseEvents(cellWidth, cellHeight);
     }
     public int getLine() {
         return line;
@@ -174,34 +178,46 @@ class CellView extends StackPane {
                 break;
         }
     }
-    private void setupMouseEvents() {
+    private void setupMouseEvents(DoubleBinding cellWidth, DoubleBinding cellHeight) {
+
         this.setOnMousePressed(event -> {
-            if (event.isPrimaryButtonDown()) {
-                initialDragX = event.getX();
-                initialDragY = event.getY();
-                System.out.println("Initial Drag X: " + initialDragX);
-                System.out.println("Initial Drag Y: " + initialDragY);
+            if (event.isPrimaryButtonDown() ) {
+                System.out.println("Raw Mouse X: " + event.getX() + ", Raw Mouse Y: " + event.getY());
+                System.out.println("GridPane Width: " + gridPane.getWidth() + ", GridPane Height: " + gridPane.getHeight());
+                System.out.println("size cell : " + cellWidth.get() +" ," + cellHeight.get());
+
+                int startCol = (int) Math.round(event.getX() / cellWidth.get());
+                int startLine = (int) Math.round(event.getY() / cellHeight.get());
+                System.out.println("Start Line: " + startLine);
+                System.out.println("Start Column: " + startCol);
+
             }
         });
 
         this.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
-                double gridTopLeftX = 10; // Obtenir le décalage X du Pane
-                double gridTopLeftY = 15;
-                double cellWidth = 15; // Largeur de chaque cellule
-                double cellHeight = 15;
+                if (this.gridPane != null) {
+                    Point2D pointInScene = gridPane.localToScene(0, 0);
+                    double gridTopLeftX = pointInScene.getX();
+                    double gridTopLeftY = pointInScene.getY();
 
-                double offsetX = event.getX() - initialDragX;
-                double offsetY = event.getY() - initialDragY;
-                System.out.println("Offset X: " + offsetX);
-                System.out.println("Offset Y: " + offsetY);
+                    // Obtient les coordonnées de la souris par rapport à la scène
+                    double mouseXInScene = event.getSceneX();
+                    double mouseYInScene = event.getSceneY();
 
-                // Calculer les nouvelles coordonnées en fonction de la position initiale
-                int newLine = (int) ((initialDragY + offsetY - gridTopLeftY) / cellHeight);
-                int newCol = (int) ((initialDragX + offsetX - gridTopLeftX) / cellWidth);
-                System.out.println("New Line: " + newLine);
-                System.out.println("New Column: " + newCol);
-                viewModel.handleMouseDragged(newLine, newCol);
+
+                    // Détermine les nouvelles coordonnées de la cellule en fonction du déplacement
+                    int newLine = (int) ((mouseYInScene - gridTopLeftY) / cellHeight.get());
+                    int newCol = (int) ((mouseXInScene - gridTopLeftX) / cellWidth.get());
+
+
+                    System.out.println("New Line: " + newLine +" dim " +Grid.getGridHeight());
+                    System.out.println("New Column: " + newCol+" dim "+Grid.getGridWidth());
+                    viewModel.handleMouseDragged(newLine, newCol);
+                } else {
+                    System.out.println("GridPane est null!");
+                }
+
             }
         });
 
