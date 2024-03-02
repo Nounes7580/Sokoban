@@ -3,9 +3,11 @@ package sokoban.view;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
 import sokoban.model.Grid;
+import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.CellViewModel;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
@@ -30,10 +32,12 @@ class CellView extends StackPane {
     private final ImageView imageView = new ImageView();
     // Effet pour assombrir l'image lorsque la souris survole la cellule
     private final ColorAdjust darkenEffect = new ColorAdjust();
-    private final int line; // La ligne de cette CellView dans la grille
-    private final int col;
+    private int line; // La ligne de cette CellView dans la grille
+    private int col;
     double initialDragX;
     double initialDragY;
+    private BoardViewModel boardViewModel;
+
     private GridPane gridPane;
 
     CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty,GridPane gridPane,  DoubleBinding cellWidth, DoubleBinding cellHeight,int line, int col) {
@@ -182,9 +186,9 @@ class CellView extends StackPane {
 
         this.setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown() ) {
-                System.out.println("Raw Mouse X: " + event.getX() + ", Raw Mouse Y: " + event.getY());
-                System.out.println("GridPane Width: " + gridPane.getWidth() + ", GridPane Height: " + gridPane.getHeight());
-                System.out.println("size cell : " + cellWidth.get() +" ," + cellHeight.get());
+                //System.out.println("Raw Mouse X: " + event.getX() + ", Raw Mouse Y: " + event.getY());
+               // System.out.println("GridPane Width: " + gridPane.getWidth() + ", GridPane Height: " + gridPane.getHeight());
+                //System.out.println("size cell : " + cellWidth.get() +" ," + cellHeight.get());
 
                 int startCol = (int) Math.round(event.getX() / cellWidth.get());
                 int startLine = (int) Math.round(event.getY() / cellHeight.get());
@@ -196,30 +200,25 @@ class CellView extends StackPane {
 
         this.setOnMouseDragged(event -> {
             if (event.isPrimaryButtonDown()) {
-                if (this.gridPane != null) {
-                    Point2D pointInScene = gridPane.localToScene(0, 0);
-                    double gridTopLeftX = pointInScene.getX();
-                    double gridTopLeftY = pointInScene.getY();
+                updateMousePositionInGrid(event);
+                Point2D localPoint = gridPane.sceneToLocal(event.getSceneX(), event.getSceneY());
+                double offsetX = localPoint.getX();
+                double offsetY = localPoint.getY();
 
-                    // Obtient les coordonnées de la souris par rapport à la scène
-                    double mouseXInScene = event.getSceneX();
-                    double mouseYInScene = event.getSceneY();
+                int newCol = (int) Math.floor(offsetX / cellWidth.get());
+                int newLine = (int) Math.floor(offsetY / cellHeight.get());
+
+                if (newLine != this.line || newCol != this.col) {
+                    // Mise à jour des indices actuels
+                    this.line = newLine;
+                    this.col = newCol;
 
 
-                    // Détermine les nouvelles coordonnées de la cellule en fonction du déplacement
-                    int newLine = (int) ((mouseYInScene - gridTopLeftY) / cellHeight.get());
-                    int newCol = (int) ((mouseXInScene - gridTopLeftX) / cellWidth.get());
-
-
-                    System.out.println("New Line: " + newLine +" dim " +Grid.getGridHeight());
-                    System.out.println("New Column: " + newCol+" dim "+Grid.getGridWidth());
                     viewModel.handleMouseDragged(newLine, newCol);
-                } else {
-                    System.out.println("GridPane est null!");
                 }
-
             }
         });
+
 
         this.setOnMouseReleased(event -> {
             viewModel.handleMouseReleased();
@@ -232,4 +231,32 @@ class CellView extends StackPane {
         if (!newVal)
             viewModel.resetScale();
     }
+    private void updateMousePositionInGrid(MouseEvent event) {
+        double cellWidth = 0;
+        double cellHeight = 0;
+
+        Point2D localPoint = gridPane.sceneToLocal(event.getSceneX(), event.getSceneY());
+        double offsetX = localPoint.getX();
+        double offsetY = localPoint.getY();
+
+        int newCol = (int) Math.floor(offsetX / cellWidth);
+        int newLine = (int) Math.floor(offsetY / cellHeight);
+
+
+        if (newLine >= 0 && newLine < Grid.getGridHeight() && newCol >= 0 && newCol < Grid.getGridWidth()) {
+          
+            if (newLine != this.line || newCol != this.col) {
+                this.line = newLine;
+                this.col = newCol;
+
+
+                System.out.println("Mouse is at position in grid: line=" + newLine + ", col=" + newCol);
+
+            }
+        }
+    }
 }
+
+
+
+

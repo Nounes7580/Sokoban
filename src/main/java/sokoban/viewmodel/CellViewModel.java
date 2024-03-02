@@ -67,14 +67,20 @@ public class CellViewModel {
     }
 
     public void handleMouseDragged(int newLine, int newCol) {
-
-
-            // Mettez à jour les coordonnées de la cellule actuelle pour les nouvelles valeurs.
+        CellValue toolValue = boardViewModel.getSelectedCellValue();
+        System.out.println("ViewModel is updating cell at: line=" + line + ", col=" + col);  // Vérifie si la nouvelle cellule est différente de la cellule actuelle
+        if (newLine != this.line || newCol != this.col) {
+            // Met à jour les coordonnées de la cellule actuelle pour les nouvelles valeurs
             this.line = newLine;
             this.col = newCol;
             System.out.println("Dragging to cell: " + newLine + ", " + newCol);
-            play();
+
+            // Effectue l'action de mise à jour de la grille
+            board.play(newLine,newCol,toolValue);
+        } else {
+            System.out.println("Same cell: line=" + newLine + ", col=" + newCol);
         }
+    }
 
     public void handleMouseReleased() {
 
