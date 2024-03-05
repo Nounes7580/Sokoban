@@ -80,12 +80,15 @@ public class BoardView extends BorderPane {
         headerBox.getChildren().add(validationLabel);
         // Initialiser le menu Fichier dans la barre de menu
         initializeMenu(stage);
-        // Ajout de la barre de menu à l'interface utilisateur
-        this.setTop(menuBar);
+        // Création du container pour le menu et l'en-tête
+        VBox topContainer = new VBox(menuBar, createHeader());
+
+        // Ajout du container combiné à l'interface utilisateur
+        this.setTop(topContainer);
 
     }
 
-    private void createHeader() {
+    private VBox createHeader() {
         headerLabel.textProperty().bind(boardViewModel.filledCellsCountProperty()
                 .asString("Number of filled cells: %d of " + boardViewModel.maxFilledCells()));
         headerLabel.getStyleClass().add("header");
@@ -107,7 +110,8 @@ public class BoardView extends BorderPane {
         headerContainer.setAlignment(Pos.CENTER);
         headerContainer.setPadding(new Insets(10));
 
-        setTop(headerContainer);
+        // Retourner le container de l'en-tête au lieu de le placer directement en haut du BorderPane
+        return headerContainer;
     }
 
     private void createGrid() {
@@ -261,7 +265,7 @@ public class BoardView extends BorderPane {
         // Affichage de la ToolBar  de sauvegarde de fichier
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {
-            // Implémentation futur pour sauvegarder le niveau dans le fichier
+            // Implémention futur pour la logique pour sauvegarder le niveau dans le fichier
         }
     }
 }
