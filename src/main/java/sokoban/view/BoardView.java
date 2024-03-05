@@ -2,12 +2,13 @@ package sokoban.view;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Cell;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import sokoban.model.CellValue;
 
 import sokoban.viewmodel.BoardViewModel;
@@ -15,11 +16,11 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -41,6 +42,9 @@ public class BoardView extends BorderPane {
     private final VBox toolBar = new VBox(); // La VBox pour la barre d'outils avec un espacement de 10
     // Label pour les messages de validation
     private final Label validationLabel = new Label();
+
+    // Ajout pour la barre de menu
+    private final MenuBar menuBar = new MenuBar();
 
 
     public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
@@ -74,6 +78,10 @@ public class BoardView extends BorderPane {
         validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
         // Add the label to the UI
         headerBox.getChildren().add(validationLabel);
+        // Initialiser le menu Fichier dans la barre de menu
+        initializeMenu(stage);
+        // Ajout de la barre de menu à l'interface utilisateur
+        this.setTop(menuBar);
 
     }
 
@@ -204,6 +212,56 @@ public class BoardView extends BorderPane {
                     imageView.setStyle(null);
                 }
             }
+        }
+    }
+    private void initializeMenu(Stage primaryStage) {
+        // creation du menu Fichier
+        Menu fileMenu = new Menu("File");
+
+        // Creation des element du menu
+        MenuItem newItem = new MenuItem("New");
+        MenuItem openItem = new MenuItem("Open");
+        MenuItem saveAsItem = new MenuItem("Save As");
+        MenuItem exitItem = new MenuItem("Exit");
+
+        // Ajout des éléments de menu au menu Fichier
+        fileMenu.getItems().addAll(newItem, openItem, saveAsItem, exitItem);
+
+        // Configuration les actions pour les éléments de menu
+        newItem.setOnAction(event -> handleNew());
+        openItem.setOnAction(event -> handleOpen(primaryStage));
+        saveAsItem.setOnAction(event -> handleSaveAs(primaryStage));
+        exitItem.setOnAction(event -> primaryStage.close());
+
+        // Ajout du menu Fichier à la barre de menu
+        menuBar.getMenus().add(fileMenu);
+    }
+    private void handleNew() {
+        // Implémentation futur pour la creation du nouveau lvl
+    }
+    private void handleOpen(Stage primaryStage) {
+        FileChooser fileChooser = new FileChooser();
+        // Définir le filtre d'extension
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb)", "*.skb");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Afficher la boîte de dialogue d'ouverture de fichier
+        File file = fileChooser.showOpenDialog(primaryStage);
+        if (file != null) {
+            // Implémenter futur pour ouvrir un niveau à partir du fichier
+        }
+    }
+
+    private void handleSaveAs(Stage primaryStage) {
+        FileChooser fileChooser = new FileChooser();
+        // Définir le filtre d'extension
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb)", "*.skb");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        // Affichage de la ToolBar  de sauvegarde de fichier
+        File file = fileChooser.showSaveDialog(primaryStage);
+        if (file != null) {
+            // Implémentation futur pour sauvegarder le niveau dans le fichier
         }
     }
 }
