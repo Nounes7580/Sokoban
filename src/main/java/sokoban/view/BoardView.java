@@ -26,6 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 public class BoardView extends BorderPane {
 
@@ -244,7 +245,18 @@ public class BoardView extends BorderPane {
         menuBar.getMenus().add(fileMenu);
     }
     private void handleNew() {
-        // Implémentation futur pour la creation du nouveau lvl
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation Dialog");
+        alert.setHeaderText("Save Current Level");
+        alert.setContentText("Do you want to save the current level?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            // User chose to save the current level
+            handleSaveAs((Stage) getScene().getWindow());
+        }
+
+        // Create a new level
     }
     private void handleOpen(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
