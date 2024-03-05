@@ -1,6 +1,7 @@
 package sokoban.viewmodel;
 
 import sokoban.model.Board;
+import sokoban.model.CellValue;
 
 public class GridViewModel {
     private final Board board;
@@ -18,5 +19,10 @@ public class GridViewModel {
         CellViewModel cellViewModel = new CellViewModel(line, col, board);
         cellViewModel.setBoardViewModel(this.boardViewModel); // Set the boardViewModel
         return cellViewModel;
+    }
+
+    public CellValue getCellValue(int line, int col) {
+        return getCellViewModel(line, col).valueProperty().get();
+
     }
 }

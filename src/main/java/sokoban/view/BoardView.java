@@ -20,7 +20,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -258,14 +261,49 @@ public class BoardView extends BorderPane {
 
     private void handleSaveAs(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
-        // Définir le filtre d'extension
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb)", "*.skb");
+        // Define the extension filter
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.xsb)", "*.xsb");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        // Affichage de la ToolBar  de sauvegarde de fichier
+        // Show the save file dialog
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {
-            // Implémention futur pour la logique pour sauvegarder le niveau dans le fichier
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+                for (int i = 0; i < BoardViewModel.gridWidth(); i++) {
+                    for (int j = 0; j < BoardViewModel.gridHeight(); j++) {
+                        CellValue cellValue = boardViewModel.getGridViewModel().getCellValue(i, j);
+                        switch (cellValue) {
+                            case WALL:
+                                writer.write('#');
+                                break;
+                            case PLAYER:
+                                writer.write('@');
+                                break;
+                            case BOX:
+                                writer.write('$');
+                                break;
+                            case GOAL:
+                                writer.write('.');
+                                break;
+                            case BOX_ON_GOAL:
+                                writer.write('*');
+                                break;
+                            case PLAYER_ON_GOAL:
+                                writer.write('+');
+                                break;
+                            case GROUND:
+                            default:
+                                writer.write(' ');
+                                break;
+                        }
+                    }
+                    writer.newLine();
+                }
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
