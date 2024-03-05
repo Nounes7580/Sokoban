@@ -67,7 +67,7 @@ public class BoardView extends BorderPane {
     }
 
     private void configMainComponents(Stage stage) {
-        stage.setTitle("Grid");
+        stage.setTitle("Sokoban");
         initializeToolBar(stage);
 
         Label validationLabel = new Label();
