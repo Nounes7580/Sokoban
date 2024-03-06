@@ -109,4 +109,7 @@ public class BoardViewModel {
         updateValidationMessage(); // Met à jour les messages de validation si nécessaire
     }
 
+    public boolean isGridChanged() {
+        return board.getGrid().isGridChanged();
+    }
 }

@@ -1,5 +1,6 @@
 package sokoban.view;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -11,7 +12,6 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import sokoban.model.CellValue;
 
-import sokoban.model.Grid;
 import sokoban.viewmodel.BoardViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
@@ -241,76 +241,144 @@ public class BoardView extends BorderPane {
     }
 
     private void handleNew() {
-        requestNewGridDimensions();
+        if (boardViewModel.isGridChanged()) { // Supposons que isGridChanged() vérifie si des changements ont été faits
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Save Changes");
+            alert.setHeaderText("Do you want to save changes to the current grid?");
+            alert.setContentText("Choose your option.");
+
+            ButtonType buttonTypeYes = new ButtonType("Yes");
+            ButtonType buttonTypeNo = new ButtonType("No");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeYes) {
+                 // Méthode pour sauvegarder
+                handleSaveAs(new Stage());
+                requestNewGridDimensions(); // Créez une nouvelle grille après la sauvegarde
+            } else if (result.get() == buttonTypeNo) {
+                requestNewGridDimensions(); // Créez une nouvelle grille sans sauvegarder
+            }
+            // Si "Cancel" est choisi, ne rien faire pour revenir à la grille actuelle
+        } else {
+            requestNewGridDimensions(); // Directement demander les nouvelles dimensions si pas de changements
+        }
     }
 
 
     private void requestNewGridDimensions() {
-        // Création de la boîte de dialogue pour la saisie des dimensions
         Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
-        dialog.setTitle("New Grid Dimensions");
-        dialog.setHeaderText("Enter the dimensions for the new grid:");
+        dialog.setTitle("Sokoban");
+        dialog.setHeaderText("Give new game dimensions");
 
-        // Ajout des boutons Type
-        ButtonType createButtonType = new ButtonType("Create", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(20, 150, 10, 10));
 
-        // Création des champs de saisie pour la largeur et la hauteur
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 150, 10, 10));
-
-        TextField widthField = new TextField();
+        TextField widthField = createNumericTextField();
         widthField.setPromptText("Width");
-        TextField heightField = new TextField();
+
+        TextField heightField = createNumericTextField();
         heightField.setPromptText("Height");
 
-        grid.add(new Label("Width:"), 0, 0);
-        grid.add(widthField, 1, 0);
-        grid.add(new Label("Height:"), 0, 1);
-        grid.add(heightField, 1, 1);
+        Label widthErrorLabel = createErrorLabel("Width must be at least 10.");
+        Label heightErrorLabel = createErrorLabel("Height must be at most 50.");
 
-        // Enable/Disable login button depending on whether a username was entered.
-        Node createButton = dialog.getDialogPane().lookupButton(createButtonType);
-        createButton.setDisable(true);
+        gridPane.add(new Label("Width:"), 0, 0);
+        gridPane.add(widthField, 1, 0);
+        gridPane.add(widthErrorLabel, 1, 1);
+        gridPane.add(new Label("Height:"), 0, 2);
+        gridPane.add(heightField, 1, 2);
+        gridPane.add(heightErrorLabel, 1, 3);
 
-        // Validation pour activer le bouton "Create" lorsque les champs sont valides.
-        widthField.textProperty().addListener((observable, oldValue, newValue) -> {
-            createButton.setDisable(newValue.trim().isEmpty() || heightField.getText().trim().isEmpty());
-        });
-        heightField.textProperty().addListener((observable, oldValue, newValue) -> {
-            createButton.setDisable(newValue.trim().isEmpty() || widthField.getText().trim().isEmpty());
-        });
+        Node okButton = createDialogButtons(dialog);
 
-        dialog.getDialogPane().setContent(grid);
+        // Validation listeners
+        widthField.textProperty().addListener((observable, oldValue, newValue) ->
+                validateDimensionInput(newValue, widthErrorLabel, "Width must be at least 10.", okButton, heightField)
+        );
 
-        // Convertit le résultat en pair width/height quand le bouton "Create" est cliqué.
+        heightField.textProperty().addListener((observable, oldValue, newValue) ->
+                validateDimensionInput(newValue, heightErrorLabel, "Height must be at most 50.", okButton, widthField)
+        );
+
+        dialog.getDialogPane().setContent(gridPane);
+
+        Platform.runLater(widthField::requestFocus);
+
         dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == createButtonType) {
-                try {
-                    int width = Integer.parseInt(widthField.getText());
-                    int height = Integer.parseInt(heightField.getText());
-                    return new Pair<>(width, height);
-                } catch (NumberFormatException e) {
-                    // Gérer l'exception si nécessaire
-                }
+            if (dialogButton == ButtonType.OK) {
+                return new Pair<>(Integer.parseInt(widthField.getText()), Integer.parseInt(heightField.getText()));
             }
             return null;
         });
 
-        // Affiche la boîte de dialogue et attend la réponse de l'utilisateur
         Optional<Pair<Integer, Integer>> result = dialog.showAndWait();
 
         result.ifPresent(dimensions -> {
             int width = dimensions.getKey();
             int height = dimensions.getValue();
-            // Ici, appelle la logique de réinitialisation de ta grille avec les dimensions spécifiées
             boardViewModel.resetGrid(width, height);
             createGrid();
-            System.out.println("New Grid Dimensions: Width = " + width + ", Height = " + height); // Remplacer par la logique de réinitialisation de la grille
         });
     }
+
+    private TextField createNumericTextField() {
+        return new TextField() {
+            @Override public void replaceText(int start, int end, String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceText(start, end, text);
+                }
+            }
+
+            @Override public void replaceSelection(String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceSelection(text);
+                }
+            }
+        };
+    }
+
+    private Label createErrorLabel(String errorMessage) {
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+        errorLabel.setVisible(false);
+        return errorLabel;
+    }
+
+    private Node createDialogButtons(Dialog<Pair<Integer, Integer>> dialog) {
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Node okButton = dialog.getDialogPane().lookupButton(ButtonType.OK
+
+        );
+        okButton.setDisable(true);
+        return okButton;
+    }
+
+    private void validateDimensionInput(String newValue, Label errorLabel, String errorMessage, Node okButton, TextField otherField) {
+        if (!newValue.isEmpty()) {
+            try {
+                int value = Integer.parseInt(newValue);
+                boolean isValid = value >= 10 && value <= 50;
+                errorLabel.setVisible(!isValid);
+                errorLabel.setText(isValid ? "" : errorMessage);
+                okButton.setDisable(!isValid || otherField.getText().isEmpty());
+            } catch (NumberFormatException e) {
+                errorLabel.setVisible(true);
+                errorLabel.setText(errorMessage);
+                okButton.setDisable(true);
+            }
+        } else {
+            errorLabel.setVisible(false);
+            okButton.setDisable(otherField.getText().isEmpty());
+        }
+    }
+
+
+
 
 
     private void handleOpen(Stage primaryStage) {

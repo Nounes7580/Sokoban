@@ -176,4 +176,7 @@ public class Grid {
         return new SimpleIntegerProperty(gridHeight.get());
     }
 
+    public boolean isGridChanged() {
+        return gridChanged.get();
+    }
 }
