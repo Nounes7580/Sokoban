@@ -5,19 +5,18 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import sokoban.model.CellValue;
 
+import sokoban.model.Grid;
 import sokoban.viewmodel.BoardViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.BufferedWriter;
@@ -34,11 +33,9 @@ public class BoardView extends BorderPane {
     private final BoardViewModel boardViewModel;
 
     // Constantes de mise en page
-    private static final int GRID_WIDTH = BoardViewModel.gridWidth();
-    private static final int GRID_HEIGHT = BoardViewModel.gridHeight();
 
-    private static final int SCENE_MIN_WIDTH = 1000;
-    private static final int SCENE_MIN_HEIGHT = 400;
+    private static final int SCENE_MIN_WIDTH = 700;
+    private static final int SCENE_MIN_HEIGHT = 600;
 
     // Composants principaux
     private final Label headerLabel = new Label("");
@@ -119,35 +116,33 @@ public class BoardView extends BorderPane {
     }
 
     private void createGrid() {
-        DoubleBinding gridWidth = Bindings.createDoubleBinding(
+        DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
                 () -> {
                     var width = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(width / GRID_WIDTH) * GRID_WIDTH;
+                    return Math.floor(width / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth();
                 },
                 widthProperty(),
                 heightProperty(),
                 headerBox.heightProperty());
 
-        DoubleBinding gridHeight = Bindings.createDoubleBinding(
+        DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
                 () -> {
                     var height = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(height / GRID_HEIGHT) * GRID_HEIGHT;
+                    return Math.floor(height / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight();
                 },
                 widthProperty(),
                 heightProperty(),
                 headerBox.heightProperty());
 
-        GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidth, gridHeight);
+        GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
-        // Grille rectangulaire, contraintes de hauteur ajoutées
-        gridView.minHeightProperty().bind(gridHeight);
-        gridView.prefHeightProperty().bind(gridHeight); // Vous pouvez vouloir ajouter cela pour préférence
-        gridView.maxHeightProperty().bind(gridHeight);
+        gridView.minHeightProperty().bind(gridHeightBinding);
+        gridView.prefHeightProperty().bind(gridHeightBinding);
+        gridView.maxHeightProperty().bind(gridHeightBinding);
 
-        // La largeur doit également être ajustée si votre GridView n'était pas prévu pour un format non-carré
-        gridView.minWidthProperty().bind(gridWidth);
-        gridView.prefWidthProperty().bind(gridWidth); // Ajustement pour la largeur préférée
-        gridView.maxWidthProperty().bind(gridWidth);
+        gridView.minWidthProperty().bind(gridWidthBinding);
+        gridView.prefWidthProperty().bind(gridWidthBinding);
+        gridView.maxWidthProperty().bind(gridWidthBinding);
 
         setCenter(gridView);
     }
@@ -244,20 +239,80 @@ public class BoardView extends BorderPane {
         // Ajout du menu Fichier à la barre de menu
         menuBar.getMenus().add(fileMenu);
     }
+
     private void handleNew() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("Save Current Level");
-        alert.setContentText("Do you want to save the current level?");
-
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            // User chose to save the current level
-            handleSaveAs((Stage) getScene().getWindow());
-        }
-
-        // Create a new level
+        requestNewGridDimensions();
     }
+
+
+    private void requestNewGridDimensions() {
+        // Création de la boîte de dialogue pour la saisie des dimensions
+        Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
+        dialog.setTitle("New Grid Dimensions");
+        dialog.setHeaderText("Enter the dimensions for the new grid:");
+
+        // Ajout des boutons Type
+        ButtonType createButtonType = new ButtonType("Create", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
+
+        // Création des champs de saisie pour la largeur et la hauteur
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField widthField = new TextField();
+        widthField.setPromptText("Width");
+        TextField heightField = new TextField();
+        heightField.setPromptText("Height");
+
+        grid.add(new Label("Width:"), 0, 0);
+        grid.add(widthField, 1, 0);
+        grid.add(new Label("Height:"), 0, 1);
+        grid.add(heightField, 1, 1);
+
+        // Enable/Disable login button depending on whether a username was entered.
+        Node createButton = dialog.getDialogPane().lookupButton(createButtonType);
+        createButton.setDisable(true);
+
+        // Validation pour activer le bouton "Create" lorsque les champs sont valides.
+        widthField.textProperty().addListener((observable, oldValue, newValue) -> {
+            createButton.setDisable(newValue.trim().isEmpty() || heightField.getText().trim().isEmpty());
+        });
+        heightField.textProperty().addListener((observable, oldValue, newValue) -> {
+            createButton.setDisable(newValue.trim().isEmpty() || widthField.getText().trim().isEmpty());
+        });
+
+        dialog.getDialogPane().setContent(grid);
+
+        // Convertit le résultat en pair width/height quand le bouton "Create" est cliqué.
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == createButtonType) {
+                try {
+                    int width = Integer.parseInt(widthField.getText());
+                    int height = Integer.parseInt(heightField.getText());
+                    return new Pair<>(width, height);
+                } catch (NumberFormatException e) {
+                    // Gérer l'exception si nécessaire
+                }
+            }
+            return null;
+        });
+
+        // Affiche la boîte de dialogue et attend la réponse de l'utilisateur
+        Optional<Pair<Integer, Integer>> result = dialog.showAndWait();
+
+        result.ifPresent(dimensions -> {
+            int width = dimensions.getKey();
+            int height = dimensions.getValue();
+            // Ici, appelle la logique de réinitialisation de ta grille avec les dimensions spécifiées
+            boardViewModel.resetGrid(width, height);
+            createGrid();
+            System.out.println("New Grid Dimensions: Width = " + width + ", Height = " + height); // Remplacer par la logique de réinitialisation de la grille
+        });
+    }
+
+
     private void handleOpen(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         // Définir le filtre d'extension
@@ -280,10 +335,11 @@ public class BoardView extends BorderPane {
         // Show the save file dialog
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                for (int i = 0; i < BoardViewModel.gridWidth(); i++) {
-                    for (int j = 0; j < BoardViewModel.gridHeight(); j++) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                int gridWidth = boardViewModel.getGridWidth(); // Assurez-vous que cette méthode existe dans BoardViewModel
+                int gridHeight = boardViewModel.getGridHeight(); // Assurez-vous que cette méthode existe dans BoardViewModel
+                for (int i = 0; i < gridWidth; i++) {
+                    for (int j = 0; j < gridHeight; j++) {
                         CellValue cellValue = boardViewModel.getGridViewModel().getCellValue(i, j);
                         switch (cellValue) {
                             case WALL:
@@ -312,7 +368,6 @@ public class BoardView extends BorderPane {
                     }
                     writer.newLine();
                 }
-                writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

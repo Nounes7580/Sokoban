@@ -1,5 +1,7 @@
 package sokoban.viewmodel;
 
+import javafx.beans.Observable;
+import javafx.beans.property.IntegerProperty;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 
@@ -25,4 +27,21 @@ public class GridViewModel {
         return getCellViewModel(line, col).valueProperty().get();
 
     }
+
+    public int getGridWidth() {
+        return board.getGrid().getGridWidth(); // Assurez-vous que Grid a une méthode getGridWidth
+    }
+
+    public int getGridHeight() {
+        return board.getGrid().getGridHeight(); // Assurez-vous que Grid a une méthode getGridHeight
+    }
+    // Forward the observable properties
+    public IntegerProperty gridWidthProperty() {
+        return board.getGrid().gridWidthProperty();
+    }
+
+    public IntegerProperty gridHeightProperty() {
+        return board.getGrid().gridHeightProperty();
+    }
+
 }
