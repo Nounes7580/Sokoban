@@ -161,7 +161,7 @@ public class BoardView extends BorderPane {
     private void initializeToolBar(Stage primaryStage) {
         // Définit l'alignement des outils à l'intérieur de la VBox
         toolBar.setAlignment(Pos.CENTER);
-        toolBar.setPadding(new Insets(0, 0, 0, 50)); // Ajoute un padding à gauche de la toolBar
+        toolBar.setPadding(new Insets(0, 0, 110, 50)); // Ajoute un padding à gauche de la toolBar
         toolBar.setSpacing(10);
 
         // Création des ImageView pour chaque outil

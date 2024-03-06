@@ -1,10 +1,15 @@
 package sokoban.viewmodel;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+
+import static sokoban.model.Grid.GRID_HEIGHT;
+import static sokoban.model.Grid.GRID_WIDTH;
 
 public class CellViewModel {
     private static final double DEFAULT_SCALE = 1;
@@ -13,7 +18,8 @@ public class CellViewModel {
     private CellValue baseElement = CellValue.EMPTY; // Pour l'élément de base (joueur ou boîte)
     private boolean hasGoal = false; // Pour savoir si un goal est présent
 
-    private final int line, col;
+    private int line;
+    private int col;
     private final Board board;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
@@ -34,7 +40,25 @@ public class CellViewModel {
             board.play(line, col, toolValue);
         }
     }
+    public void addObject() {
+        CellValue selectedTool = boardViewModel.getSelectedTool(); // Obtenez l'outil actuellement sélectionné
+        if (selectedTool != CellValue.EMPTY && isEmpty()) { // Assurez-vous que la cellule est vide
+            updateCellValue(selectedTool); // Mettez à jour la valeur de la cellule
+        }
+    }
 
+    // Méthode pour "supprimer" un objet de la cellule
+    public void deleteObject() {
+        if (!isEmpty()) { // Vérifiez si la cellule n'est pas déjà vide
+            updateCellValue(CellValue.EMPTY); // Définissez la cellule sur EMPTY
+        }
+    }
+
+    // Méthode privée pour mettre à jour la valeur de la cellule
+    private void updateCellValue(CellValue newValue) {
+        board.setCellValue(line, col, newValue); // Supposons que cette méthode existe dans votre classe Board
+        // Ici, vous pourriez également mettre à jour la vue ou notifier des observateurs
+    }
 
     public ReadOnlyObjectProperty<CellValue> valueProperty() {
         return board.valueProperty(line, col);
@@ -58,7 +82,15 @@ public class CellViewModel {
 
 
 
+
+    public void handleMouseReleased() {
+
+    }
     public void resetScale() {
         scale.set(DEFAULT_SCALE);
     }
+
+
+
 }
+

@@ -6,6 +6,9 @@ import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 
+import static sokoban.model.Grid.GRID_HEIGHT;
+import static sokoban.model.Grid.GRID_WIDTH;
+
 public class Board {
     static final int MAX_FILLED_CELLS = 75; //TODO: ca doit etre la moitie du nombre de cellules
 
@@ -21,6 +24,10 @@ public class Board {
 
 
     public CellValue play(int line, int col, CellValue toolValue) {
+        if (line < 0 || line >= Grid.getGridWidth() || col < 0 || col >= Grid.getGridHeight()) {
+            System.out.println("Indices hors limites : line=" + line + ", col=" + col);
+            return null; // Ou gérer autrement
+        }
         CellValue currentValue = grid.getValue(line, col);
         // Si l'outil sélectionné est un goal et que la cellule contient déjà un joueur ou une boîte,
         // nous superposons le goal sur l'élément existant.
@@ -36,6 +43,27 @@ public class Board {
         return grid.getValue(line, col);
 
 
+    }
+    public void setCellValue(int line, int col, CellValue newValue) {
+        if (isPositionValid(line, col)) {
+            Cell cell = getCell(line, col);
+            cell.setValue(newValue);
+        }
+    }
+
+    public Cell getCell(int line, int col) {
+        // Vérifie si les indices sont dans les limites
+        if (isPositionValid(line, col)) {
+            return grid.getMatrix()[line][col];
+        } else {
+            return null;
+        }
+    }
+
+    // Méthode pour vérifier si les coordonnées de la cellule sont valides
+    public boolean isPositionValid(int line, int col) {
+        // Retourne vrai si les coordonnées sont dans les limites de la grille
+        return line >= 0 && line <= GRID_WIDTH && col >= 0 && col <= GRID_HEIGHT;
     }
 
     private long calculateFilledCells() {

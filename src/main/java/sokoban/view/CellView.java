@@ -1,7 +1,14 @@
 package sokoban.view;
 
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
+import sokoban.model.Grid;
+import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.CellViewModel;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
@@ -11,12 +18,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
 class CellView extends StackPane {
-
     private static final Image playerImage = new Image("player.png");
     private static final Image boxImage = new Image("box.png");
     private static final Image goalImage = new Image("goal.png");
     private static final Image groundImage = new Image("ground.png");
-
 
     private static final Image wallImage = new Image("wall.png");
 
@@ -28,15 +33,32 @@ class CellView extends StackPane {
     private final ImageView imageView = new ImageView();
     // Effet pour assombrir l'image lorsque la souris survole la cellule
     private final ColorAdjust darkenEffect = new ColorAdjust();
+    private int line; // La ligne de cette CellView dans la grille
+    private int col;
+    double initialDragX;
+    double initialDragY;
+    private BoardViewModel boardViewModel;
 
-    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty, DoubleBinding cellSize) {
+    private GridPane gridPane;
+
+    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty,GridPane gridPane,  DoubleBinding cellWidth, DoubleBinding cellHeight,int line, int col) {
         this.viewModel = cellViewModel;
         this.sizeProperty = sizeProperty;
-
+        this.line = line;
+        this.col = col;
+        this.gridPane = gridPane;
         setAlignment(Pos.CENTER);
 
         layoutControls();
         configureBindings();
+        setupMouseEvents(cellWidth, cellHeight);
+    }
+    public int getLine() {
+        return line;
+    }
+
+    public int getColumn() {
+        return col;
     }
 
     private void layoutControls() {
@@ -161,6 +183,49 @@ class CellView extends StackPane {
                 break;
         }
     }
+    private void setupMouseEvents(DoubleBinding cellWidth, DoubleBinding cellHeight) {
+
+        this.setOnMousePressed(event -> {
+            if (event.isPrimaryButtonDown() ) {
+                //System.out.println("Raw Mouse X: " + event.getX() + ", Raw Mouse Y: " + event.getY());
+               // System.out.println("GridPane Width: " + gridPane.getWidth() + ", GridPane Height: " + gridPane.getHeight());
+                //System.out.println("size cell : " + cellWidth.get() +" ," + cellHeight.get());
+
+                int startCol = (int) Math.round(event.getX() / cellWidth.get());
+                int startLine = (int) Math.round(event.getY() / cellHeight.get());
+                System.out.println("Start Line: " + startLine);
+                System.out.println("Start Column: " + startCol);
+
+            }
+        });
+        setOnDragDetected(event -> {
+            System.out.println("Drag detected");
+            if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
+                this.startFullDrag(); // Prépare l'élément pour le suivi du glissement
+            }
+            event.consume();
+        });
+
+        setOnMouseDragEntered(event -> {
+            System.out.println("Mouse drag entered");
+            if (event.getButton() == MouseButton.SECONDARY) {
+                viewModel.deleteObject(); // Suppose que deleteObject gère la suppression basée sur la position actuelle
+                System.out.println("Object deleted");
+            }
+            // Vérification du bouton primaire de la souris pour l'ajout d'objet
+            else if (event.getButton() == MouseButton.PRIMARY) {
+ 
+                    viewModel.addObject();
+                    System.out.println("Object added");
+
+            }
+            event.consume();
+        });
+
+        this.setOnMouseReleased(event -> {
+            viewModel.handleMouseReleased();
+        });
+    }
 
 
     private void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
@@ -168,4 +233,10 @@ class CellView extends StackPane {
         if (!newVal)
             viewModel.resetScale();
     }
+
+
 }
+
+
+
+
