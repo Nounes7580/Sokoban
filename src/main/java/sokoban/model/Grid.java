@@ -154,5 +154,8 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
                 .filter(cell -> cell.getValue() == CellValue.BOX || cell.getValue() == CellValue.BOX_ON_GOAL)
                 .count();
     }
+    public Cell[][] getMatrix() {
+        return matrix;
+    }
 
 }

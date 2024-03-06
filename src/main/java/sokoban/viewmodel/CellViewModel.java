@@ -1,5 +1,7 @@
 package sokoban.viewmodel;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
@@ -38,7 +40,25 @@ public class CellViewModel {
             board.play(line, col, toolValue);
         }
     }
+    public void addObject() {
+        CellValue selectedTool = boardViewModel.getSelectedTool(); // Obtenez l'outil actuellement sélectionné
+        if (selectedTool != CellValue.EMPTY && isEmpty()) { // Assurez-vous que la cellule est vide
+            updateCellValue(selectedTool); // Mettez à jour la valeur de la cellule
+        }
+    }
 
+    // Méthode pour "supprimer" un objet de la cellule
+    public void deleteObject() {
+        if (!isEmpty()) { // Vérifiez si la cellule n'est pas déjà vide
+            updateCellValue(CellValue.EMPTY); // Définissez la cellule sur EMPTY
+        }
+    }
+
+    // Méthode privée pour mettre à jour la valeur de la cellule
+    private void updateCellValue(CellValue newValue) {
+        board.setCellValue(line, col, newValue); // Supposons que cette méthode existe dans votre classe Board
+        // Ici, vous pourriez également mettre à jour la vue ou notifier des observateurs
+    }
 
     public ReadOnlyObjectProperty<CellValue> valueProperty() {
         return board.valueProperty(line, col);
@@ -61,26 +81,7 @@ public class CellViewModel {
     }
 
 
-    public void handleMousePressed(int line, int column) {
 
-        play();
-    }
-
-    public void handleMouseDragged(int newLine, int newCol) {
-        CellValue toolValue = boardViewModel.getSelectedCellValue();
-        System.out.println("ViewModel is updating cell at: line=" + line + ", col=" + col);  // Vérifie si la nouvelle cellule est différente de la cellule actuelle
-        if (newLine != this.line || newCol != this.col) {
-            // Met à jour les coordonnées de la cellule actuelle pour les nouvelles valeurs
-            this.line = newLine;
-            this.col = newCol;
-            System.out.println("Dragging to cell: " + newLine + ", " + newCol);
-
-            // Effectue l'action de mise à jour de la grille
-            board.play(newLine,newCol,toolValue);
-        } else {
-            System.out.println("Same cell: line=" + newLine + ", col=" + newCol);
-        }
-    }
 
     public void handleMouseReleased() {
 
@@ -88,4 +89,8 @@ public class CellViewModel {
     public void resetScale() {
         scale.set(DEFAULT_SCALE);
     }
+
+
+
 }
+

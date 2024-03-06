@@ -3,6 +3,7 @@ package sokoban.view;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
@@ -197,28 +198,29 @@ class CellView extends StackPane {
 
             }
         });
-
-        this.setOnMouseDragged(event -> {
-            if (event.isPrimaryButtonDown()) {
-                updateMousePositionInGrid(event);
-                Point2D localPoint = gridPane.sceneToLocal(event.getSceneX(), event.getSceneY());
-                double offsetX = localPoint.getX();
-                double offsetY = localPoint.getY();
-
-                int newCol = (int) Math.floor(offsetX / cellWidth.get());
-                int newLine = (int) Math.floor(offsetY / cellHeight.get());
-
-                if (newLine != this.line || newCol != this.col) {
-                    // Mise à jour des indices actuels
-                    this.line = newLine;
-                    this.col = newCol;
-
-
-                    viewModel.handleMouseDragged(newLine, newCol);
-                }
+        setOnDragDetected(event -> {
+            System.out.println("Drag detected");
+            if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
+                this.startFullDrag(); // Prépare l'élément pour le suivi du glissement
             }
+            event.consume();
         });
 
+        setOnMouseDragEntered(event -> {
+            System.out.println("Mouse drag entered");
+            if (event.getButton() == MouseButton.SECONDARY) {
+                viewModel.deleteObject(); // Suppose que deleteObject gère la suppression basée sur la position actuelle
+                System.out.println("Object deleted");
+            }
+            // Vérification du bouton primaire de la souris pour l'ajout d'objet
+            else if (event.getButton() == MouseButton.PRIMARY) {
+ 
+                    viewModel.addObject();
+                    System.out.println("Object added");
+
+            }
+            event.consume();
+        });
 
         this.setOnMouseReleased(event -> {
             viewModel.handleMouseReleased();
@@ -231,30 +233,8 @@ class CellView extends StackPane {
         if (!newVal)
             viewModel.resetScale();
     }
-    private void updateMousePositionInGrid(MouseEvent event) {
-        double cellWidth = 0;
-        double cellHeight = 0;
-
-        Point2D localPoint = gridPane.sceneToLocal(event.getSceneX(), event.getSceneY());
-        double offsetX = localPoint.getX();
-        double offsetY = localPoint.getY();
-
-        int newCol = (int) Math.floor(offsetX / cellWidth);
-        int newLine = (int) Math.floor(offsetY / cellHeight);
 
 
-        if (newLine >= 0 && newLine < Grid.getGridHeight() && newCol >= 0 && newCol < Grid.getGridWidth()) {
-          
-            if (newLine != this.line || newCol != this.col) {
-                this.line = newLine;
-                this.col = newCol;
-
-
-                System.out.println("Mouse is at position in grid: line=" + newLine + ", col=" + newCol);
-
-            }
-        }
-    }
 }
 
 
