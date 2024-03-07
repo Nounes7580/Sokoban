@@ -8,8 +8,6 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 
-import static sokoban.model.Grid.GRID_HEIGHT;
-import static sokoban.model.Grid.GRID_WIDTH;
 
 public class CellViewModel {
     private static final double DEFAULT_SCALE = 1;

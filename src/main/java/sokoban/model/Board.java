@@ -6,13 +6,11 @@ import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleLongProperty;
 
-import static sokoban.model.Grid.GRID_HEIGHT;
-import static sokoban.model.Grid.GRID_WIDTH;
 
 public class Board {
     static final int MAX_FILLED_CELLS = 75; //TODO: ca doit etre la moitie du nombre de cellules
 
-    private final Grid grid = new Grid();
+    private final Grid grid = new Grid(10,15);
     private final BooleanBinding isFull;
     private final LongProperty filledCellsCount = new SimpleLongProperty();
 
@@ -24,7 +22,7 @@ public class Board {
 
 
     public CellValue play(int line, int col, CellValue toolValue) {
-        if (line < 0 || line >= Grid.getGridWidth() || col < 0 || col >= Grid.getGridHeight()) {
+        if (line < 0 || line >= grid.getGridWidth() || col < 0 || col >= grid.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
             return null; // Ou gérer autrement
         }
@@ -63,7 +61,7 @@ public class Board {
     // Méthode pour vérifier si les coordonnées de la cellule sont valides
     public boolean isPositionValid(int line, int col) {
         // Retourne vrai si les coordonnées sont dans les limites de la grille
-        return line >= 0 && line <= GRID_WIDTH && col >= 0 && col <= GRID_HEIGHT;
+        return line >= 0 && line <= grid.getGridWidth() && col >= 0 && col <= grid.getGridHeight();
     }
 
     private long calculateFilledCells() {

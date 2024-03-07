@@ -1,39 +1,52 @@
 package sokoban.model;
 
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.*;
 
 import java.util.Arrays;
 
-public class Grid { //gérerait la structure de la grille de jeu qui contient les cellules(Cell)
-    public static int GRID_WIDTH = 10;
-    public static int GRID_HEIGHT = 15; // Renommé et utilisé
+public class Grid {
+    private final IntegerProperty gridWidth = new SimpleIntegerProperty();
+    private final IntegerProperty gridHeight = new SimpleIntegerProperty();
+
+
     private BooleanProperty gridChanged = new SimpleBooleanProperty();
-
-
-    private final Cell[][] matrix;
+    private Cell[][] matrix;
     private final LongBinding filledCellsCount;
 
-    public Grid() {
-        matrix = new Cell[GRID_WIDTH][GRID_HEIGHT];
-        for (int i = 0; i < GRID_WIDTH; i++) {
-            for (int j = 0; j < GRID_HEIGHT; j++) {
-                matrix[i][j] = new Cell();
+    // Constructeur adapté pour initialiser avec des dimensions spécifiques
+    public Grid(int width, int height) {
+        this.gridWidth.set(width);
+        this.gridHeight.set(height);
+        this.matrix = new Cell[gridWidth.get()][gridHeight.get()];
+        initializeCells();
 
-            }
-
-        }
-
-        // Calcul du nombre de cellules remplies. Pas de dépendances supplémentaires nécessaires ici.
         filledCellsCount = Bindings.createLongBinding(() -> Arrays
                 .stream(matrix)
                 .flatMap(Arrays::stream)
                 .filter(cell -> cell.getValue() != CellValue.EMPTY && cell.getValue() != CellValue.GROUND)
-                .count());
+                .count(), gridChanged);
     }
+
+    private void initializeCells() {
+        for (int i = 0; i < gridWidth.get(); i++) {
+            for (int j = 0; j < gridHeight.get(); j++) {
+                matrix[i][j] = new Cell();
+            }
+        }
+    }
+
+    // Méthode pour réinitialiser la grille avec de nouvelles dimensions
+    public void resetGrid(int newWidth, int newHeight) {
+        this.gridWidth.set(newWidth);
+        this.gridHeight.set(newHeight);
+        this.matrix = new Cell[newWidth][newHeight];
+        initializeCells();
+        triggerGridChange();
+    }
+
     public BooleanProperty gridChangedProperty() {
         return gridChanged;
     }
@@ -44,8 +57,8 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
     // Cette méthode retourne les coordonnées du joueur sous forme d'un tableau [x, y]
     // ou null si aucun joueur n'est trouvé.
     public int[] findPlayerPosition() {
-        for (int i = 0; i < GRID_WIDTH; i++) {
-            for (int j = 0; j < GRID_HEIGHT; j++) {
+        for (int i = 0; i < gridWidth.get(); i++) {
+            for (int j = 0; j < gridHeight.get(); j++) {
                 if (matrix[i][j].getValue() == CellValue.PLAYER || matrix[i][j].getValue() == CellValue.PLAYER_ON_GOAL) {
                     return new int[]{i, j}; // Retourne les coordonnées du joueur
                 }
@@ -53,14 +66,15 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
         }
         return null; // Aucun joueur trouvé
     }
+    public  int getGridWidth() {
+        return gridWidth.get();
+    }
+
+    public  int getGridHeight() {
+        return gridHeight.get();
+    }
 
 
-    public static int getGridWidth() {
-        return GRID_WIDTH;
-    }
-    public static int getGridHeight() {
-        return GRID_HEIGHT;
-    }
 
     ReadOnlyObjectProperty<CellValue> valueProperty(int line, int col) {
         return matrix[line][col].valueProperty();
@@ -154,8 +168,19 @@ public class Grid { //gérerait la structure de la grille de jeu qui contient le
                 .filter(cell -> cell.getValue() == CellValue.BOX || cell.getValue() == CellValue.BOX_ON_GOAL)
                 .count();
     }
+    public IntegerProperty gridWidthProperty() {
+        return new SimpleIntegerProperty(gridWidth.get());
+    }
+
+    public IntegerProperty gridHeightProperty() {
+        return new SimpleIntegerProperty(gridHeight.get());
+    }
+
+    public boolean isGridChanged() {
+        return gridChanged.get();
+    }
+
     public Cell[][] getMatrix() {
         return matrix;
     }
-
 }

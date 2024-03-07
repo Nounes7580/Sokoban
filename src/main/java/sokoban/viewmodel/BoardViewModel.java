@@ -42,11 +42,12 @@ public class BoardViewModel {
     public CellValue getSelectedTool() {
         return selectedTool.get();
     }
-    public static int gridWidth() {
-        return Grid.getGridWidth();
+    public int getGridWidth() {
+        return board.getGrid().getGridWidth(); // Assurez-vous que Grid a une méthode getGridWidth
     }
-    public static int gridHeight() {
-        return Grid.getGridHeight(); // Cette méthode doit être définie dans votre classe Grid.
+
+    public int getGridHeight() {
+        return board.getGrid().getGridHeight(); // Assurez-vous que Grid a une méthode getGridHeight
     }
     public CellValue getSelectedCellValue() {
         switch (selectedTool.get()) {
@@ -103,5 +104,12 @@ public class BoardViewModel {
     public StringProperty validationMessageProperty() {
         return validationMessage;
     }
+    public void resetGrid(int width, int height) {
+        this.board.getGrid().resetGrid(width, height); // Assure-toi que cette méthode existe et fonctionne comme prévu
+        updateValidationMessage(); // Met à jour les messages de validation si nécessaire
+    }
 
+    public boolean isGridChanged() {
+        return board.getGrid().isGridChanged();
+    }
 }

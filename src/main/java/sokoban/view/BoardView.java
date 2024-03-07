@@ -1,14 +1,15 @@
 package sokoban.view;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import sokoban.model.CellValue;
 
 import sokoban.viewmodel.BoardViewModel;
@@ -16,8 +17,6 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.BufferedWriter;
@@ -34,11 +33,9 @@ public class BoardView extends BorderPane {
     private final BoardViewModel boardViewModel;
 
     // Constantes de mise en page
-    private static final int GRID_WIDTH = BoardViewModel.gridWidth();
-    private static final int GRID_HEIGHT = BoardViewModel.gridHeight();
 
-    private static final int SCENE_MIN_WIDTH = 1000;
-    private static final int SCENE_MIN_HEIGHT = 400;
+    private static final int SCENE_MIN_WIDTH = 700;
+    private static final int SCENE_MIN_HEIGHT = 600;
 
     // Composants principaux
     private final Label headerLabel = new Label("");
@@ -119,35 +116,33 @@ public class BoardView extends BorderPane {
     }
 
     private void createGrid() {
-        DoubleBinding gridWidth = Bindings.createDoubleBinding(
+        DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
                 () -> {
                     var width = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(width / GRID_WIDTH) * GRID_WIDTH;
+                    return Math.floor(width / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth();
                 },
                 widthProperty(),
                 heightProperty(),
                 headerBox.heightProperty());
 
-        DoubleBinding gridHeight = Bindings.createDoubleBinding(
+        DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
                 () -> {
                     var height = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(height / GRID_HEIGHT) * GRID_HEIGHT;
+                    return Math.floor(height / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight();
                 },
                 widthProperty(),
                 heightProperty(),
                 headerBox.heightProperty());
 
-        GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidth, gridHeight);
+        GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
-        // Grille rectangulaire, contraintes de hauteur ajoutées
-        gridView.minHeightProperty().bind(gridHeight);
-        gridView.prefHeightProperty().bind(gridHeight); // Vous pouvez vouloir ajouter cela pour préférence
-        gridView.maxHeightProperty().bind(gridHeight);
+        gridView.minHeightProperty().bind(gridHeightBinding);
+        gridView.prefHeightProperty().bind(gridHeightBinding);
+        gridView.maxHeightProperty().bind(gridHeightBinding);
 
-        // La largeur doit également être ajustée si votre GridView n'était pas prévu pour un format non-carré
-        gridView.minWidthProperty().bind(gridWidth);
-        gridView.prefWidthProperty().bind(gridWidth); // Ajustement pour la largeur préférée
-        gridView.maxWidthProperty().bind(gridWidth);
+        gridView.minWidthProperty().bind(gridWidthBinding);
+        gridView.prefWidthProperty().bind(gridWidthBinding);
+        gridView.maxWidthProperty().bind(gridWidthBinding);
 
         setCenter(gridView);
     }
@@ -244,20 +239,148 @@ public class BoardView extends BorderPane {
         // Ajout du menu Fichier à la barre de menu
         menuBar.getMenus().add(fileMenu);
     }
+
     private void handleNew() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation Dialog");
-        alert.setHeaderText("Save Current Level");
-        alert.setContentText("Do you want to save the current level?");
+        if (boardViewModel.isGridChanged()) { // Supposons que isGridChanged() vérifie si des changements ont été faits
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Save Changes");
+            alert.setHeaderText("Do you want to save changes to the current grid?");
+            alert.setContentText("Choose your option.");
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
-            // User chose to save the current level
-            handleSaveAs((Stage) getScene().getWindow());
+            ButtonType buttonTypeYes = new ButtonType("Yes");
+            ButtonType buttonTypeNo = new ButtonType("No");
+            ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == buttonTypeYes) {
+                 // Méthode pour sauvegarder
+                handleSaveAs(new Stage());
+                requestNewGridDimensions(); // Créez une nouvelle grille après la sauvegarde
+            } else if (result.get() == buttonTypeNo) {
+                requestNewGridDimensions(); // Créez une nouvelle grille sans sauvegarder
+            }
+            // Si "Cancel" est choisi, ne rien faire pour revenir à la grille actuelle
+        } else {
+            requestNewGridDimensions(); // Directement demander les nouvelles dimensions si pas de changements
         }
-
-        // Create a new level
     }
+
+
+    private void requestNewGridDimensions() {
+        Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
+        dialog.setTitle("Sokoban");
+        dialog.setHeaderText("Give new game dimensions");
+
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField widthField = createNumericTextField();
+        widthField.setPromptText("Width");
+
+        TextField heightField = createNumericTextField();
+        heightField.setPromptText("Height");
+
+        Label widthErrorLabel = createErrorLabel("Width must be at least 10.");
+        Label heightErrorLabel = createErrorLabel("Height must be at most 50.");
+
+        gridPane.add(new Label("Width:"), 0, 0);
+        gridPane.add(widthField, 1, 0);
+        gridPane.add(widthErrorLabel, 1, 1);
+        gridPane.add(new Label("Height:"), 0, 2);
+        gridPane.add(heightField, 1, 2);
+        gridPane.add(heightErrorLabel, 1, 3);
+
+        Node okButton = createDialogButtons(dialog);
+
+        // Validation listeners
+        widthField.textProperty().addListener((observable, oldValue, newValue) ->
+                validateDimensionInput(newValue, widthErrorLabel, "Width must be at least 10.", okButton, heightField)
+        );
+
+        heightField.textProperty().addListener((observable, oldValue, newValue) ->
+                validateDimensionInput(newValue, heightErrorLabel, "Height must be at most 50.", okButton, widthField)
+        );
+
+        dialog.getDialogPane().setContent(gridPane);
+
+        Platform.runLater(widthField::requestFocus);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                return new Pair<>(Integer.parseInt(widthField.getText()), Integer.parseInt(heightField.getText()));
+            }
+            return null;
+        });
+
+        Optional<Pair<Integer, Integer>> result = dialog.showAndWait();
+
+        result.ifPresent(dimensions -> {
+            int width = dimensions.getKey();
+            int height = dimensions.getValue();
+            boardViewModel.resetGrid(width, height);
+            createGrid();
+        });
+    }
+
+    private TextField createNumericTextField() {
+        return new TextField() {
+            @Override public void replaceText(int start, int end, String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceText(start, end, text);
+                }
+            }
+
+            @Override public void replaceSelection(String text) {
+                if (text.matches("[0-9]*")) {
+                    super.replaceSelection(text);
+                }
+            }
+        };
+    }
+
+    private Label createErrorLabel(String errorMessage) {
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.RED);
+        errorLabel.setVisible(false);
+        return errorLabel;
+    }
+
+    private Node createDialogButtons(Dialog<Pair<Integer, Integer>> dialog) {
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        Node okButton = dialog.getDialogPane().lookupButton(ButtonType.OK
+
+        );
+        okButton.setDisable(true);
+        return okButton;
+    }
+
+    private void validateDimensionInput(String newValue, Label errorLabel, String errorMessage, Node okButton, TextField otherField) {
+        if (!newValue.isEmpty()) {
+            try {
+                int value = Integer.parseInt(newValue);
+                boolean isValid = value >= 10 && value <= 50;
+                errorLabel.setVisible(!isValid);
+                errorLabel.setText(isValid ? "" : errorMessage);
+                okButton.setDisable(!isValid || otherField.getText().isEmpty());
+            } catch (NumberFormatException e) {
+                errorLabel.setVisible(true);
+                errorLabel.setText(errorMessage);
+                okButton.setDisable(true);
+            }
+        } else {
+            errorLabel.setVisible(false);
+            okButton.setDisable(otherField.getText().isEmpty());
+        }
+    }
+
+
+
+
+
     private void handleOpen(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         // Définir le filtre d'extension
@@ -280,10 +403,11 @@ public class BoardView extends BorderPane {
         // Show the save file dialog
         File file = fileChooser.showSaveDialog(primaryStage);
         if (file != null) {
-            try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-                for (int i = 0; i < BoardViewModel.gridWidth(); i++) {
-                    for (int j = 0; j < BoardViewModel.gridHeight(); j++) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                int gridWidth = boardViewModel.getGridWidth(); // Assurez-vous que cette méthode existe dans BoardViewModel
+                int gridHeight = boardViewModel.getGridHeight(); // Assurez-vous que cette méthode existe dans BoardViewModel
+                for (int i = 0; i < gridWidth; i++) {
+                    for (int j = 0; j < gridHeight; j++) {
                         CellValue cellValue = boardViewModel.getGridViewModel().getCellValue(i, j);
                         switch (cellValue) {
                             case WALL:
@@ -312,7 +436,6 @@ public class BoardView extends BorderPane {
                     }
                     writer.newLine();
                 }
-                writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
