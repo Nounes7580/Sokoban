@@ -145,6 +145,7 @@ public class BoardView extends BorderPane {
         gridView.maxWidthProperty().bind(gridWidthBinding);
 
         setCenter(gridView);
+
     }
     private ImageView createImageView(String resourcePath, CellValue toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
@@ -383,15 +384,15 @@ public class BoardView extends BorderPane {
 
     private void handleOpen(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
-        // Définir le filtre d'extension
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb)", "*.skb");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb, *.xsb)", "*.skb", "*.xsb");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        // Afficher la boîte de dialogue d'ouverture de fichier
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
-            // Implémenter futur pour ouvrir un niveau à partir du fichier
+            boardViewModel.loadLevelFromFile(file);
+            createGrid(); // Recréez la grille après le chargement du fichier
         }
+
     }
 
     private void handleSaveAs(Stage primaryStage) {
