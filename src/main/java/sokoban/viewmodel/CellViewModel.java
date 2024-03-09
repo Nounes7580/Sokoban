@@ -24,6 +24,10 @@ public class CellViewModel {
     private final BooleanBinding mayIncrementScale = scale.lessThan(1 - EPSILON);
     private final BooleanBinding mayDecrementScale = scale.greaterThan(0.1 + EPSILON);
 
+
+
+    private CellValue selectedTool = CellValue.EMPTY;
+
     public CellViewModel(int line, int col, Board board) {
         this.line = line;
         this.col = col;
@@ -40,10 +44,15 @@ public class CellViewModel {
     }
     public void addObject() {
         CellValue selectedTool = boardViewModel.getSelectedTool(); // Obtenez l'outil actuellement sélectionné
-        if (selectedTool != CellValue.EMPTY && isEmpty()) { // Assurez-vous que la cellule est vide
+        if (selectedTool == CellValue.PLAYER && boardViewModel.hasPlayer()) {
+            System.out.println("A player is already present on the grid. Cannot add another.");
+            return; // Sortie précoce si un joueur est déjà présent
+        }
+        if (selectedTool != CellValue.EMPTY && isEmpty()) {
             updateCellValue(selectedTool); // Mettez à jour la valeur de la cellule
         }
     }
+
 
     // Méthode pour "supprimer" un objet de la cellule
     public void deleteObject() {
@@ -86,6 +95,14 @@ public class CellViewModel {
     }
     public void resetScale() {
         scale.set(DEFAULT_SCALE);
+    }
+
+    public CellValue getSelectedTool() {
+        return this.selectedTool;
+    }
+
+    public void setSelectedTool(CellValue tool) {
+        this.selectedTool = tool;
     }
 
 

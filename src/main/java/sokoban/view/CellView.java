@@ -209,18 +209,28 @@ class CellView extends StackPane {
         setOnMouseDragEntered(event -> {
             System.out.println("Mouse drag entered");
             if (event.getButton() == MouseButton.SECONDARY) {
-                viewModel.deleteObject(); // Suppose que deleteObject gère la suppression basée sur la position actuelle
+                viewModel.deleteObject(); // Gestion de la suppression
                 System.out.println("Object deleted");
             }
             // Vérification du bouton primaire de la souris pour l'ajout d'objet
             else if (event.getButton() == MouseButton.PRIMARY) {
- 
-                    viewModel.addObject();
+                // Vérifie si l'outil sélectionné est le joueur et s'il y a déjà un joueur sur la grille
+                if (viewModel.getSelectedTool() == CellValue.PLAYER) {
+                    if (!boardViewModel.hasPlayer()) { // Assurez-vous que hasPlayer est correctement implémenté dans BoardViewModel
+                        viewModel.addObject(); // Ajoute le joueur seulement s'il n'y en a pas
+                        System.out.println("Player added");
+                    } else {
+                        System.out.println("Cannot add another player.");
+                    }
+                } else {
+                    // Pour tous les autres éléments, les ajouter sans restriction
+                    viewModel.addObject(); // Ajoute l'objet
                     System.out.println("Object added");
-
+                }
             }
             event.consume();
         });
+
 
         this.setOnMouseReleased(event -> {
             viewModel.handleMouseReleased();

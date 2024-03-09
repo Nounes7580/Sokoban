@@ -112,4 +112,8 @@ public class BoardViewModel {
     public boolean isGridChanged() {
         return board.getGrid().isGridChanged();
     }
+
+    public boolean hasPlayer(){
+        return board.getGrid().hasPlayer();
+    }
 }
