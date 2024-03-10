@@ -170,6 +170,8 @@ public class BoardView extends BorderPane {
     private void addToolToBar(String imagePath, CellValue toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
         imageView.setPreserveRatio(true);
+        imageView.setFitHeight(50); // Exemple de hauteur ajustée
+        imageView.setFitWidth(50);
         imageView.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1)); // Ajuste la hauteur de l'image
 
         StackPane container = new StackPane(imageView);
