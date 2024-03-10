@@ -183,4 +183,13 @@ public class Grid {
     public Cell[][] getMatrix() {
         return matrix;
     }
+
+    public void setCellValue(int line, int col, CellValue newValue) {
+        if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
+            matrix[line][col].setValue(newValue);
+            triggerGridChange(); // pour notifier que la grille a changé, si vous avez une telle logique
+        }
+    }
+
+
 }

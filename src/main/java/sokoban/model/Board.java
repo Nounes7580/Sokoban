@@ -2,22 +2,41 @@ package sokoban.model;
 
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
-import javafx.beans.property.LongProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.*;
 
 
 public class Board {
-    static final int MAX_FILLED_CELLS = 75; //TODO: ca doit etre la moitie du nombre de cellules
 
-    private final Grid grid = new Grid(10,15);
+    private static Grid grid;
     private final BooleanBinding isFull;
     private final LongProperty filledCellsCount = new SimpleLongProperty();
+    private final IntegerProperty maxFilledCells = new SimpleIntegerProperty();
 
 
     public Board() {
-        isFull = grid.filledCellsCountProperty().isEqualTo(Board.MAX_FILLED_CELLS);
+        this.grid = new Grid(10, 15); // Initialisation avec une taille de grille par défaut
+        // Initialisez filledCellsCount avec le nombre actuel de cellules remplies
+        filledCellsCount.set(grid.filledCellsCountProperty().get());
+
+        // Écoutez les changements sur grid.filledCellsCountProperty() et mettez à jour filledCellsCount
+        grid.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> {
+            filledCellsCount.set(newCount.longValue());
+        });
+
+        // Créez un BooleanBinding pour isFull qui sera recalculé lorsque filledCellsCount change
+        isFull = filledCellsCount.greaterThanOrEqualTo(maxFilledCells());
     }
+
+    public void resetGrid(int newWidth, int newHeight) {
+        this.grid.resetGrid(newWidth, newHeight);
+        this.maxFilledCells.set(newWidth * newHeight / 2);
+        // Mise à jour immédiate du nombre de cellules remplies pour refléter la nouvelle grille
+        this.filledCellsCount.set(grid.filledCellsCountProperty().get());
+        // Il pourrait être nécessaire d'ajouter une notification ou un recalcul pour isFull ici
+        isFull.invalidate();
+    }
+
+
 
 
 
@@ -26,6 +45,7 @@ public class Board {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
             return null; // Ou gérer autrement
         }
+        if (!isFull.get() || grid.getValue(line, col) != CellValue.EMPTY) {
         CellValue currentValue = grid.getValue(line, col);
         // Si l'outil sélectionné est un goal et que la cellule contient déjà un joueur ou une boîte,
         // nous superposons le goal sur l'élément existant.
@@ -38,14 +58,15 @@ public class Board {
         }
         // After play actions, call the updateValidationMessage to refresh the validation messages
         filledCellsCount.set(calculateFilledCells()); // You'd implement calculateFilledCells to return the correct count
+        }
         return grid.getValue(line, col);
 
 
     }
     public void setCellValue(int line, int col, CellValue newValue) {
-        if (isPositionValid(line, col)) {
-            Cell cell = getCell(line, col);
-            cell.setValue(newValue);
+        if (isPositionValid(line, col) && (!isFull.get() || grid.getValue(line, col) != CellValue.EMPTY)) {
+            grid.setCellValue(line, col, newValue);
+            filledCellsCount.set(calculateFilledCells());
         }
     }
 
@@ -70,7 +91,7 @@ public class Board {
     }
 
     public static int maxFilledCells() {
-        return Board.MAX_FILLED_CELLS;
+        return (grid.getGridWidth() * grid.getGridHeight()) / 2;
     }
 
     public Boolean isFull() {
@@ -91,4 +112,8 @@ public class Board {
     public boolean isEmpty(int line, int col) {
         return grid.isEmpty(line, col);
     }
+    public IntegerProperty maxFilledCellsProperty() {
+        return this.maxFilledCells;
+    }
+
 }

@@ -116,4 +116,5 @@ public class BoardViewModel {
     public boolean hasPlayer(){
         return board.getGrid().hasPlayer();
     }
+
 }
