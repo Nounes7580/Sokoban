@@ -156,47 +156,37 @@ public class BoardView extends BorderPane {
     private void initializeToolBar(Stage primaryStage) {
         // Définit l'alignement des outils à l'intérieur de la VBox
         toolBar.setAlignment(Pos.CENTER);
-        toolBar.setPadding(new Insets(0, 0, 110, 50)); // Ajoute un padding à gauche de la toolBar
+        toolBar.setPadding(new Insets(0, 0, 110, 50)); // Ajuste le padding
         toolBar.setSpacing(10);
 
-        // Création des ImageView pour chaque outil
-        ImageView terrainTool = createImageView("/ground.png", CellValue.GROUND);
-        ImageView wallTool = createImageView("/wall.png", CellValue.WALL);
-        ImageView playerTool = createImageView("/player.png", CellValue.PLAYER);
-        ImageView boxTool = createImageView("/box.png", CellValue.BOX);
-        ImageView goalTool = createImageView("/goal.png", CellValue.GOAL);
+        // Création et ajout des outils à la VBox en utilisant une méthode modifiée
+        addToolToBar("/ground.png", CellValue.GROUND);
+        addToolToBar("/wall.png", CellValue.WALL);
+        addToolToBar("/player.png", CellValue.PLAYER);
+        addToolToBar("/box.png", CellValue.BOX);
+        addToolToBar("/goal.png", CellValue.GOAL);
+    }
 
-        // Ajout des ImageView à la VBox
-        toolBar.getChildren().addAll(terrainTool, wallTool, playerTool, boxTool, goalTool);
+    private void addToolToBar(String imagePath, CellValue toolType) {
+        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
+        imageView.setPreserveRatio(true);
+        imageView.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1)); // Ajuste la hauteur de l'image
 
-        // Configuration des événements de sélection d'outil
-        terrainTool.setOnMouseClicked(event -> selectTool(CellValue.GROUND));
-        wallTool.setOnMouseClicked(event -> selectTool(CellValue.WALL));
-        playerTool.setOnMouseClicked(event -> selectTool(CellValue.PLAYER));
-        boxTool.setOnMouseClicked(event -> selectTool(CellValue.BOX));
-        goalTool.setOnMouseClicked(event -> selectTool(CellValue.GOAL));
+        StackPane container = new StackPane(imageView);
+        container.setPadding(new Insets(5)); // Un peu de padding autour de l'image
+        container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;"); // Bordure transparente par défaut
 
-        // Assurez-vous que les proportions sont préservées et que les images sont ajustées correctement
-        for (ImageView tool : Arrays.asList(terrainTool, wallTool, playerTool, boxTool, goalTool)) {
-            tool.setPreserveRatio(true);
+        // Applique un style de bordure bleue au conteneur lors du survol
+        container.setOnMouseEntered(e -> container.setStyle("-fx-border-color: lightblue; -fx-border-width: 2; -fx-background-radius: 5;"));
+        container.setOnMouseExited(e -> container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;"));
 
-            StackPane container = new StackPane(tool); // Créez un conteneur pour chaque ImageView
-            container.setOnMouseEntered(event -> {
-                // Appliquez un style de bordure bleue au conteneur
-                container.setStyle("-fx-border-color: lightblue; -fx-border-width: 4; -fx-effect: dropshadow(gaussian, lightblue, 10, 0.5, 0, 0);");
-            });
+        // Sélectionne l'outil lors du clic sur le conteneur
+        container.setOnMouseClicked(e -> selectTool(toolType));
 
-            container.setOnMouseExited(event -> {
-                // Retirez le style appliqué lors du survol
-                container.setStyle("");
-            });
+        // Ajoute le conteneur à la barre d'outils
+        toolBar.getChildren().add(container);
+    }
 
-            // Ajoutez le conteneur à la barre d'outils au lieu de l'ImageView directement
-            toolBar.getChildren().add(container);
-            tool.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1));
-        }
-
-        }
 
 
     private void selectTool(CellValue tool) {
