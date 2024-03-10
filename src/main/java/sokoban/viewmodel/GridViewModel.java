@@ -29,11 +29,11 @@ public class GridViewModel {
     }
 
     public int getGridWidth() {
-        return board.getGrid().getGridWidth(); // Assurez-vous que Grid a une méthode getGridWidth
+        return board.getGrid().getGridWidth();
     }
 
     public int getGridHeight() {
-        return board.getGrid().getGridHeight(); // Assurez-vous que Grid a une méthode getGridHeight
+        return board.getGrid().getGridHeight();
     }
     // Forward the observable properties
     public IntegerProperty gridWidthProperty() {

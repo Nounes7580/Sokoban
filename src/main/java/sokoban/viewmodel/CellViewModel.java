@@ -43,28 +43,28 @@ public class CellViewModel {
         }
     }
     public void addObject() {
-        CellValue selectedTool = boardViewModel.getSelectedTool(); // Obtenez l'outil actuellement sélectionné
+        CellValue selectedTool = boardViewModel.getSelectedTool();
         if (selectedTool == CellValue.PLAYER && boardViewModel.hasPlayer()) {
             System.out.println("A player is already present on the grid. Cannot add another.");
-            return; // Sortie précoce si un joueur est déjà présent
+            return;
         }
         if (selectedTool != CellValue.EMPTY && isEmpty()) {
-            updateCellValue(selectedTool); // Mettez à jour la valeur de la cellule
+            updateCellValue(selectedTool);
         }
     }
 
 
     // Méthode pour "supprimer" un objet de la cellule
     public void deleteObject() {
-        if (!isEmpty()) { // Vérifiez si la cellule n'est pas déjà vide
-            updateCellValue(CellValue.EMPTY); // Définissez la cellule sur EMPTY
+        if (!isEmpty()) {
+            updateCellValue(CellValue.EMPTY);
         }
     }
 
     // Méthode privée pour mettre à jour la valeur de la cellule
     private void updateCellValue(CellValue newValue) {
-        board.setCellValue(line, col, newValue); // Supposons que cette méthode existe dans votre classe Board
-        // Ici, vous pourriez également mettre à jour la vue ou notifier des observateurs
+        board.setCellValue(line, col, newValue);
+
     }
 
     public ReadOnlyObjectProperty<CellValue> valueProperty() {

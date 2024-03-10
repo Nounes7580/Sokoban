@@ -25,7 +25,7 @@ public class BoardViewModel {
     public BoardViewModel(Board board) {
         this.board = board;
         this.gridViewModel = new GridViewModel(board);
-        this.gridViewModel.setBoardViewModel(this); // Establish the link after GridViewModel is constructed
+        this.gridViewModel.setBoardViewModel(this);
         updateValidationMessage();
         board.filledCellsCountProperty().addListener((observable, oldValue, newValue) -> {
             updateValidationMessage();
@@ -48,11 +48,11 @@ public class BoardViewModel {
         return selectedTool.get();
     }
     public int getGridWidth() {
-        return board.getGrid().getGridWidth(); // Assurez-vous que Grid a une méthode getGridWidth
+        return board.getGrid().getGridWidth();
     }
 
     public int getGridHeight() {
-        return board.getGrid().getGridHeight(); // Assurez-vous que Grid a une méthode getGridHeight
+        return board.getGrid().getGridHeight();
     }
     public CellValue getSelectedCellValue() {
         switch (selectedTool.get()) {
@@ -110,8 +110,8 @@ public class BoardViewModel {
         return validationMessage;
     }
     public void resetGrid(int width, int height) {
-        this.board.getGrid().resetGrid(width, height); // Assure-toi que cette méthode existe et fonctionne comme prévu
-        updateValidationMessage(); // Met à jour les messages de validation si nécessaire
+        this.board.getGrid().resetGrid(width, height);
+        updateValidationMessage();
     }
 
     public boolean isGridChanged() {

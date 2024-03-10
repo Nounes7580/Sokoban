@@ -14,16 +14,15 @@ public class Board {
 
 
     public Board() {
-        this.grid = new Grid(10, 15); // Initialisation avec une taille de grille par défaut
-        // Initialisez filledCellsCount avec le nombre actuel de cellules remplies
+        this.grid = new Grid(10, 15);
+
         filledCellsCount.set(grid.filledCellsCountProperty().get());
 
-        // Écoutez les changements sur grid.filledCellsCountProperty() et mettez à jour filledCellsCount
+
         grid.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> {
             filledCellsCount.set(newCount.longValue());
         });
 
-        // Créez un BooleanBinding pour isFull qui sera recalculé lorsque filledCellsCount change
         isFull = filledCellsCount.greaterThanOrEqualTo(maxFilledCells());
     }
 
@@ -32,7 +31,6 @@ public class Board {
         this.maxFilledCells.set(newWidth * newHeight / 2);
         // Mise à jour immédiate du nombre de cellules remplies pour refléter la nouvelle grille
         this.filledCellsCount.set(grid.filledCellsCountProperty().get());
-        // Il pourrait être nécessaire d'ajouter une notification ou un recalcul pour isFull ici
         isFull.invalidate();
     }
 
@@ -43,21 +41,18 @@ public class Board {
     public CellValue play(int line, int col, CellValue toolValue) {
         if (line < 0 || line >= grid.getGridWidth() || col < 0 || col >= grid.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
-            return null; // Ou gérer autrement
+            return null;
         }
         if (!isFull.get() || grid.getValue(line, col) != CellValue.EMPTY) {
         CellValue currentValue = grid.getValue(line, col);
         // Si l'outil sélectionné est un goal et que la cellule contient déjà un joueur ou une boîte,
         // nous superposons le goal sur l'élément existant.
         if (toolValue == CellValue.GOAL && (currentValue == CellValue.PLAYER || currentValue == CellValue.BOX)) {
-            grid.play(line, col, CellValue.GOAL); // Ici, vous devrez gérer la superposition.
+            grid.play(line, col, CellValue.GOAL);
         } else {
-            // Dans les autres cas, si l'outil sélectionné n'est pas un goal ou si la cellule ne contient pas de joueur/boîte,
-            // l'outil sélectionné remplace simplement la valeur existante.
             grid.play(line, col, toolValue);
         }
-        // After play actions, call the updateValidationMessage to refresh the validation messages
-        filledCellsCount.set(calculateFilledCells()); // You'd implement calculateFilledCells to return the correct count
+        filledCellsCount.set(calculateFilledCells());
         }
         return grid.getValue(line, col);
 

@@ -8,14 +8,13 @@ import sokoban.viewmodel.GridViewModel;
 
 class GridView extends GridPane {
     private static final int PADDING = 20;
-    private GridViewModel gridViewModel; // Declare gridViewModel as an instance variable
-
+    private GridViewModel gridViewModel;
     GridView(GridViewModel gridViewModel, DoubleBinding gridWidth, DoubleBinding gridHeight) {
         setGridLinesVisible(true);
         setPadding(new Insets(PADDING));
-        this.gridViewModel = gridViewModel; // Initialize the instance variable with the constructor parameter
+        this.gridViewModel = gridViewModel;
 
-        // Use bindings to dynamically adjust to the grid size
+
         DoubleBinding cellWidth = gridWidth.subtract(PADDING * 2).divide(gridViewModel.getGridWidth());
         DoubleBinding cellHeight = gridHeight.subtract(PADDING * 2).divide(gridViewModel.getGridHeight());
         DoubleBinding cellSize = (DoubleBinding) Bindings.min(cellWidth, cellHeight);
@@ -27,14 +26,14 @@ class GridView extends GridPane {
             }
         }
 
-        // Optional: Listen for changes in grid dimensions to update the view
+
     }
 
     public void updateGrid() {
-        this.getChildren().clear(); // Clear existing CellViews
-        setPadding(new Insets(PADDING)); // Re-apply padding if needed
+        this.getChildren().clear();
+        setPadding(new Insets(PADDING));
 
-        // Recreate CellViews based on the current state of gridViewModel
+
         DoubleBinding cellWidth = widthProperty().subtract(PADDING * 2).divide(gridViewModel.getGridWidth());
         DoubleBinding cellHeight = heightProperty().subtract(PADDING * 2).divide(gridViewModel.getGridHeight());
         DoubleBinding cellSize = (DoubleBinding) Bindings.min(cellWidth, cellHeight);

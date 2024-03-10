@@ -64,7 +64,7 @@ public class Grid {
                 }
             }
         }
-        return null; // Aucun joueur trouvé
+        return null;
     }
     public  int getGridWidth() {
         return gridWidth.get();
@@ -89,9 +89,8 @@ public class Grid {
 
         // Gestion du déplacement du joueur
         if (toolValue == CellValue.PLAYER) {
-            int[] playerPos = findPlayerPosition(); // Trouve la position actuelle du joueur.
+            int[] playerPos = findPlayerPosition();
             if (playerPos != null) {
-                // Obtenez l'état de la cellule où le joueur était précédemment.
                 CellValue previousPlayerCellState = getValue(playerPos[0], playerPos[1]);
 
                 // Si le joueur était sur un goal, la cellule précédente devient juste un goal.
@@ -129,12 +128,11 @@ public class Grid {
                 matrix[line][col].setValue(CellValue.BOX);
             }
         } else {
-            // Pour les autres éléments, remplacez simplement le contenu existant
             matrix[line][col].setValue(toolValue);
         }
 
-        filledCellsCount.invalidate(); // Recalcule le nombre de cellules remplies après chaque changement.
-        triggerGridChange(); // Appelé après modification de la grille
+        filledCellsCount.invalidate();
+        triggerGridChange();
 
     }
 
@@ -187,7 +185,7 @@ public class Grid {
     public void setCellValue(int line, int col, CellValue newValue) {
         if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
             matrix[line][col].setValue(newValue);
-            triggerGridChange(); // pour notifier que la grille a changé, si vous avez une telle logique
+            triggerGridChange();
         }
     }
 

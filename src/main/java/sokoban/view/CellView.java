@@ -31,9 +31,9 @@ class CellView extends StackPane {
     private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
     private final ImageView goalImageView = new ImageView(goalImage);
     private final ImageView imageView = new ImageView();
-    // Effet pour assombrir l'image lorsque la souris survole la cellule
+
     private final ColorAdjust darkenEffect = new ColorAdjust();
-    private int line; // La ligne de cette CellView dans la grille
+    private int line;
     private int col;
     double initialDragX;
     double initialDragY;
@@ -70,23 +70,19 @@ class CellView extends StackPane {
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
 
-        // Assume that the ground image is the default background.
         backgroundImageView.setImage(groundImage);
-
         imageView.setPreserveRatio(true);
 
-        // Ajouter le backgroundImageView en tant qu'enfant de la StackPane
         getChildren().add(backgroundImageView);
 
-        // Écouter les changements sur la valeur de la cellule pour mettre à jour la vue
         viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
     private void updateView(CellValue cellValue) {
         getChildren().clear();
-        getChildren().add(backgroundImageView); // Toujours ajouter le fond.
+        getChildren().add(backgroundImageView);
 
-        // Gérer l'affichage basé sur l'état de la cellule.
+
         switch (cellValue) {
             case PLAYER:
             case BOX:
@@ -98,11 +94,11 @@ class CellView extends StackPane {
                 break;
             case PLAYER_ON_GOAL:
                 addImageView(playerImage);
-                addImageView(goalImage); // Superposition explicite.
+                addImageView(goalImage);
                 break;
             case BOX_ON_GOAL:
                 addImageView(boxImage);
-                addImageView(goalImage); // Superposition explicite.
+                addImageView(goalImage);
                 break;
         }
     }
@@ -139,27 +135,22 @@ class CellView extends StackPane {
         minWidthProperty().bind(sizeProperty);
         minHeightProperty().bind(sizeProperty);
 
-        // adapte la largeur de l'image à celle de la cellule multipliée par l'échelle
         imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
 
-        // un clic sur la cellule permet de jouer celle-ci
         this.setOnMouseClicked(e -> viewModel.play());
 
-        // quand la cellule change de valeur, adapter l'image affichée
         viewModel.valueProperty().addListener((obs, old, newVal) -> setImage(imageView, newVal));
 
-        // gère le survol de la cellule avec la souris
         hoverProperty().addListener(this::hoverChanged);
 
 
-        // Lier l'effet d'assombrissement à la propriété hover de la cellule
         hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {
             if (isNowHovered) {
-                darkenEffect.setBrightness(-0.1); // Assombrir l'image
+                darkenEffect.setBrightness(-0.1);
                 backgroundImageView.setEffect(darkenEffect);
                 imageView.setEffect(darkenEffect);
             } else {
-                darkenEffect.setBrightness(0); // Retour à la normale
+                darkenEffect.setBrightness(0);
                 backgroundImageView.setEffect(null);
                 imageView.setEffect(null);
             }
@@ -184,7 +175,7 @@ class CellView extends StackPane {
                 imageView.setImage(groundImage);
                 break;
             case EMPTY:
-                imageView.setImage(null); // Aucune image pour une cellule vide
+                imageView.setImage(null);
                 break;
         }
     }
@@ -192,9 +183,6 @@ class CellView extends StackPane {
 
         this.setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown() ) {
-                //System.out.println("Raw Mouse X: " + event.getX() + ", Raw Mouse Y: " + event.getY());
-               // System.out.println("GridPane Width: " + gridPane.getWidth() + ", GridPane Height: " + gridPane.getHeight());
-                //System.out.println("size cell : " + cellWidth.get() +" ," + cellHeight.get());
 
                 int startCol = (int) Math.round(event.getX() / cellWidth.get());
                 int startLine = (int) Math.round(event.getY() / cellHeight.get());
@@ -217,18 +205,18 @@ class CellView extends StackPane {
                 viewModel.deleteObject(); // Gestion de la suppression
                 System.out.println("Object deleted");
             }
-            // Vérification du bouton primaire de la souris pour l'ajout d'objet
+
             else if (event.getButton() == MouseButton.PRIMARY) {
-                // Vérifie si l'outil sélectionné est le joueur et s'il y a déjà un joueur sur la grille
+
                 if (viewModel.getSelectedTool() == CellValue.PLAYER) {
-                    if (!boardViewModel.hasPlayer()) { // Assurez-vous que hasPlayer est correctement implémenté dans BoardViewModel
-                        viewModel.addObject(); // Ajoute le joueur seulement s'il n'y en a pas
+                    if (!boardViewModel.hasPlayer()) {
+                        viewModel.addObject();
                         System.out.println("Player added");
                     } else {
                         System.out.println("Cannot add another player.");
                     }
                 } else {
-                    // Pour tous les autres éléments, les ajouter sans restriction
+
                     viewModel.addObject(); // Ajoute l'objet
                     System.out.println("Object added");
                 }
@@ -244,7 +232,7 @@ class CellView extends StackPane {
 
 
     private void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
-        // si on arrête le survol de la cellule, on remet l'échelle à sa valeur par défaut
+
         if (!newVal)
             viewModel.resetScale();
     }
