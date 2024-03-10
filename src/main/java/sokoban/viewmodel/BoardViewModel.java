@@ -126,14 +126,14 @@ public class BoardViewModel {
             try {
                 List<String> lines = Files.readAllLines(file.toPath());
 
-                int currentWidth = board.getGrid().getGridWidth();
-                int currentHeight = board.getGrid().getGridHeight();
+                int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
+                int maxHeight = lines.size();
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i);
                     System.out.println("Loading line " + i + ": " + line);
                     for (int j = 0; j < line.length(); j++) {
-                        if (i < currentHeight && j < currentWidth) {
+                        if (i < maxHeight && j < maxWidth) {
                             char c = line.charAt(j);
                             CellValue cellValue = charToCellValue(c);
                             System.out.println("Setting cell [" + i + ", " + j + "] to " + cellValue);
@@ -156,6 +156,7 @@ public class BoardViewModel {
             case '.': return CellValue.GOAL;
             case '*': return CellValue.BOX_ON_GOAL;
             case '+': return CellValue.PLAYER_ON_GOAL;
+            case ' ': return CellValue.GROUND;
             default: return CellValue.EMPTY;
         }
     }
