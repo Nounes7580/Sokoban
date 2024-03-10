@@ -18,6 +18,7 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sokoban.viewmodel.CellViewModel;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,6 +32,8 @@ public class BoardView extends BorderPane {
 
     // ViewModel
     private final BoardViewModel boardViewModel;
+    private GridView gridView; // Declare gridView as a member variable
+
 
     // Constantes de mise en page
 
@@ -116,6 +119,11 @@ public class BoardView extends BorderPane {
     }
 
     private void createGrid() {
+        if (getCenter() != null) {
+            ((GridPane) getCenter()).getChildren().clear();
+        }
+
+
         DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
                 () -> {
                     var width = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
@@ -145,6 +153,7 @@ public class BoardView extends BorderPane {
         gridView.maxWidthProperty().bind(gridWidthBinding);
 
         setCenter(gridView);
+
     }
     private ImageView createImageView(String resourcePath, CellValue toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
@@ -375,15 +384,15 @@ public class BoardView extends BorderPane {
 
     private void handleOpen(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
-        // Définir le filtre d'extension
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb)", "*.skb");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.skb, *.xsb)", "*.skb", "*.xsb");
         fileChooser.getExtensionFilters().add(extFilter);
 
-        // Afficher la boîte de dialogue d'ouverture de fichier
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
-            // Implémenter futur pour ouvrir un niveau à partir du fichier
+            boardViewModel.loadLevelFromFile(file);
+
         }
+
     }
 
     private void handleSaveAs(Stage primaryStage) {

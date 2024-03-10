@@ -52,6 +52,11 @@ class CellView extends StackPane {
         layoutControls();
         configureBindings();
         setupMouseEvents(cellWidth, cellHeight);
+
+
+        // Add a listener to the valueProperty of the viewModel.
+        viewModel.valueProperty().addListener((obs, oldVal, newVal) -> setImage(imageView, newVal));
+
     }
     public int getLine() {
         return line;

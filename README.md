@@ -11,7 +11,7 @@
 *   open
 * apres exit, boite de dialogue qui  demande si on veut sauvegarder avant de quitter
 * limiter le nombre d'éléments à la moitié de la taille de la grille arrondi à l'entier inférieur
-* corriger l'affichage relatif à la taille de la grille
+* corriger l'affichage relatif à la taille de la grille[main](src%2Fmain)
 
 ### Liste des fonctionnalités supplémentaires
 *  ajouter un bouton pour reset la grille
