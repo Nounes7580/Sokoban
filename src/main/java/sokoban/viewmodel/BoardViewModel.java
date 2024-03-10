@@ -156,7 +156,6 @@ public class BoardViewModel {
             case '.': return CellValue.GOAL;
             case '*': return CellValue.BOX_ON_GOAL;
             case '+': return CellValue.PLAYER_ON_GOAL;
-            case ' ': return CellValue.GROUND;
             default: return CellValue.EMPTY;
         }
     }
