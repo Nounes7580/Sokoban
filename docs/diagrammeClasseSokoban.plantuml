@@ -1,0 +1,124 @@
+@startuml
+
+'!theme plain
+top to bottom direction
+skinparam defaultFontName Consolas
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+hide attributes
+hide methods
+
+set namespaceSeparator none
+
+package Model {
+    class Board {
+        Board()
+        +play(int, int): CellValue
+        +setCellValue(int, int, CellValue)
+        +getCell(int, int): Cell
+        +isPositionValid(int, int): boolean
+        +calculateFilledCells(): long
+    }
+
+    class Grid {
+        Grid(int width, int height)
+        +resetGrid(int, int)
+        +findPlayerPosition(): int[]
+        +setCellValue(int, int, CellValue)
+        +play(int, int, CellValue)
+        +isEmpty(int, int): boolean
+    }
+
+    class Cell {
+        Cell()
+        +setValue(CellValue)
+        +isEmpty(): boolean
+        +getValue(): CellValue
+    }
+
+    enum CellValue {
+        EMPTY, PLAYER, BOX, GOAL, GROUND, WALL, BOX_ON_GOAL, PLAYER_ON_GOAL
+    }
+
+    Board *--> "1" Grid : contains
+    Grid *--> "10x15" Cell : contains
+}
+
+package View {
+    class BoardView {
+        BoardView(Stage, BoardViewModel)
+    }
+
+    class GridView {
+        GridView(GridViewModel, gridWidth: DoubleBinding, gridHeight: DoubleBinding)
+    }
+
+    class CellView {
+        CellView(CellViewModel, sizeProperty: DoubleBinding)
+    }
+
+    BoardView *--> "1" GridView
+    GridView *--> "10x15" CellView
+}
+
+package Viewmodel {
+    class BoardViewModel {
+        BoardViewModel(Board)
+        +setSelectedTool(CellValue)
+        +updateValidationMessage()
+    }
+
+    class GridViewModel {
+        GridViewModel(Grid)
+        +getCellViewModel(int, int): CellViewModel
+    }
+
+    class CellViewModel {
+        CellViewModel(int line, int col, Cell)
+        +play()
+        +addObject()
+        +deleteObject()
+    }
+
+    BoardViewModel *--> "1" GridViewModel
+    GridViewModel *--> "10x15" CellViewModel
+}
+
+package javafx.* {
+    class Application
+    class Stage
+    class Scene {
+        Scene(Parent, width: double, height: double)
+    }
+    class BorderPane
+    class GridPane
+    class StackPane
+
+    Application -[hidden]-> Stage
+    Stage *--> "1" Scene
+    Scene -[hidden]- BorderPane
+    BorderPane -[hidden]- GridPane
+    GridPane -[hidden]- StackPane
+}
+
+package sokoban {
+    class GridApp
+
+    Application <|-- GridApp
+    GridApp *-l-> "1" Stage
+    Scene *--> "1" BoardView
+    BorderPane <|-r- BoardView
+    GridPane <|-r- GridView
+    StackPane <|-r- CellView
+
+    BoardView *-r-> "1" BoardViewModel
+    GridView *-r-> "1" GridViewModel
+    CellView *-r-> "1" CellViewModel
+
+    BoardViewModel *-r-> "1" Board
+    GridViewModel *-r-> "1" Grid
+    CellViewModel *-r-> "1" Cell
+}
+
+@enduml
