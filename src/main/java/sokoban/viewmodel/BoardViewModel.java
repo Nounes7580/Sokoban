@@ -1,9 +1,6 @@
 package sokoban.viewmodel;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 import sokoban.model.Grid;
@@ -121,13 +118,21 @@ public class BoardViewModel {
     public boolean hasPlayer(){
         return board.getGrid().hasPlayer();
     }
-
+    private final BooleanProperty gridReset = new SimpleBooleanProperty(false);
+    public BooleanProperty gridResetProperty() {
+        return gridReset;
+    }
     public void loadLevelFromFile(File file) {
             try {
                 List<String> lines = Files.readAllLines(file.toPath());
 
                 int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
                 int maxHeight = lines.size();
+
+                board.getGrid().resetGrid(maxHeight, maxWidth);
+                //createGrid
+                gridReset.set(true);
+
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i);

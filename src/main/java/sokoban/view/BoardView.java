@@ -58,6 +58,13 @@ public class BoardView extends BorderPane {
         createHeader(); // Ajoutez le label de validation dans cette méthode
         createGrid();
         start(primaryStage);
+        boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                createGrid();
+                boardViewModel.gridResetProperty().set(false); // Reset the property to false
+            }
+        });
+
     }
 
     private void start(Stage stage) {
@@ -155,6 +162,7 @@ public class BoardView extends BorderPane {
         setCenter(gridView);
 
     }
+
     private ImageView createImageView(String resourcePath, CellValue toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
         imageView.setPreserveRatio(true);
@@ -388,6 +396,7 @@ public class BoardView extends BorderPane {
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
             boardViewModel.loadLevelFromFile(file);
+
 
         }
 
