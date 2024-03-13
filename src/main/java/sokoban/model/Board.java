@@ -8,13 +8,13 @@ import javafx.beans.property.*;
 public class Board {
 
     private static Grid grid;
-    private final BooleanBinding isFull;
+    private BooleanBinding isFull;
     private final LongProperty filledCellsCount = new SimpleLongProperty();
     private final IntegerProperty maxFilledCells = new SimpleIntegerProperty();
 
 
     public Board() {
-        this.grid = new Grid(10, 15);
+        grid = new Grid(10, 15);
 
         filledCellsCount.set(grid.filledCellsCountProperty().get());
 
@@ -22,9 +22,12 @@ public class Board {
         grid.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> {
             filledCellsCount.set(newCount.longValue());
         });
-
-        isFull = filledCellsCount.greaterThanOrEqualTo(maxFilledCells());
+        maxFilledCells.addListener((obs, oldVal, newVal) -> {
+            isFull = filledCellsCount.greaterThanOrEqualTo(newVal.intValue());
+        });
     }
+
+
 
     public void resetGrid(int newWidth, int newHeight) {
         this.maxFilledCells.set(newWidth * newHeight / 2); // Update maxFilledCells based on new dimensions
