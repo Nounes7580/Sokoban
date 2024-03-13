@@ -1,5 +1,6 @@
 package sokoban.viewmodel;
 
+import javafx.beans.Observable;
 import javafx.beans.property.*;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
@@ -79,7 +80,7 @@ public class BoardViewModel {
     }
 
     public int maxFilledCells() {
-        return Board.maxFilledCells();
+        return board.maxFilledCells();
     }
     // Méthode pour mettre à jour le message de validation
     public void updateValidationMessage() {
@@ -129,9 +130,10 @@ public class BoardViewModel {
                 int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
                 int maxHeight = lines.size();
 
-                board.getGrid().resetGrid(maxHeight, maxWidth);
+                board.resetGrid(maxHeight, maxWidth);
                 //createGrid
                 gridReset.set(true);
+
 
 
                 for (int i = 0; i < lines.size(); i++) {
@@ -165,4 +167,7 @@ public class BoardViewModel {
         }
     }
 
+    public Observable maxFilledCellsProperty() {
+        return board.maxFilledCellsProperty();
+    }
 }

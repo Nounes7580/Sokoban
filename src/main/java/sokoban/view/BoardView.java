@@ -100,8 +100,11 @@ public class BoardView extends BorderPane {
     }
 
     private VBox createHeader() {
-        headerLabel.textProperty().bind(boardViewModel.filledCellsCountProperty()
-                .asString("Number of filled cells: %d of " + boardViewModel.maxFilledCells()));
+        headerLabel.textProperty().bind(Bindings.createStringBinding(() ->
+                        "Number of filled cells: " + boardViewModel.filledCellsCountProperty().get() + " of " + boardViewModel.maxFilledCells(),
+                boardViewModel.filledCellsCountProperty(),
+                boardViewModel.maxFilledCellsProperty() // Assuming there's a property accessor for maxFilledCells in your ViewModel
+        ));
         headerLabel.getStyleClass().add("header");
 
         // Configuration du label de validation
@@ -396,6 +399,7 @@ public class BoardView extends BorderPane {
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
             boardViewModel.loadLevelFromFile(file);
+
 
 
         }

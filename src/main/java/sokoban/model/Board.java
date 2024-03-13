@@ -27,6 +27,8 @@ public class Board {
     }
 
     public void resetGrid(int newWidth, int newHeight) {
+        this.maxFilledCells.set(newWidth * newHeight / 2); // Update maxFilledCells based on new dimensions
+
         this.grid.resetGrid(newWidth, newHeight);
         this.maxFilledCells.set(newWidth * newHeight / 2);
         // Mise à jour immédiate du nombre de cellules remplies pour refléter la nouvelle grille
@@ -85,7 +87,7 @@ public class Board {
 
     }
 
-    public static int maxFilledCells() {
+    public  int maxFilledCells() {
         return (grid.getGridWidth() * grid.getGridHeight()) / 2;
     }
 
