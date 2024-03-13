@@ -1,5 +1,6 @@
 package sokoban.model;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
@@ -15,9 +16,13 @@ public class Board {
 
     public Board() {
         grid = new Grid(10, 15);
-
         filledCellsCount.set(grid.filledCellsCountProperty().get());
+        maxFilledCells.set(maxFilledCells()); // Set maxFilledCells based on grid dimensions
 
+        isFull = Bindings.createBooleanBinding(() ->
+                        filledCellsCount.get() >= maxFilledCells.get(),
+                filledCellsCount, maxFilledCells
+        );
 
         grid.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> {
             filledCellsCount.set(newCount.longValue());
@@ -44,6 +49,11 @@ public class Board {
 
 
     public CellValue play(int line, int col, CellValue toolValue) {
+        System.out.println("filledCellsCount: " + filledCellsCount.get());
+        System.out.println("maxFilledCells: " + maxFilledCells.get());
+        System.out.println("isFull: " + isFull.get());
+
+
         if (line < 0 || line >= grid.getGridWidth() || col < 0 || col >= grid.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
             return null;
