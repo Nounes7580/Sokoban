@@ -1,6 +1,7 @@
 package sokoban.view;
 
 import javafx.application.Platform;
+import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -133,37 +134,35 @@ public class BoardView extends BorderPane {
             ((GridPane) getCenter()).getChildren().clear();
         }
 
+        NumberBinding gridSizeBinding = Bindings.min(
+                widthProperty()
+                        .subtract(toolBar.widthProperty())
+                ,
+                heightProperty()
+                        .subtract(headerBox.heightProperty())
+                        .subtract(validationLabel.heightProperty())
+                        .subtract(menuBar.heightProperty())
+        );
 
         DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-                () -> {
-                    var width = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(width / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth();
-                },
-                widthProperty(),
-                heightProperty(),
-                headerBox.heightProperty());
+                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth(),
+                gridSizeBinding
+        );
 
         DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
-                () -> {
-                    var height = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(height / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight();
-                },
-                widthProperty(),
-                heightProperty(),
-                headerBox.heightProperty());
+                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight(),
+                gridSizeBinding
+        );
 
         GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
         gridView.minHeightProperty().bind(gridHeightBinding);
-        gridView.prefHeightProperty().bind(gridHeightBinding);
         gridView.maxHeightProperty().bind(gridHeightBinding);
 
         gridView.minWidthProperty().bind(gridWidthBinding);
-        gridView.prefWidthProperty().bind(gridWidthBinding);
         gridView.maxWidthProperty().bind(gridWidthBinding);
 
         setCenter(gridView);
-
     }
 
     private ImageView createImageView(String resourcePath, CellValue toolType) {
