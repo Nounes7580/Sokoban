@@ -108,7 +108,7 @@ public class BoardViewModel {
         return validationMessage;
     }
     public void resetGrid(int width, int height) {
-        this.board.getGrid().resetGrid(width, height);
+        this.board.resetGrid(width, height);
         updateValidationMessage();
     }
 
