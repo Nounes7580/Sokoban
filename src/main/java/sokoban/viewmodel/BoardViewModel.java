@@ -1,9 +1,7 @@
 package sokoban.viewmodel;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.Observable;
+import javafx.beans.property.*;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 import sokoban.model.Grid;
@@ -82,7 +80,7 @@ public class BoardViewModel {
     }
 
     public int maxFilledCells() {
-        return Board.maxFilledCells();
+        return board.maxFilledCells();
     }
     // Méthode pour mettre à jour le message de validation
     public void updateValidationMessage() {
@@ -110,7 +108,7 @@ public class BoardViewModel {
         return validationMessage;
     }
     public void resetGrid(int width, int height) {
-        this.board.getGrid().resetGrid(width, height);
+        this.board.resetGrid(width, height);
         updateValidationMessage();
     }
 
@@ -121,13 +119,22 @@ public class BoardViewModel {
     public boolean hasPlayer(){
         return board.getGrid().hasPlayer();
     }
-
+    private final BooleanProperty gridReset = new SimpleBooleanProperty(false);
+    public BooleanProperty gridResetProperty() {
+        return gridReset;
+    }
     public void loadLevelFromFile(File file) {
             try {
                 List<String> lines = Files.readAllLines(file.toPath());
 
                 int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
                 int maxHeight = lines.size();
+
+                board.resetGrid(maxHeight, maxWidth);
+                //createGrid
+                gridReset.set(true);
+
+
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i);
@@ -160,4 +167,7 @@ public class BoardViewModel {
         }
     }
 
+    public Observable maxFilledCellsProperty() {
+        return board.maxFilledCellsProperty();
+    }
 }

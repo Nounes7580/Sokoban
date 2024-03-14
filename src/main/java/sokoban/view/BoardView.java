@@ -1,6 +1,7 @@
 package sokoban.view;
 
 import javafx.application.Platform;
+import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -58,6 +59,13 @@ public class BoardView extends BorderPane {
         createHeader(); // Ajoutez le label de validation dans cette méthode
         createGrid();
         start(primaryStage);
+        boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal) {
+                createGrid();
+                boardViewModel.gridResetProperty().set(false); // Reset the property to false
+            }
+        });
+
     }
 
     private void start(Stage stage) {
@@ -93,8 +101,11 @@ public class BoardView extends BorderPane {
     }
 
     private VBox createHeader() {
-        headerLabel.textProperty().bind(boardViewModel.filledCellsCountProperty()
-                .asString("Number of filled cells: %d of " + boardViewModel.maxFilledCells()));
+        headerLabel.textProperty().bind(Bindings.createStringBinding(() ->
+                        "Number of filled cells: " + boardViewModel.filledCellsCountProperty().get() + " of " + boardViewModel.maxFilledCells(),
+                boardViewModel.filledCellsCountProperty(),
+                boardViewModel.maxFilledCellsProperty() // Assuming there's a property accessor for maxFilledCells in your ViewModel
+        ));
         headerLabel.getStyleClass().add("header");
 
         // Configuration du label de validation
@@ -123,38 +134,37 @@ public class BoardView extends BorderPane {
             ((GridPane) getCenter()).getChildren().clear();
         }
 
+        NumberBinding gridSizeBinding = Bindings.min(
+                widthProperty()
+                        .subtract(toolBar.widthProperty())
+                ,
+                heightProperty()
+                        .subtract(headerBox.heightProperty())
+                        .subtract(validationLabel.heightProperty())
+                        .subtract(menuBar.heightProperty())
+        );
 
         DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-                () -> {
-                    var width = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(width / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth();
-                },
-                widthProperty(),
-                heightProperty(),
-                headerBox.heightProperty());
+                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth(),
+                gridSizeBinding
+        );
 
         DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
-                () -> {
-                    var height = Math.min(widthProperty().get(), heightProperty().get() - headerBox.heightProperty().get());
-                    return Math.floor(height / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight();
-                },
-                widthProperty(),
-                heightProperty(),
-                headerBox.heightProperty());
+                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight(),
+                gridSizeBinding
+        );
 
         GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
         gridView.minHeightProperty().bind(gridHeightBinding);
-        gridView.prefHeightProperty().bind(gridHeightBinding);
         gridView.maxHeightProperty().bind(gridHeightBinding);
 
         gridView.minWidthProperty().bind(gridWidthBinding);
-        gridView.prefWidthProperty().bind(gridWidthBinding);
         gridView.maxWidthProperty().bind(gridWidthBinding);
 
         setCenter(gridView);
-
     }
+
     private ImageView createImageView(String resourcePath, CellValue toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
         imageView.setPreserveRatio(true);
@@ -388,6 +398,8 @@ public class BoardView extends BorderPane {
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
             boardViewModel.loadLevelFromFile(file);
+
+
 
         }
 

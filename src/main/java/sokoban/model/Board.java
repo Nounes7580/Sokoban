@@ -1,5 +1,6 @@
 package sokoban.model;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
@@ -8,55 +9,71 @@ import javafx.beans.property.*;
 public class Board {
 
     private static Grid grid;
-    private final BooleanBinding isFull;
+    private BooleanBinding isFull;
     private final LongProperty filledCellsCount = new SimpleLongProperty();
     private final IntegerProperty maxFilledCells = new SimpleIntegerProperty();
 
 
     public Board() {
-        this.grid = new Grid(10, 15);
-
+        grid = new Grid(10, 15);
         filledCellsCount.set(grid.filledCellsCountProperty().get());
+        maxFilledCells.set(maxFilledCells()); // Set maxFilledCells based on grid dimensions
 
+        isFull = Bindings.createBooleanBinding(() ->
+                        filledCellsCount.get() >= maxFilledCells.get(),
+                filledCellsCount, maxFilledCells
+        );
 
         grid.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> {
             filledCellsCount.set(newCount.longValue());
         });
-
-        isFull = filledCellsCount.greaterThanOrEqualTo(maxFilledCells());
+        maxFilledCells.addListener((obs, oldVal, newVal) -> {
+            isFull = filledCellsCount.greaterThanOrEqualTo(newVal.intValue());
+        });
     }
 
+
+
     public void resetGrid(int newWidth, int newHeight) {
+        this.maxFilledCells.set(newWidth * newHeight / 2); // Update maxFilledCells based on new dimensions
+
         this.grid.resetGrid(newWidth, newHeight);
         this.maxFilledCells.set(newWidth * newHeight / 2);
         // Mise à jour immédiate du nombre de cellules remplies pour refléter la nouvelle grille
         this.filledCellsCount.set(grid.filledCellsCountProperty().get());
-        isFull.invalidate();
-    }
 
+        // Update isFull binding
+        isFull = Bindings.createBooleanBinding(() ->
+                        filledCellsCount.get() >= maxFilledCells.get(),
+                filledCellsCount, maxFilledCells
+        );
+    }
 
 
 
 
     public CellValue play(int line, int col, CellValue toolValue) {
+        System.out.println("filledCellsCount: " + filledCellsCount.get());
+        System.out.println("maxFilledCells: " + maxFilledCells.get());
+        System.out.println("isFull: " + isFull.get());
+
         if (line < 0 || line >= grid.getGridWidth() || col < 0 || col >= grid.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
             return null;
         }
-        if (!isFull.get() || grid.getValue(line, col) != CellValue.EMPTY) {
-        CellValue currentValue = grid.getValue(line, col);
-        // Si l'outil sélectionné est un goal et que la cellule contient déjà un joueur ou une boîte,
-        // nous superposons le goal sur l'élément existant.
-        if (toolValue == CellValue.GOAL && (currentValue == CellValue.PLAYER || currentValue == CellValue.BOX)) {
-            grid.play(line, col, CellValue.GOAL);
-        } else {
+        if (grid.getValue(line, col) != CellValue.EMPTY) {
+            CellValue currentValue = grid.getValue(line, col);
+            if (toolValue == CellValue.GOAL && (currentValue == CellValue.PLAYER || currentValue == CellValue.BOX)) {
+                grid.play(line, col, CellValue.GOAL);
+            } else {
+                grid.play(line, col, toolValue);
+            }
+            filledCellsCount.set(calculateFilledCells());
+        } else if (!isFull.get()) {
             grid.play(line, col, toolValue);
-        }
-        filledCellsCount.set(calculateFilledCells());
+            filledCellsCount.set(calculateFilledCells());
         }
         return grid.getValue(line, col);
-
-
     }
     public void setCellValue(int line, int col, CellValue newValue) {
         if (isPositionValid(line, col) && (!isFull.get() || grid.getValue(line, col) != CellValue.EMPTY)) {
@@ -85,7 +102,7 @@ public class Board {
 
     }
 
-    public static int maxFilledCells() {
+    public  int maxFilledCells() {
         return (grid.getGridWidth() * grid.getGridHeight()) / 2;
     }
 

@@ -1,16 +1,47 @@
-.scale-button {
-    -fx-min-width: 15px;
-    -fx-min-height: 15px;
-    -fx-max-width: 15px;
-    -fx-max-height: 15px;
-    -fx-padding: 0px;
-    -fx-font-size: 8;
-    -fx-font-family: -moz-fixed;
-    -fx-font-weight: bold;
-    -fx-focus-traversable: false
+/* General body styling */
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    color: #333;
 }
 
+/* Header styling */
 .header {
-    -fx-font-weight: bold;
-    -fx-font-size: 16;
+    font-weight: bold;
+    font-size: 24px;
+    color: #444;
+    text-align: center;
+    padding: 20px;
+    background-color: #ddd;
+}
+
+/* Button styling */
+.scale-button {
+    min-width: 15px;
+    min-height: 15px;
+    max-width: 15px;
+    max-height: 15px;
+    padding: 0px;
+    font-size: 8px;
+    font-family: -moz-fixed;
+    font-weight: bold;
+    focus-traversable: false;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.scale-button:hover {
+    background-color: #0056b3;
+}
+
+/* Validation message styling */
+.validation-message {
+    color: red;
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
 }
