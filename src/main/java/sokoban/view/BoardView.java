@@ -58,6 +58,7 @@ public class BoardView extends BorderPane {
         setLeft(toolBar);
         createHeader(); // Ajoutez le label de validation dans cette méthode
         createGrid();
+        createPlayButton();
         start(primaryStage);
         boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
@@ -98,6 +99,20 @@ public class BoardView extends BorderPane {
         // Ajout du container combiné à l'interface utilisateur
         this.setTop(topContainer);
 
+    }
+    private void createPlayButton() {
+        Button playButton = new Button("Play");
+        playButton.setOnAction(event -> {
+            System.out.println("test");
+        });
+
+        // Create an HBox for centering the button
+        HBox playButtonContainer = new HBox(playButton);
+        playButtonContainer.setAlignment(Pos.CENTER); // Center the button horizontally
+        playButtonContainer.setPadding(new Insets(10, 0, 10, 0)); // Add some padding for aesthetic spacing
+
+        // Set the play button container at the bottom of the BorderPane
+        setBottom(playButtonContainer);
     }
 
     private VBox createHeader() {
@@ -161,7 +176,7 @@ public class BoardView extends BorderPane {
 
         gridView.minWidthProperty().bind(gridWidthBinding);
         gridView.maxWidthProperty().bind(gridWidthBinding);
-
+        gridView.setStyle("-fx-background-color: red;");
         setCenter(gridView);
     }
 
