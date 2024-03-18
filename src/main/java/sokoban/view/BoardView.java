@@ -51,6 +51,10 @@ public class BoardView extends BorderPane {
     // Ajout pour la barre de menu
     private final MenuBar menuBar = new MenuBar();
 
+    private final VBox topContainer = new VBox();
+
+    private final HBox playButtonContainer = new HBox();
+
 
     public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
         this.boardViewModel = boardViewModel;
@@ -94,7 +98,7 @@ public class BoardView extends BorderPane {
         // Initialiser le menu Fichier dans la barre de menu
         initializeMenu(stage);
         // Création du container pour le menu et l'en-tête
-        VBox topContainer = new VBox(menuBar, createHeader());
+         topContainer.getChildren().addAll(menuBar, createHeader());
 
         // Ajout du container combiné à l'interface utilisateur
         this.setTop(topContainer);
@@ -107,7 +111,8 @@ public class BoardView extends BorderPane {
         });
 
         // Create an HBox for centering the button
-        HBox playButtonContainer = new HBox(playButton);
+
+        playButtonContainer.getChildren().add(playButton);
         playButtonContainer.setAlignment(Pos.CENTER); // Center the button horizontally
         playButtonContainer.setPadding(new Insets(10, 0, 10, 0)); // Add some padding for aesthetic spacing
 
@@ -149,26 +154,60 @@ public class BoardView extends BorderPane {
             ((GridPane) getCenter()).getChildren().clear();
         }
 
-        NumberBinding gridSizeBinding = Bindings.min(
+        //taille d'une case
+        NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
+                () -> Math.min(
+                        widthProperty().subtract(toolBar.widthProperty()).divide(boardViewModel.getGridWidth()).get(),
+                        heightProperty().subtract(topContainer.heightProperty()).subtract(playButtonContainer.heightProperty()).divide(boardViewModel.getGridHeight()).get()
+                ),
+                widthProperty(),
+                heightProperty()
+        );
+        /*
+        ).min(
                 widthProperty()
                         .subtract(toolBar.widthProperty())
                 ,
                 heightProperty()
-                        .subtract(headerBox.heightProperty())
-                        .subtract(validationLabel.heightProperty())
-                        .subtract(menuBar.heightProperty())
-        );
+                        .subtract(topContainer.heightProperty())
+                        //.subtract(headerBox.heightProperty())
+                        //.subtract(validationLabel.heightProperty())
+                        //.subtract(menuBar.heightProperty())
+        );*/
+
+        gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+            System.out.println("grid " + newVal);
+
+        });
+
 
         DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth(),
+                //() -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth(),
+                () -> {
+                    //var width = Math.floor(gridSizeBinding.doubleValue() * boardViewModel.getGridWidth()) * boardViewModel.getGridWidth();
+                    var width = gridSizeBinding.doubleValue() * boardViewModel.getGridWidth();
+                    System.out.println("WIDTH" + width + " " + boardViewModel.getGridWidth());
+                    return width;
+                },
                 gridSizeBinding
         );
 
         DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
-                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight(),
+                () -> {
+                    var height = gridSizeBinding.doubleValue() * boardViewModel.getGridHeight();
+                    System.out.println("HEIGHT " + height+ " " + boardViewModel.getGridHeight());
+                    return height;
+                },
                 gridSizeBinding
         );
 
+        /*gridWidthBinding.addListener((obs,oldVal,newVal) -> {
+
+            System.out.println("width " + newVal + "(" + boardViewModel.getGridWidth() + ")");
+        });
+        gridHeightBinding.addListener((obs,oldVal,newVal) -> {
+            System.out.println("height " + newVal + "(" + boardViewModel.getGridHeight() + ")");
+        });*/
         GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
         gridView.minHeightProperty().bind(gridHeightBinding);

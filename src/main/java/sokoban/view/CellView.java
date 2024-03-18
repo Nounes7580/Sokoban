@@ -41,7 +41,7 @@ class CellView extends StackPane {
 
     private GridPane gridPane;
 
-    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty,GridPane gridPane,  DoubleBinding cellWidth, DoubleBinding cellHeight,int line, int col) {
+    CellView(CellViewModel cellViewModel, DoubleBinding sizeProperty,GridPane gridPane,  int line, int col) {
         this.viewModel = cellViewModel;
         this.sizeProperty = sizeProperty;
         this.line = line;
@@ -51,7 +51,7 @@ class CellView extends StackPane {
 
         layoutControls();
         configureBindings();
-        setupMouseEvents(cellWidth, cellHeight);
+        setupMouseEvents();
 
 
         // Add a listener to the valueProperty of the viewModel.
@@ -135,7 +135,7 @@ class CellView extends StackPane {
         minWidthProperty().bind(sizeProperty);
         minHeightProperty().bind(sizeProperty);
 
-        imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
+        //imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
 
         this.setOnMouseClicked(e -> viewModel.play());
 
@@ -179,13 +179,13 @@ class CellView extends StackPane {
                 break;
         }
     }
-    private void setupMouseEvents(DoubleBinding cellWidth, DoubleBinding cellHeight) {
+    private void setupMouseEvents() {
 
         this.setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown() ) {
 
-                int startCol = (int) Math.round(event.getX() / cellWidth.get());
-                int startLine = (int) Math.round(event.getY() / cellHeight.get());
+                int startCol = (int) Math.round(event.getX() / sizeProperty.get());
+                int startLine = (int) Math.round(event.getY() / sizeProperty.get());
                 System.out.println("Start Line: " + startLine);
                 System.out.println("Start Column: " + startCol);
 

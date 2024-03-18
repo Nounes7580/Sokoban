@@ -15,7 +15,7 @@ public class Board {
 
 
     public Board() {
-        grid = new Grid(10, 15);
+        grid = new Grid(15, 10);
         filledCellsCount.set(grid.filledCellsCountProperty().get());
         maxFilledCells.set(maxFilledCells()); // Set maxFilledCells based on grid dimensions
 
