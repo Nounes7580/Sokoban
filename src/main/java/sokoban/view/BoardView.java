@@ -114,7 +114,7 @@ public class BoardView extends BorderPane {
 
         playButtonContainer.getChildren().add(playButton);
         playButtonContainer.setAlignment(Pos.CENTER); // Center the button horizontally
-        playButtonContainer.setPadding(new Insets(10, 0, 10, 0)); // Add some padding for aesthetic spacing
+        playButtonContainer.setPadding(new Insets(0, 0, 10, 0)); // Add some padding for aesthetic spacing
 
         // Set the play button container at the bottom of the BorderPane
         setBottom(playButtonContainer);
@@ -163,17 +163,6 @@ public class BoardView extends BorderPane {
                 widthProperty(),
                 heightProperty()
         );
-        /*
-        ).min(
-                widthProperty()
-                        .subtract(toolBar.widthProperty())
-                ,
-                heightProperty()
-                        .subtract(topContainer.heightProperty())
-                        //.subtract(headerBox.heightProperty())
-                        //.subtract(validationLabel.heightProperty())
-                        //.subtract(menuBar.heightProperty())
-        );*/
 
         gridSizeBinding.addListener((obs,oldVal,newVal) -> {
             System.out.println("grid " + newVal);
@@ -182,9 +171,9 @@ public class BoardView extends BorderPane {
 
 
         DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-                //() -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth(),
+
                 () -> {
-                    //var width = Math.floor(gridSizeBinding.doubleValue() * boardViewModel.getGridWidth()) * boardViewModel.getGridWidth();
+
                     var width = gridSizeBinding.doubleValue() * boardViewModel.getGridWidth();
                     System.out.println("WIDTH" + width + " " + boardViewModel.getGridWidth());
                     return width;
@@ -201,13 +190,6 @@ public class BoardView extends BorderPane {
                 gridSizeBinding
         );
 
-        /*gridWidthBinding.addListener((obs,oldVal,newVal) -> {
-
-            System.out.println("width " + newVal + "(" + boardViewModel.getGridWidth() + ")");
-        });
-        gridHeightBinding.addListener((obs,oldVal,newVal) -> {
-            System.out.println("height " + newVal + "(" + boardViewModel.getGridHeight() + ")");
-        });*/
         GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
         gridView.minHeightProperty().bind(gridHeightBinding);
@@ -215,7 +197,6 @@ public class BoardView extends BorderPane {
 
         gridView.minWidthProperty().bind(gridWidthBinding);
         gridView.maxWidthProperty().bind(gridWidthBinding);
-        gridView.setStyle("-fx-background-color: red;");
         setCenter(gridView);
     }
 
