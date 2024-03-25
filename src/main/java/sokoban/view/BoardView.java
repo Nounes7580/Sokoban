@@ -107,18 +107,23 @@ public class BoardView extends BorderPane {
     private void createPlayButton() {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
-            System.out.println("test");
+            System.out.println("Play button clicked");
         });
 
-        // Create an HBox for centering the button
-
+        // Centre le bouton dans le conteneur
         playButtonContainer.getChildren().add(playButton);
-        playButtonContainer.setAlignment(Pos.CENTER); // Center the button horizontally
-        playButtonContainer.setPadding(new Insets(0, 0, 10, 0)); // Add some padding for aesthetic spacing
+        playButtonContainer.setAlignment(Pos.CENTER);
+        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
 
-        // Set the play button container at the bottom of the BorderPane
+        // Désactive le bouton "Play" basé sur le message de validation
+        playButton.disableProperty().bind(
+                boardViewModel.validationMessageProperty().isNotEmpty()
+        );
+
+        // Positionne le conteneur du bouton "Play" en bas du BorderPane
         setBottom(playButtonContainer);
     }
+
 
     private VBox createHeader() {
         headerLabel.textProperty().bind(Bindings.createStringBinding(() ->
