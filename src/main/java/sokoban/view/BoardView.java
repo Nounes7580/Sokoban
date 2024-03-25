@@ -107,22 +107,48 @@ public class BoardView extends BorderPane {
     private void createPlayButton() {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
-            System.out.println("Play button clicked");
-        });
+            // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
+            if (boardViewModel.isGridChanged()) {
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationDialog.setTitle("Confirmation Dialog");
+                confirmationDialog.setHeaderText("Your board has been modified.");
+                confirmationDialog.setContentText("Do you want to save your changes?");
 
-        // Centre le bouton dans le conteneur
-        playButtonContainer.getChildren().add(playButton);
-        playButtonContainer.setAlignment(Pos.CENTER);
-        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
+                ButtonType buttonTypeYes = new ButtonType("Oui");
+                ButtonType buttonTypeNo = new ButtonType("Non");
+                ButtonType buttonTypeCancel = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                confirmationDialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+                Optional<ButtonType> result = confirmationDialog.showAndWait();
+                if (result.isPresent() && result.get() == buttonTypeYes) {
+                    // Méthode pour sauvegarder
+                    handleSaveAs(new Stage());
+                    // TODO : Afficher la nouvelle vue après la sauvegarde
+                } else if (result.isPresent() && result.get() == buttonTypeNo) {
+                    // TODO : Afficher la nouvelle vue sans sauvegarder
+                }
+                // Si "Annuler" est choisi, fermez simplement la boîte de dialogue sans rien faire d'autre
+            } else {
+                // Si la grille n'a pas été modifiée, affichez directement la nouvelle vue
+                // TODO: Afficher la nouvelle vue
+            }
+        });
 
         // Désactive le bouton "Play" basé sur le message de validation
         playButton.disableProperty().bind(
                 boardViewModel.validationMessageProperty().isNotEmpty()
         );
 
+        // Centre le bouton dans le conteneur
+        playButtonContainer.getChildren().add(playButton);
+        playButtonContainer.setAlignment(Pos.CENTER);
+        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
+
         // Positionne le conteneur du bouton "Play" en bas du BorderPane
         setBottom(playButtonContainer);
     }
+
 
 
     private VBox createHeader() {
