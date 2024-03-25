@@ -22,7 +22,7 @@ class GridView extends GridPane {
         for (int i = 0; i < gridViewModel.getGridWidth(); i++) {
             for (int j = 0; j < gridViewModel.getGridHeight(); j++) {
                 CellView cellView = new CellView(gridViewModel.getCellViewModel(i, j), cellSize, this, i, j);
-                this.add(cellView, j, i);
+                this.add(cellView, i, j);
             }
         }
 
