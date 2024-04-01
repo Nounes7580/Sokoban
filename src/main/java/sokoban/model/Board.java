@@ -129,51 +129,35 @@ public class Board {
     }
 
     public void savelevel(File selectedFile){
-
         try {
-            // Créer un écrivain de fichier
             BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile));
 
-            // Parcourir la grille pour écrire chaque objet dans le fichier
-            for (int row = 0; row < grid.getGridHeight(); row++) {
-                for (int col = 0; col < grid.getGridWidth(); col++) {
+            for (int col = 0; col < grid.getMatrix()[0].length; col++) {
+                for (int row = 0; row < grid.getMatrix().length; row++) { // Direct order for rows
                     ReadOnlyListProperty<CellValue> values = valueProperty(row, col);
-                    char character;
-                    if (values.isEmpty() || values.contains(CellValue.GROUND))
-                        character = ' ';
-                    else if (values.contains(CellValue.WALL))
-                        character = '#';
-                    else if (values.contains(CellValue.PLAYER) && values.contains(CellValue.GOAL))
-                        character = '+';
-                    else if (values.contains(CellValue.BOX) && values.contains(CellValue.GOAL))
-                        character = '*';
-                    else if (values.contains(CellValue.GOAL))
-                        character = '.';
-                    else if (values.contains(CellValue.BOX))
-                        character = '$';
-                    else if (values.contains(CellValue.PLAYER))
-                        character = '@';
-                    else
-                        character = '9';
-
-                    // Écrire le caractère dans le fichier
+                    char character = determineCharacter(values);
                     writer.write(character);
-
                 }
-                // Aller à la ligne suivante dans le fichier après chaque ligne de la grille
                 writer.newLine();
             }
 
-            // Fermer l'écrivain de fichier
             writer.close();
-
-            // Message de succès
-            System.out.println("Fichier sauvegardé avec succès : " + selectedFile.getAbsolutePath());
+            System.out.println("File saved successfully: " + selectedFile.getAbsolutePath());
         } catch (IOException e) {
-            // Gérer les exceptions d'entrée/sortie (par exemple, erreur d'écriture dans le fichier)
             e.printStackTrace();
         }
     }
+
+    private char determineCharacter(ReadOnlyListProperty<CellValue> values) {
+        if (values.contains(CellValue.WALL)) return '#';
+        if (values.contains(CellValue.PLAYER)) return '@';
+        if (values.contains(CellValue.BOX)) return '$';
+        if (values.contains(CellValue.GOAL)) return '.';
+        if (values.contains(CellValue.PLAYER) && values.contains(CellValue.GOAL)) return '+';
+        if (values.contains(CellValue.BOX) && values.contains(CellValue.GOAL)) return '*';
+        return ' ';  // Default character for empty cell or ground
+    }
+
 
     public void handleOpen(File selectedFile){
 
