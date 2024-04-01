@@ -1,12 +1,10 @@
 package sokoban.viewmodel;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import sokoban.model.Cell;
 
 
 public class CellViewModel {
@@ -19,6 +17,7 @@ public class CellViewModel {
     private int line;
     private int col;
     private final Board board;
+    public Cell cell;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
     private final BooleanBinding mayIncrementScale = scale.lessThan(1 - EPSILON);
@@ -57,7 +56,9 @@ public class CellViewModel {
     // Méthode pour "supprimer" un objet de la cellule
     public void deleteObject() {
         if (!isEmpty()) {
-            updateCellValue(CellValue.EMPTY);
+            Cell cell = board.getGrid().getMatrix()[line][col];
+            cell.clearValues();
+            board.getGrid().triggerGridChange(); // cela a permis la mise a jour lors de la suppression lors du drag
         }
     }
 
@@ -67,7 +68,7 @@ public class CellViewModel {
 
     }
 
-    public ReadOnlyObjectProperty<CellValue> valueProperty() {
+    public ReadOnlyListProperty<CellValue> valueProperty() {
         return board.valueProperty(line, col);
     }
 

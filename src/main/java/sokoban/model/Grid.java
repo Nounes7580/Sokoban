@@ -26,7 +26,7 @@ public class Grid {
         filledCellsCount = Bindings.createLongBinding(() -> Arrays
                 .stream(matrix)
                 .flatMap(Arrays::stream)
-                .filter(cell -> cell.getValue() != CellValue.EMPTY && cell.getValue() != CellValue.GROUND)
+                .filter(cell -> !(cell.isEmpty()))
                 .count(), gridChanged);
     }
 
@@ -50,7 +50,7 @@ public class Grid {
     public BooleanProperty gridChangedProperty() {
         return gridChanged;
     }
-    private void triggerGridChange() {
+    public void triggerGridChange() {
         gridChanged.set(!gridChanged.get()); // Change la valeur pour déclencher l'écouteur
     }
 
@@ -59,7 +59,7 @@ public class Grid {
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
-                if (matrix[i][j].getValue() == CellValue.PLAYER || matrix[i][j].getValue() == CellValue.PLAYER_ON_GOAL) {
+                if (matrix[i][j].getValue().contains(CellValue.PLAYER) || (matrix[i][j].getValue().contains(CellValue.PLAYER)&&matrix[i][j].getValue().contains(CellValue.GOAL))) {
                     return new int[]{i, j}; // Retourne les coordonnées du joueur
                 }
             }
@@ -76,64 +76,48 @@ public class Grid {
 
 
 
-    ReadOnlyObjectProperty<CellValue> valueProperty(int line, int col) {
-        return matrix[line][col].valueProperty();
-    }
-
-    CellValue getValue(int line, int col) {
+    ReadOnlyListProperty<CellValue> valueProperty(int line, int col) {
+        if (line < 0 || col < 0 || line >= gridWidth.get() || col >= gridHeight.get()) {
+            throw new IllegalArgumentException("Index out of bounds");
+        }
         return matrix[line][col].getValue();
     }
 
-    void play(int line, int col, CellValue toolValue) {
-        CellValue currentValue = getValue(line, col);
 
-        // Gestion du déplacement du joueur
+
+    public void play(int line, int col, CellValue toolValue) {
+        // Assurez-vous que les coordonnées sont valides.
+        if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight()) {
+            return; // Position invalide.
+        }
+
+        Cell cell = matrix[line][col];
+
+        // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
         if (toolValue == CellValue.PLAYER) {
             int[] playerPos = findPlayerPosition();
             if (playerPos != null) {
-                CellValue previousPlayerCellState = getValue(playerPos[0], playerPos[1]);
-
-                // Si le joueur était sur un goal, la cellule précédente devient juste un goal.
-                if (previousPlayerCellState == CellValue.PLAYER_ON_GOAL) {
-                    matrix[playerPos[0]][playerPos[1]].setValue(CellValue.GOAL);
-                } else {
-                    // Sinon, effacez simplement l'ancienne position du joueur.
-                    matrix[playerPos[0]][playerPos[1]].setValue(CellValue.EMPTY);
-                }
+                matrix[playerPos[0]][playerPos[1]].play(CellValue.PLAYER);
             }
-
-            // Gère la nouvelle position du joueur
-            if (currentValue == CellValue.GOAL) {
-                matrix[line][col].setValue(CellValue.PLAYER_ON_GOAL);
-            } else {
-                matrix[line][col].setValue(CellValue.PLAYER);
-            }
-        } else if (toolValue == CellValue.WALL) {
-            // Un mur remplace tout contenu existant
-            matrix[line][col].setValue(CellValue.WALL);
-        } else if (toolValue == CellValue.GOAL) {
-            // Gère le placement du goal
-            if (currentValue == CellValue.PLAYER) {
-                matrix[line][col].setValue(CellValue.PLAYER_ON_GOAL);
-            } else if (currentValue == CellValue.BOX) {
-                matrix[line][col].setValue(CellValue.BOX_ON_GOAL);
-            } else {
-                matrix[line][col].setValue(CellValue.GOAL);
-            }
-        } else if (toolValue == CellValue.BOX) {
-            // Gère le placement d'une boîte
-            if (currentValue == CellValue.GOAL) {
-                matrix[line][col].setValue(CellValue.BOX_ON_GOAL);
-            } else {
-                matrix[line][col].setValue(CellValue.BOX);
-            }
-        } else {
-            matrix[line][col].setValue(toolValue);
         }
 
+        // Logique simplifiée pour l'ajout d'états dans la cellule.
+        if (toolValue == CellValue.WALL || toolValue == CellValue.GROUND) {
+            // Pour WALL et GROUND, on remplace tout les états existants.
+            cell.play(toolValue);
+        } else if (!cell.getValue().contains(toolValue)) {
+            // Pour les autres états, on ajoute seulement s'ils ne sont pas déjà présents.
+            // Cela évite les duplications pour des états comme GOAL qui peut être superposé avec PLAYER ou BOX.
+            cell.play(toolValue);
+
+        }
+
+        // Si on ajoute autre chose qu'un GOAL, et que GOAL est déjà présent, on ne le retire pas.
+        // Cela permet de garder le GOAL même quand on ajoute PLAYER ou BOX sur celui-ci.
+
+        // invalide le compteur de cellules remplies et déclenche le changement de grille.
         filledCellsCount.invalidate();
         triggerGridChange();
-
     }
 
 
@@ -150,22 +134,31 @@ public class Grid {
     }
 
     public boolean hasAtLeastOneTarget() {
-        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.GOAL || cell.getValue() == CellValue.PLAYER_ON_GOAL|| cell.getValue() == CellValue.BOX_ON_GOAL);
+        return Arrays.stream(matrix)
+                .flatMap(Arrays::stream)
+                .anyMatch(cell -> cell.getValue().contains(CellValue.GOAL));
     }
 
     public boolean hasAtLeastOneBox() {
-        return Arrays.stream(matrix).flatMap(Arrays::stream).anyMatch(cell -> cell.getValue() == CellValue.BOX || cell.getValue() == CellValue.BOX_ON_GOAL);
+        return Arrays.stream(matrix)
+                .flatMap(Arrays::stream)
+                .anyMatch(cell -> cell.getValue().contains(CellValue.BOX));
     }
 
     public long getTargetCount() {
-        return Arrays.stream(matrix).flatMap(Arrays::stream).filter(cell -> cell.getValue() == CellValue.GOAL || cell.getValue() == CellValue.PLAYER_ON_GOAL|| cell.getValue() == CellValue.BOX_ON_GOAL).count();
+        return Arrays.stream(matrix)
+                .flatMap(Arrays::stream)
+                .filter(cell -> cell.getValue().contains(CellValue.GOAL))
+                .count();
     }
+
     public long getBoxCount() {
         return Arrays.stream(matrix)
                 .flatMap(Arrays::stream)
-                .filter(cell -> cell.getValue() == CellValue.BOX || cell.getValue() == CellValue.BOX_ON_GOAL)
+                .filter(cell -> cell.getValue().contains(CellValue.BOX))
                 .count();
     }
+
     public IntegerProperty gridWidthProperty() {
         return new SimpleIntegerProperty(gridWidth.get());
     }
@@ -184,7 +177,7 @@ public class Grid {
 
     public void setCellValue(int line, int col, CellValue newValue) {
         if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
-            matrix[line][col].setValue(newValue);
+            matrix[line][col].addValue(newValue);
             triggerGridChange();
         }
     }

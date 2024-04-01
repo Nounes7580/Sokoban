@@ -4,6 +4,16 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
+import sokoban.view.BoardView;
+import sokoban.viewmodel.BoardViewModel;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class Board {
@@ -12,6 +22,7 @@ public class Board {
     private BooleanBinding isFull;
     private final LongProperty filledCellsCount = new SimpleLongProperty();
     private final IntegerProperty maxFilledCells = new SimpleIntegerProperty();
+    private final BooleanProperty gridReset = new SimpleBooleanProperty(false);
 
 
     public Board() {
@@ -52,44 +63,36 @@ public class Board {
 
 
 
-    public CellValue play(int line, int col, CellValue toolValue) {
+    public void play(int line, int col, CellValue toolValue) {
         System.out.println("filledCellsCount: " + filledCellsCount.get());
         System.out.println("maxFilledCells: " + maxFilledCells.get());
         System.out.println("isFull: " + isFull.get());
 
         if (line < 0 || line >= grid.getGridWidth() || col < 0 || col >= grid.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
-            return null;
+            return; // Aucune valeur à retourner, la méthode peut être de type void.
         }
-        if (grid.getValue(line, col) != CellValue.EMPTY) {
-            CellValue currentValue = grid.getValue(line, col);
-            if (toolValue == CellValue.GOAL && (currentValue == CellValue.PLAYER || currentValue == CellValue.BOX)) {
-                grid.play(line, col, CellValue.GOAL);
-            } else {
-                grid.play(line, col, toolValue);
-            }
-            filledCellsCount.set(calculateFilledCells());
-        } else if (!isFull.get()) {
+
+        // Accéder directement à la cellule pour manipuler ses états.
+        Cell cell = grid.getMatrix()[line][col];
+
+        // Si la grille n'est pas pleine ou si la cellule n'est pas vide, procéder à la manipulation.
+        if (!isFull.get() || !cell.getValue().isEmpty()) {
+            // Utiliser une méthode adaptée de Grid pour gérer l'ajout des états.
             grid.play(line, col, toolValue);
-            filledCellsCount.set(calculateFilledCells());
+            filledCellsCount.set(calculateFilledCells()); // Recalculer après manipulation.
         }
-        return grid.getValue(line, col);
+        // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
+
     public void setCellValue(int line, int col, CellValue newValue) {
-        if (isPositionValid(line, col) && (!isFull.get() || grid.getValue(line, col) != CellValue.EMPTY)) {
+        if (isPositionValid(line, col) && (!isFull.get() || !grid.valueProperty(line, col).getValue().isEmpty())) {
             grid.setCellValue(line, col, newValue);
             filledCellsCount.set(calculateFilledCells());
         }
     }
 
-    public Cell getCell(int line, int col) {
-        // Vérifie si les indices sont dans les limites
-        if (isPositionValid(line, col)) {
-            return grid.getMatrix()[line][col];
-        } else {
-            return null;
-        }
-    }
+
 
     // Méthode pour vérifier si les coordonnées de la cellule sont valides
     public boolean isPositionValid(int line, int col) {
@@ -113,7 +116,7 @@ public class Board {
         return grid;
     }
 
-    public ReadOnlyObjectProperty<CellValue> valueProperty(int line, int col) {
+    public ReadOnlyListProperty<CellValue> valueProperty(int line, int col) {
         return grid.valueProperty(line, col);
     }
 
@@ -128,4 +131,84 @@ public class Board {
         return this.maxFilledCells;
     }
 
+    public void savelevel(File selectedFile){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(selectedFile));
+
+            for (int col = 0; col < grid.getMatrix()[0].length; col++) {
+                for (int row = 0; row < grid.getMatrix().length; row++) { // Direct order for rows
+                    ReadOnlyListProperty<CellValue> values = valueProperty(row, col);
+                    char character = determineCharacter(values);
+                    writer.write(character);
+                }
+                writer.newLine();
+            }
+
+            writer.close();
+            System.out.println("File saved successfully: " + selectedFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private char determineCharacter(ReadOnlyListProperty<CellValue> values) {
+        if (values.contains(CellValue.WALL)) return '#';
+        if (values.contains(CellValue.PLAYER)) return '@';
+        if (values.contains(CellValue.BOX)) return '$';
+        if (values.contains(CellValue.GOAL)) return '.';
+        if (values.contains(CellValue.PLAYER) && values.contains(CellValue.GOAL)) return '+';
+        if (values.contains(CellValue.BOX) && values.contains(CellValue.GOAL)) return '*';
+        return ' ';  // Default character for empty cell or ground
+    }
+
+
+    public void handleOpen(File selectedFile){
+
+            try {
+                List<String> lines = Files.readAllLines(selectedFile.toPath());
+
+                int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
+                int maxHeight = lines.size();
+
+                resetGrid(maxWidth, maxHeight);
+                gridReset.set(true);
+
+                for (int i = 0; i < lines.size(); i++) {
+                    String line = lines.get(i);
+                    for (int j = 0; j < line.length(); j++) {
+                        char c = line.charAt(j);
+                        // Traiter chaque caractère et ajuster la cellule correspondante
+                        switch (c) {
+                            case '#':
+                                getGrid().getMatrix()[i][j].getValue().add(CellValue.WALL);
+                                break;
+                            case '@':
+                                getGrid().getMatrix()[i][j].getValue().add(CellValue.PLAYER);
+                                break;
+                            case '$':
+                                getGrid().getMatrix()[i][j].getValue().add(CellValue.BOX);
+                                break;
+                            case '.':
+                                getGrid().getMatrix()[i][j].getValue().add(CellValue.GOAL);
+                                break;
+                            case '*': // Boîte sur objectif
+                                getGrid().getMatrix()[i][j].getValue().addAll(Arrays.asList(CellValue.BOX, CellValue.GOAL));
+                                break;
+                            case '+': // Joueur sur objectif
+                                getGrid().getMatrix()[i][j].getValue().addAll(Arrays.asList(CellValue.PLAYER, CellValue.GOAL));
+                                break;
+                            default: // Espaces ou autres caractères sont traités comme vides ou ignorés
+                                break;
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+    }
 }
+
+
+
