@@ -207,6 +207,7 @@ public class Board {
                     }
                 }
             }
+            grid.triggerGridChange();
 
 
         } catch (IOException e) {
