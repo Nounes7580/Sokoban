@@ -4,6 +4,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
 public class Cell { //Représente une cellule dans la grille
+
     private final ListProperty<CellValue> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
     public ReadOnlyListProperty<CellValue> getValue() {
         return toolObject;

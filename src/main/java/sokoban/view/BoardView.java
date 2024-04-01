@@ -12,6 +12,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
+import sokoban.model.Board;
 import sokoban.model.CellValue;
 
 import sokoban.viewmodel.BoardViewModel;
@@ -85,11 +86,44 @@ public class BoardView extends BorderPane {
         Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
+
+
+
         stage.setScene(scene);
+        setupKeyControls(stage.getScene());
+
         stage.show();
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
+
+
     }
+
+    //TODO: Separer ca pour le jeu et pour l'editeur
+    private void setupKeyControls(Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            Board.Direction direction = null;
+            switch (event.getCode()) {
+                case UP:
+                    direction = Board.Direction.UP;
+                    break;
+                case DOWN:
+                    direction = Board.Direction.DOWN;
+                    break;
+                case LEFT:
+                    direction = Board.Direction.LEFT;
+                    break;
+                case RIGHT:
+                    direction = Board.Direction.RIGHT;
+                    break;
+            }
+
+            if (direction != null) {
+                boardViewModel.movePlayer(direction);
+            }
+        });
+    }
+
 
     private void configMainComponents(Stage stage) {
         stage.setTitle("Sokoban");

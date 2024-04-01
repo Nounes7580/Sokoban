@@ -98,6 +98,7 @@ public class Board {
 
 
 
+
     // Méthode pour vérifier si les coordonnées de la cellule sont valides
     public boolean isPositionValid(int line, int col) {
         // Retourne vrai si les coordonnées sont dans les limites de la grille
@@ -214,6 +215,63 @@ public class Board {
             e.printStackTrace();
         }
     }
+//Todo: Implement tout ce qui est en bas est pour le déplacement du joueur
+    public void movePlayer(Direction direction) {
+        int[] playerPosition = grid.findPlayerPosition();
+        if (playerPosition == null) {
+            // Handle the case where the player is not found
+            return;
+        }
+
+        int newRow = playerPosition[0] + direction.getDeltaRow();
+        int newCol = playerPosition[1] + direction.getDeltaCol();
+
+        // First, check if the move is valid
+        if (isMoveValid(newRow, newCol)) {
+            // Move the player
+            grid.play(playerPosition[0], playerPosition[1], CellValue.EMPTY); // Remove the player from the old position
+            grid.play(newRow, newCol, CellValue.PLAYER); // Place the player in the new position
+        }
+
+        // After the move, the filled cells count might have changed
+        filledCellsCount.set(calculateFilledCells());
+
+        // Notify any observers that the grid has changed
+        grid.triggerGridChange();
+    }
+
+    private boolean isMoveValid(int newRow, int newCol) {
+        // Check boundaries
+        if (newRow < 0 || newRow >= grid.getGridHeight() || newCol < 0 || newCol >= grid.getGridWidth()) {
+            return false;
+        }
+
+        // Check if the target cell is empty or contains a goal
+        Cell targetCell = grid.getMatrix()[newRow][newCol];
+        return targetCell.isEmpty() || targetCell.getValue().contains(CellValue.GOAL);
+    }
+
+
+    public enum Direction {
+        UP(-1, 0), DOWN(1, 0), LEFT(0, -1), RIGHT(0, 1);
+
+        private final int deltaRow;
+        private final int deltaCol;
+
+        Direction(int deltaRow, int deltaCol) {
+            this.deltaRow = deltaRow;
+            this.deltaCol = deltaCol;
+        }
+
+        public int getDeltaRow() {
+            return deltaRow;
+        }
+
+        public int getDeltaCol() {
+            return deltaCol;
+        }
+    }
+
 
 }
 

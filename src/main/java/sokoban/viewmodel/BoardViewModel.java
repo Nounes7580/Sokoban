@@ -143,4 +143,10 @@ public class BoardViewModel {
     public void saveLevel(File selectedFile){
         board.savelevel(selectedFile);
     }
+
+    //Todo: à separer pour le jeu (boardview4play)
+    public void movePlayer(Board.Direction direction) {
+        // Assuming you have a method in Board to move the player
+        board.movePlayer(direction);
+    }
 }
