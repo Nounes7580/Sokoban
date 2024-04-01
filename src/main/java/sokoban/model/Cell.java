@@ -3,7 +3,7 @@ package sokoban.model;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 
-class Cell { //Représente une cellule dans la grille
+public class Cell { //Représente une cellule dans la grille
     private final ListProperty<CellValue> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
     public ReadOnlyListProperty<CellValue> getValue() {
         return toolObject;
@@ -34,8 +34,12 @@ class Cell { //Représente une cellule dans la grille
     public void removeValue(CellValue value){
         toolObject.remove(value);
     }
+    public void clearValues() {
+        this.toolObject.clear();
+    }
 
-   public  void play(CellValue value) {
+
+    public  void play(CellValue value) {
         if (toolObject.contains(value)) {
             removeValue(value);
         }

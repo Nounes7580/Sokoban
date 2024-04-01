@@ -4,6 +4,8 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
+import sokoban.view.BoardView;
+import sokoban.viewmodel.BoardViewModel;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -20,6 +22,7 @@ public class Board {
     private BooleanBinding isFull;
     private final LongProperty filledCellsCount = new SimpleLongProperty();
     private final IntegerProperty maxFilledCells = new SimpleIntegerProperty();
+    private final BooleanProperty gridReset = new SimpleBooleanProperty(false);
 
 
     public Board() {
@@ -167,7 +170,8 @@ public class Board {
                 int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
                 int maxHeight = lines.size();
 
-                resetGrid(maxWidth, maxHeight); // Réinitialiser la grille avec les bonnes dimensions
+                resetGrid(maxWidth, maxHeight);
+                gridReset.set(true);
 
                 for (int i = 0; i < lines.size(); i++) {
                     String line = lines.get(i);

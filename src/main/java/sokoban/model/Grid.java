@@ -50,7 +50,7 @@ public class Grid {
     public BooleanProperty gridChangedProperty() {
         return gridChanged;
     }
-    private void triggerGridChange() {
+    public void triggerGridChange() {
         gridChanged.set(!gridChanged.get()); // Change la valeur pour déclencher l'écouteur
     }
 
@@ -77,7 +77,9 @@ public class Grid {
 
 
     ReadOnlyListProperty<CellValue> valueProperty(int line, int col) {
-
+        if (line < 0 || col < 0 || line >= gridWidth.get() || col >= gridHeight.get()) {
+            throw new IllegalArgumentException("Index out of bounds");
+        }
         return matrix[line][col].getValue();
     }
 
