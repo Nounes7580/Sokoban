@@ -23,7 +23,11 @@ public class Board {
     private final LongProperty filledCellsCount = new SimpleLongProperty();
     private final IntegerProperty maxFilledCells = new SimpleIntegerProperty();
     private final BooleanProperty gridReset = new SimpleBooleanProperty(false);
+    private final BooleanProperty boardUpdated = new SimpleBooleanProperty(false);
 
+    public BooleanProperty boardUpdatedProperty() {
+        return boardUpdated;
+    }
 
     public Board() {
         grid = new Grid(15, 10);
@@ -163,51 +167,53 @@ public class Board {
 
 
     public void handleOpen(File selectedFile){
+        try {
+            List<String> lines = Files.readAllLines(selectedFile.toPath());
 
-            try {
-                List<String> lines = Files.readAllLines(selectedFile.toPath());
+            int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
+            int maxHeight = lines.size();
 
-                int maxWidth = lines.stream().mapToInt(String::length).max().orElse(0);
-                int maxHeight = lines.size();
+            resetGrid(maxWidth, maxHeight);
 
-                resetGrid(maxWidth, maxHeight);
-                gridReset.set(true);
+            boardUpdated.set(!boardUpdated.get());
 
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i);
-                    for (int j = 0; j < line.length(); j++) {
-                        char c = line.charAt(j);
-                        // Traiter chaque caractère et ajuster la cellule correspondante
-                        switch (c) {
-                            case '#':
-                                getGrid().getMatrix()[i][j].getValue().add(CellValue.WALL);
-                                break;
-                            case '@':
-                                getGrid().getMatrix()[i][j].getValue().add(CellValue.PLAYER);
-                                break;
-                            case '$':
-                                getGrid().getMatrix()[i][j].getValue().add(CellValue.BOX);
-                                break;
-                            case '.':
-                                getGrid().getMatrix()[i][j].getValue().add(CellValue.GOAL);
-                                break;
-                            case '*': // Boîte sur objectif
-                                getGrid().getMatrix()[i][j].getValue().addAll(Arrays.asList(CellValue.BOX, CellValue.GOAL));
-                                break;
-                            case '+': // Joueur sur objectif
-                                getGrid().getMatrix()[i][j].getValue().addAll(Arrays.asList(CellValue.PLAYER, CellValue.GOAL));
-                                break;
-                            default: // Espaces ou autres caractères sont traités comme vides ou ignorés
-                                break;
-                        }
+            for (int i = 0; i < maxHeight; i++) {
+                String line = lines.get(i);
+                for (int j = 0; j < maxWidth && j < line.length(); j++) {
+                    char c = line.charAt(j);
+                    // i est pour les lignes, j est pour les colonnes
+
+
+                    switch (c) {
+                        case '#':
+                            getGrid().getMatrix()[j][i].getValue().add(CellValue.WALL);
+                            break;
+                        case '@':
+                            getGrid().getMatrix()[j][i].getValue().add(CellValue.PLAYER);
+                            break;
+                        case '$':
+                            getGrid().getMatrix()[j][i].getValue().add(CellValue.BOX);
+                            break;
+                        case '.':
+                            getGrid().getMatrix()[j][i].getValue().add(CellValue.GOAL);
+                            break;
+                        case '*':
+                            getGrid().getMatrix()[j][i].getValue().addAll(Arrays.asList(CellValue.BOX, CellValue.GOAL));
+                            break;
+                        case '+':
+                            getGrid().getMatrix()[j][i].getValue().addAll(Arrays.asList(CellValue.PLAYER, CellValue.GOAL));
+                            break;
+                        // Ajoutez plus de cas si nécessaire
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
 
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 }
 
 

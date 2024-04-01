@@ -32,6 +32,10 @@ public class BoardViewModel {
         board.getGrid().gridChangedProperty().addListener((observable, oldValue, newValue) -> {
             updateValidationMessage();
         });
+        // Écoutez les changements signalant que le board a été mis à jour.
+        this.board.boardUpdatedProperty().addListener((obs, oldVal, newVal) -> {
+            gridReset.set(!gridReset.get()); // Basculez pour garantir que la vue sera mise à jour.
+        });
 
 
     }
@@ -127,6 +131,7 @@ public class BoardViewModel {
     public void loadLevelFromFile(File file) {
        board.handleOpen(file);
     }
+
 
 
 

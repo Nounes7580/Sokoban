@@ -70,7 +70,8 @@ public class BoardView extends BorderPane {
         boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 createGrid();
-                boardViewModel.gridResetProperty().set(false); // Reset the property to false
+                System.out.println("Grid reset");
+                this.boardViewModel.gridResetProperty().set(false);
             }
         });
 
