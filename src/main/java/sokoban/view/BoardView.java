@@ -2,6 +2,7 @@ package sokoban.view;
 
 import javafx.application.Platform;
 import javafx.beans.binding.NumberBinding;
+import javafx.beans.property.ReadOnlyListProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -28,6 +29,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
+
+
 
 public class BoardView extends BorderPane {
 
@@ -465,8 +468,6 @@ public class BoardView extends BorderPane {
         if (file != null) {
             boardViewModel.loadLevelFromFile(file);
 
-
-
         }
 
     }
@@ -476,46 +477,7 @@ public class BoardView extends BorderPane {
         // Define the extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.xsb)", "*.xsb");
         fileChooser.getExtensionFilters().add(extFilter);
-
-        // Show the save file dialog
-        File file = fileChooser.showSaveDialog(primaryStage);
-        if (file != null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                int gridWidth = boardViewModel.getGridWidth(); // Assurez-vous que cette méthode existe dans BoardViewModel
-                int gridHeight = boardViewModel.getGridHeight(); // Assurez-vous que cette méthode existe dans BoardViewModel
-                for (int i = 0; i < gridWidth; i++) {
-                    for (int j = 0; j < gridHeight; j++) {
-                        CellValue cellValue = boardViewModel.getGridViewModel().getCellValue(i, j);
-                        switch (cellValue) {
-                            case WALL:
-                                writer.write('#');
-                                break;
-                            case PLAYER:
-                                writer.write('@');
-                                break;
-                            case BOX:
-                                writer.write('$');
-                                break;
-                            case GOAL:
-                                writer.write('.');
-                                break;
-                            case BOX_ON_GOAL:
-                                writer.write('*');
-                                break;
-                            case PLAYER_ON_GOAL:
-                                writer.write('+');
-                                break;
-                            case GROUND:
-                            default:
-                                writer.write(' ');
-                                break;
-                        }
-                    }
-                    writer.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        File selectedFile = fileChooser.showSaveDialog(getScene().getWindow());
+        boardViewModel.saveLevel(selectedFile);
     }
 }

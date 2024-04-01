@@ -1,5 +1,8 @@
 package sokoban.view;
 
+import javafx.beans.Observable;
+import javafx.beans.value.ObservableListValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
@@ -55,16 +58,10 @@ class CellView extends StackPane {
 
 
         // Add a listener to the valueProperty of the viewModel.
-        viewModel.valueProperty().addListener((obs, oldVal, newVal) -> setImage(imageView, newVal));
+        viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
 
     }
-    public int getLine() {
-        return line;
-    }
 
-    public int getColumn() {
-        return col;
-    }
 
     private void layoutControls() {
         backgroundImageView.setPreserveRatio(false);
@@ -78,28 +75,12 @@ class CellView extends StackPane {
         viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
-    private void updateView(CellValue cellValue) {
+    private void updateView(ObservableList<CellValue> list) {
         getChildren().clear();
         getChildren().add(backgroundImageView);
 
-
-        switch (cellValue) {
-            case PLAYER:
-            case BOX:
-            case WALL:
-                addImageViewForCellValue(cellValue);
-                break;
-            case GOAL:
-                addImageView(goalImage);
-                break;
-            case PLAYER_ON_GOAL:
-                addImageView(playerImage);
-                addImageView(goalImage);
-                break;
-            case BOX_ON_GOAL:
-                addImageView(boxImage);
-                addImageView(goalImage);
-                break;
+        for(CellValue value: list){
+            addImageViewForCellValue(value);
         }
     }
 
@@ -108,6 +89,7 @@ class CellView extends StackPane {
             case PLAYER -> playerImage;
             case BOX -> boxImage;
             case WALL -> wallImage;
+            case GOAL -> goalImage;
             default -> null;
         };
         if (image != null) {
@@ -139,7 +121,7 @@ class CellView extends StackPane {
 
         this.setOnMouseClicked(e -> viewModel.play());
 
-        viewModel.valueProperty().addListener((obs, old, newVal) -> setImage(imageView, newVal));
+        viewModel.valueProperty().addListener((obs, old, newVal) -> updateView( newVal));
 
         hoverProperty().addListener(this::hoverChanged);
 
@@ -157,28 +139,7 @@ class CellView extends StackPane {
         });
     }
 
-    private void setImage(ImageView imageView, CellValue cellValue) {
-        switch (cellValue) {
-            case WALL:
-                imageView.setImage(wallImage);
-                break;
-            case PLAYER:
-                imageView.setImage(playerImage);
-                break;
-            case BOX:
-                imageView.setImage(boxImage);
-                break;
-            case GOAL:
-                imageView.setImage(goalImage);
-                break;
-            case GROUND:
-                imageView.setImage(groundImage);
-                break;
-            case EMPTY:
-                imageView.setImage(null);
-                break;
-        }
-    }
+
     private void setupMouseEvents() {
 
         this.setOnMousePressed(event -> {

@@ -1,12 +1,9 @@
 package sokoban.viewmodel;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import sokoban.model.Board;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 
 
 public class CellViewModel {
@@ -67,7 +64,7 @@ public class CellViewModel {
 
     }
 
-    public ReadOnlyObjectProperty<CellValue> valueProperty() {
+    public ReadOnlyListProperty<CellValue> valueProperty() {
         return board.valueProperty(line, col);
     }
 
