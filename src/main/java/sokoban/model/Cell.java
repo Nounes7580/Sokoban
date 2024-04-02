@@ -2,29 +2,33 @@ package sokoban.model;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import sokoban.model.element.Element;
+import sokoban.model.element.Goal;
+import sokoban.model.element.Ground;
+import sokoban.model.element.Player;
 
 public class Cell { //Représente une cellule dans la grille
 
-    private final ListProperty<CellValue> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
-    public ReadOnlyListProperty<CellValue> getValue() {
+    private final ListProperty<Element> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
+    public ReadOnlyListProperty<Element> getValue() {
         return toolObject;
     }
     public Cell(){}
-    public void addValue(CellValue value){
-        if (value == CellValue.GROUND || value == CellValue.WALL) {
+    public void addValue(Element value){
+        if (value.getType() == CellValue.GROUND || value.getType() == CellValue.WALL) {
             toolObject.clear();
             toolObject.add(value);
-        } else if (value == CellValue.BOX || value == CellValue.PLAYER) {
-            if (toolObject.contains(CellValue.GOAL)) {
+        } else if (value.getType() == CellValue.BOX || value.getType() == CellValue.PLAYER) {
+            if (toolObject.contains(new Goal())) {
                 toolObject.clear();
                 toolObject.add(value);
-                toolObject.add(CellValue.GOAL);
+                toolObject.add(new Goal());
             } else {
                 toolObject.clear();
                 toolObject.add(value);
             }
-        } else if (value == CellValue.GOAL) {
-            if (toolObject.contains(CellValue.BOX) || toolObject.contains(CellValue.PLAYER) ||  toolObject.isEmpty()) {
+        } else if (value.getType() == CellValue.GOAL) {
+            if (toolObject.contains(new Goal()) || toolObject.contains(new Player()) ||  toolObject.isEmpty()) {
                 toolObject.add(value);
             } else {
                 toolObject.clear();
@@ -32,7 +36,7 @@ public class Cell { //Représente une cellule dans la grille
             }
         }
     }
-    public void removeValue(CellValue value){
+    public void removeValue(Element value){
         toolObject.remove(value);
     }
     public void clearValues() {
@@ -40,7 +44,7 @@ public class Cell { //Représente une cellule dans la grille
     }
 
 
-    public  void play(CellValue value) {
+    public  void play(Element value) {
         if (toolObject.contains(value)) {
             removeValue(value);
         }
@@ -50,7 +54,7 @@ public class Cell { //Représente une cellule dans la grille
     }
 
    public boolean isEmpty() {
-        return toolObject.isEmpty() || (toolObject.contains(CellValue.GROUND) && toolObject.size() == 1);
+        return toolObject.isEmpty() || (toolObject.contains(new Ground()) && toolObject.size() == 1);
     }
 
 

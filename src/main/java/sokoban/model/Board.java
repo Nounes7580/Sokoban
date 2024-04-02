@@ -1,13 +1,12 @@
 package sokoban.model;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
+import sokoban.model.element.Element;
 
 
-
-    public abstract class Board {
+public abstract class Board {
        protected final BooleanProperty boardUpdated = new SimpleBooleanProperty(false);
 
        public BooleanProperty boardUpdatedProperty() {
@@ -28,7 +27,7 @@ import javafx.beans.property.*;
 
 
 
-    public void setCellValue(int line, int col, CellValue newValue) {
+    public void setCellValue(int line, int col, Element newValue) {
         if (isPositionValid(line, col) && (!isFull.get() || !grid.valueProperty(line, col).getValue().isEmpty())) {
             grid.setCellValue(line, col, newValue);
             filledCellsCount.set(calculateFilledCells());
@@ -38,14 +37,14 @@ import javafx.beans.property.*;
 
 
 
-    public Boolean isFull() {
+    /*public Boolean isFull() {
         return isFull.get();
-    }
+    }*/
     public Grid getGrid() {
         return grid;
     }
 
-    public ReadOnlyListProperty<CellValue> valueProperty(int line, int col) {
+    public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         return grid.valueProperty(line, col);
     }
 

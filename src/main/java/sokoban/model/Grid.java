@@ -4,6 +4,10 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
+import sokoban.model.element.Box;
+import sokoban.model.element.Element;
+import sokoban.model.element.Goal;
+import sokoban.model.element.Player;
 
 import java.util.Arrays;
 
@@ -59,7 +63,7 @@ public class Grid {
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
-                if (matrix[i][j].getValue().contains(CellValue.PLAYER) || (matrix[i][j].getValue().contains(CellValue.PLAYER)&&matrix[i][j].getValue().contains(CellValue.GOAL))) {
+                if (matrix[i][j].getValue().contains(new Player()) || (matrix[i][j].getValue().contains(new Player())&&matrix[i][j].getValue().contains(new Goal()))) {
                     return new int[]{i, j}; // Retourne les coordonnées du joueur
                 }
             }
@@ -76,7 +80,7 @@ public class Grid {
 
 
 
-    ReadOnlyListProperty<CellValue> valueProperty(int line, int col) {
+    ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         if (line < 0 || col < 0 || line >= gridWidth.get() || col >= gridHeight.get()) {
             throw new IllegalArgumentException("Index out of bounds");
         }
@@ -85,7 +89,7 @@ public class Grid {
 
 
 
-    public void play(int line, int col, CellValue toolValue) {
+    public void play(int line, int col, Element toolValue) {
         // Assurez-vous que les coordonnées sont valides.
         if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight()) {
             return; // Position invalide.
@@ -94,15 +98,15 @@ public class Grid {
         Cell cell = matrix[line][col];
 
         // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
-        if (toolValue == CellValue.PLAYER) {
+        if (toolValue.getType() == CellValue.PLAYER) {
             int[] playerPos = findPlayerPosition();
             if (playerPos != null) {
-                matrix[playerPos[0]][playerPos[1]].play(CellValue.PLAYER);
+                matrix[playerPos[0]][playerPos[1]].play(new Player());
             }
         }
 
         // Logique simplifiée pour l'ajout d'états dans la cellule.
-        if (toolValue == CellValue.WALL || toolValue == CellValue.GROUND) {
+        if (toolValue.getType() == CellValue.WALL || toolValue.getType() == CellValue.GROUND) {
             // Pour WALL et GROUND, on remplace tout les états existants.
             cell.play(toolValue);
         } else if (!cell.getValue().contains(toolValue)) {
@@ -136,26 +140,26 @@ public class Grid {
     public boolean hasAtLeastOneTarget() {
         return Arrays.stream(matrix)
                 .flatMap(Arrays::stream)
-                .anyMatch(cell -> cell.getValue().contains(CellValue.GOAL));
+                .anyMatch(cell -> cell.getValue().contains(new Goal()));
     }
 
     public boolean hasAtLeastOneBox() {
         return Arrays.stream(matrix)
                 .flatMap(Arrays::stream)
-                .anyMatch(cell -> cell.getValue().contains(CellValue.BOX));
+                .anyMatch(cell -> cell.getValue().contains(new Box()));
     }
 
     public long getTargetCount() {
         return Arrays.stream(matrix)
                 .flatMap(Arrays::stream)
-                .filter(cell -> cell.getValue().contains(CellValue.GOAL))
+                .filter(cell -> cell.getValue().contains(new Goal()))
                 .count();
     }
 
     public long getBoxCount() {
         return Arrays.stream(matrix)
                 .flatMap(Arrays::stream)
-                .filter(cell -> cell.getValue().contains(CellValue.BOX))
+                .filter(cell -> cell.getValue().contains(new Box()))
                 .count();
     }
 
@@ -175,7 +179,7 @@ public class Grid {
         return matrix;
     }
 
-    public void setCellValue(int line, int col, CellValue newValue) {
+    public void setCellValue(int line, int col, Element newValue) {
         if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
             matrix[line][col].addValue(newValue);
             triggerGridChange();

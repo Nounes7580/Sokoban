@@ -1,18 +1,19 @@
 package sokoban.viewmodel;
 
 import javafx.beans.property.*;
-import sokoban.model.Board;
 import sokoban.model.Board4Design;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
 import sokoban.model.Cell;
+import sokoban.model.element.Element;
+import sokoban.model.element.Ground;
 
 
 public class CellViewModel {
     private static final double DEFAULT_SCALE = 1;
     private static final double EPSILON = 1e-3;
     private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel
-    private CellValue baseElement = CellValue.EMPTY; // Pour l'élément de base (joueur ou boîte)
+    private Element baseElement = new Ground(); // Pour l'élément de base (joueur ou boîte)
     private boolean hasGoal = false; // Pour savoir si un goal est présent
 
     private int line;
@@ -26,7 +27,7 @@ public class CellViewModel {
 
 
 
-    private CellValue selectedTool = CellValue.EMPTY;
+    private Element selectedTool = new Ground();
 
     public CellViewModel(int line, int col, Board4Design board) {
         this.line = line;
@@ -38,17 +39,17 @@ public class CellViewModel {
     }
     public void play() {
         if (boardViewModel != null) {
-            CellValue toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
+           Element toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
             board.play(line, col, toolValue);
         }
     }
     public void addObject() {
-        CellValue selectedTool = boardViewModel.getSelectedTool();
-        if (selectedTool == CellValue.PLAYER && boardViewModel.hasPlayer()) {
+        Element selectedTool = boardViewModel.getSelectedTool();
+        if (selectedTool.getType()== CellValue.PLAYER && boardViewModel.hasPlayer()) {
             System.out.println("A player is already present on the grid. Cannot add another.");
             return;
         }
-        if (selectedTool != CellValue.EMPTY && isEmpty()) {
+        if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
             updateCellValue(selectedTool);
         }
     }
@@ -64,12 +65,12 @@ public class CellViewModel {
     }
 
     // Méthode privée pour mettre à jour la valeur de la cellule
-    private void updateCellValue(CellValue newValue) {
+    private void updateCellValue(Element newValue) {
         board.setCellValue(line, col, newValue);
 
     }
 
-    public ReadOnlyListProperty<CellValue> valueProperty() {
+    public ReadOnlyListProperty<Element> valueProperty() {
         return board.valueProperty(line, col);
     }
 
@@ -99,11 +100,11 @@ public class CellViewModel {
         scale.set(DEFAULT_SCALE);
     }
 
-    public CellValue getSelectedTool() {
+    public Element getSelectedTool() {
         return this.selectedTool;
     }
 
-    public void setSelectedTool(CellValue tool) {
+    public void setSelectedTool(Element tool) {
         this.selectedTool = tool;
     }
 

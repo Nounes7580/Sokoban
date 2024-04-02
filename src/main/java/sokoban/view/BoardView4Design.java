@@ -20,6 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import sokoban.model.CellValue;
+import sokoban.model.element.*;
 import sokoban.viewmodel.BoardViewModel;
 
 import java.io.File;
@@ -159,14 +160,14 @@ public class BoardView4Design extends BoardView {
         toolBar.setSpacing(10);
 
         // Création et ajout des outils à la VBox en utilisant une méthode modifiée
-        addToolToBar("/ground.png", CellValue.GROUND);
-        addToolToBar("/wall.png", CellValue.WALL);
-        addToolToBar("/player.png", CellValue.PLAYER);
-        addToolToBar("/box.png", CellValue.BOX);
-        addToolToBar("/goal.png", CellValue.GOAL);
+        addToolToBar("/ground.png", new Ground());
+        addToolToBar("/wall.png", new Wall());
+        addToolToBar("/player.png", new Player());
+        addToolToBar("/box.png", new Box());
+        addToolToBar("/goal.png", new Goal());
     }
 
-    private void addToolToBar(String imagePath, CellValue toolType) {
+    private void addToolToBar(String imagePath, Element toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
         imageView.setPreserveRatio(true);
         imageView.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1)); // Ajuste la hauteur de l'image
@@ -188,7 +189,7 @@ public class BoardView4Design extends BoardView {
 
 
 
-    private void selectTool(CellValue tool) {
+    private void selectTool(Element tool) {
         boardViewModel.setSelectedTool(tool); // Mettez à jour l'outil sélectionné dans le ViewModel
         updateToolHighlights(); // Optionnel: Mettez à jour l'interface utilisateur pour refléter l'outil sélectionné
     }
@@ -198,7 +199,7 @@ public class BoardView4Design extends BoardView {
             if (child instanceof ImageView) {
                 ImageView imageView = (ImageView) child;
                 String id = imageView.getId();
-                if (id != null && id.equals(boardViewModel.getSelectedTool().name())) {
+                if (id != null && id.equals(boardViewModel.getSelectedTool())) {
                     imageView.setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
                 } else {
                     imageView.setStyle(null);

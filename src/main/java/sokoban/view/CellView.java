@@ -1,16 +1,11 @@
 package sokoban.view;
 
-import javafx.beans.Observable;
-import javafx.beans.value.ObservableListValue;
 import javafx.collections.ObservableList;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
-import sokoban.model.Grid;
+import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.CellViewModel;
 import javafx.beans.binding.DoubleBinding;
@@ -75,12 +70,12 @@ class CellView extends StackPane {
         viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
-    private void updateView(ObservableList<CellValue> list) {
+    private void updateView(ObservableList<Element> list) {
         getChildren().clear();
         getChildren().add(backgroundImageView);
 
-        for(CellValue value: list){
-            addImageViewForCellValue(value);
+        for(Element value: list){
+            addImageViewForCellValue(value.getType());
         }
     }
 
@@ -169,7 +164,7 @@ class CellView extends StackPane {
 
             else if (event.getButton() == MouseButton.PRIMARY) {
 
-                if (viewModel.getSelectedTool() == CellValue.PLAYER) {
+                if (viewModel.getSelectedTool().getType() == CellValue.PLAYER) {
                     if (!boardViewModel.hasPlayer()) {
                         viewModel.addObject();
                         System.out.println("Player added");

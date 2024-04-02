@@ -1,9 +1,8 @@
 package sokoban.model;
 
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import sokoban.model.element.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -60,7 +59,7 @@ public class Board4Design extends Board {
     }
 
 
-    public void play(int line, int col, CellValue toolValue) {
+    public void play(int line, int col, Element toolValue) {
         System.out.println("filledCellsCount: " + filledCellsCount.get());
         System.out.println("maxFilledCells: " + maxFilledCells.get());
         System.out.println("isFull: " + isFull.get());
@@ -87,7 +86,7 @@ public class Board4Design extends Board {
 
             for (int col = 0; col < grid.getMatrix()[0].length; col++) {
                 for (int row = 0; row < grid.getMatrix().length; row++) { // Direct order for rows
-                    ReadOnlyListProperty<CellValue> values = valueProperty(row, col);
+                    ReadOnlyListProperty<Element> values = valueProperty(row, col);
                     char character = determineCharacter(values);
                     writer.write(character);
                 }
@@ -100,13 +99,13 @@ public class Board4Design extends Board {
             e.printStackTrace();
         }
     }
-    private char determineCharacter(ReadOnlyListProperty<CellValue> values) {
-        if (values.contains(CellValue.WALL)) return '#';
-        if (values.contains(CellValue.PLAYER)) return '@';
-        if (values.contains(CellValue.BOX)) return '$';
-        if (values.contains(CellValue.GOAL)) return '.';
-        if (values.contains(CellValue.PLAYER) && values.contains(CellValue.GOAL)) return '+';
-        if (values.contains(CellValue.BOX) && values.contains(CellValue.GOAL)) return '*';
+    private char determineCharacter(ReadOnlyListProperty<Element> values) {
+        if (values.contains(new Wall())) return '#';
+        if (values.contains(new Player())) return '@';
+        if (values.contains(new Box())) return '$';
+        if (values.contains(new Goal())) return '.';
+        if (values.contains(new Player()) && values.contains(new Goal())) return '+';
+        if (values.contains(new Box()) && values.contains(new Goal())) return '*';
         return ' ';  // Default character for empty cell or ground
     }
 
@@ -130,22 +129,22 @@ public class Board4Design extends Board {
 
                     switch (c) {
                         case '#':
-                            getGrid().getMatrix()[j][i].getValue().add(CellValue.WALL);
+                            getGrid().getMatrix()[j][i].getValue().add(new Wall());
                             break;
                         case '@':
-                            getGrid().getMatrix()[j][i].getValue().add(CellValue.PLAYER);
+                            getGrid().getMatrix()[j][i].getValue().add(new Player());
                             break;
                         case '$':
-                            getGrid().getMatrix()[j][i].getValue().add(CellValue.BOX);
+                            getGrid().getMatrix()[j][i].getValue().add(new Box());
                             break;
                         case '.':
-                            getGrid().getMatrix()[j][i].getValue().add(CellValue.GOAL);
+                            getGrid().getMatrix()[j][i].getValue().add(new Goal());
                             break;
                         case '*':
-                            getGrid().getMatrix()[j][i].getValue().addAll(Arrays.asList(CellValue.BOX, CellValue.GOAL));
+                            getGrid().getMatrix()[j][i].getValue().addAll(Arrays.asList(new Box(), new Goal()));
                             break;
                         case '+':
-                            getGrid().getMatrix()[j][i].getValue().addAll(Arrays.asList(CellValue.PLAYER, CellValue.GOAL));
+                            getGrid().getMatrix()[j][i].getValue().addAll(Arrays.asList(new Player(), new Goal()));
                             break;
                         // Ajoutez plus de cas si nécessaire
                     }

@@ -1,5 +1,10 @@
 package sokoban.model;
 
+import sokoban.model.element.Element;
+import sokoban.model.element.Goal;
+import sokoban.model.element.Ground;
+import sokoban.model.element.Player;
+
 public class Board4Play extends Board {
 
     public Board4Play(int width, int height) {
@@ -23,7 +28,7 @@ public class Board4Play extends Board {
 
 
 
-    public void play(int line, int col, CellValue toolValue) {
+    public void play(int line, int col, Element toolValue) {
         // Gameplay-specific implementation of play
     }
 
@@ -40,8 +45,8 @@ public class Board4Play extends Board {
         // First, check if the move is valid
         if (isMoveValid(newRow, newCol)) {
             // Move the player
-            grid.play(playerPosition[0], playerPosition[1], CellValue.EMPTY); // Remove the player from the old position
-            grid.play(newRow, newCol, CellValue.PLAYER); // Place the player in the new position
+            grid.play(playerPosition[0], playerPosition[1], new Ground()); // Remove the player from the old position
+            grid.play(newRow, newCol, new Player()); // Place the player in the new position
         }
 
         // After the move, the filled cells count might have changed
@@ -59,7 +64,7 @@ public class Board4Play extends Board {
 
         // Check if the target cell is empty or contains a goal
         Cell targetCell = grid.getMatrix()[newRow][newCol];
-        return targetCell.isEmpty() || targetCell.getValue().contains(CellValue.GOAL);
+        return targetCell.isEmpty() || targetCell.getValue().contains(new Goal());
     }
 
 

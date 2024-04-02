@@ -4,6 +4,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.*;
 import sokoban.model.*;
 import javafx.beans.binding.LongBinding;
+import sokoban.model.element.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +12,13 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
+import static sokoban.model.CellValue.*;
+
 
 public class BoardViewModel {
     private final GridViewModel gridViewModel;
     private final Board4Design board;
-    private final ObjectProperty<CellValue> selectedTool = new SimpleObjectProperty<>(CellValue.GROUND);
+    private final ObjectProperty<Element> selectedTool = new SimpleObjectProperty<>();
     private final StringProperty validationMessage = new SimpleStringProperty();
 
 
@@ -37,15 +40,15 @@ public class BoardViewModel {
 
 
     }
-    public ObjectProperty<CellValue> selectedToolProperty() {
+    public ObjectProperty<Element> selectedToolProperty() {
         return selectedTool;
     }
 
-    public void setSelectedTool(CellValue cell) {
+    public void setSelectedTool(Element cell) {
         selectedTool.set(cell);
     }
 
-    public CellValue getSelectedTool() {
+    public Element getSelectedTool() {
         return selectedTool.get();
     }
     public int getGridWidth() {
@@ -55,22 +58,11 @@ public class BoardViewModel {
     public int getGridHeight() {
         return board.getGrid().getGridHeight();
     }
-    public CellValue getSelectedCellValue() {
-        switch (selectedTool.get()) {
-            case GROUND:
-                return CellValue.GROUND;
-            case WALL:
-                return CellValue.WALL;
-            case PLAYER:
-                return CellValue.PLAYER;
-            case BOX:
-                return CellValue.BOX;
-            case GOAL:
-                return CellValue.GOAL;
-            default:
-                return CellValue.EMPTY;
-        }
+   public Element getSelectedCellValue() {
+       return selectedTool.getValue();
     }
+
+
 
 
 
