@@ -272,7 +272,40 @@ public class Board {
         }
     }
 
+    public void moveBox(Direction direction) {
+        int[] playerPosition = grid.findPlayerPosition();
+        if (playerPosition == null) return;
 
+        int boxRow = playerPosition[0] + direction.getDeltaRow();
+        int boxCol = playerPosition[1] + direction.getDeltaCol();
+
+        int destinationRow = boxRow + direction.getDeltaRow();
+        int destinationCol = boxCol + direction.getDeltaCol();
+
+        // Vérifie si le mouvement est valide
+        if (isValidMove(boxRow, boxCol, destinationRow, destinationCol)) {
+            // Mettre à jour la grille
+            grid.setCellValue(playerPosition[0], playerPosition[1], CellValue.EMPTY);
+            grid.setCellValue(boxRow, boxCol, CellValue.PLAYER);
+            grid.setCellValue(destinationRow, destinationCol, CellValue.BOX);
+
+            // Peut-être notifier le système que la grille a changé
+            grid.triggerGridChange();
+        }
+    }
+
+    private boolean isValidMove(int boxRow, int boxCol, int destinationRow, int destinationCol) {
+        // Vérifie si la destination est dans les limites de la grille
+        if (destinationRow < 0 || destinationRow >= grid.getGridHeight() ||
+                destinationCol < 0 || destinationCol >= grid.getGridWidth()) {
+            return false;
+        }
+
+        // Vérifie si la destination est libre (ni mur ni caisse)
+        Cell destinationCell = grid.getMatrix()[destinationRow][destinationCol];
+        return !destinationCell.getValue().contains(CellValue.WALL) &&
+                !destinationCell.getValue().contains(CellValue.BOX);
+    }
 }
 
 
