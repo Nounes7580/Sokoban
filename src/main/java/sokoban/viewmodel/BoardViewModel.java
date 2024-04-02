@@ -2,9 +2,7 @@ package sokoban.viewmodel;
 
 import javafx.beans.Observable;
 import javafx.beans.property.*;
-import sokoban.model.Board;
-import sokoban.model.CellValue;
-import sokoban.model.Grid;
+import sokoban.model.*;
 import javafx.beans.binding.LongBinding;
 
 import java.io.File;
@@ -16,12 +14,12 @@ import java.util.List;
 
 public class BoardViewModel {
     private final GridViewModel gridViewModel;
-    private final Board board;
+    private final Board4Design board;
     private final ObjectProperty<CellValue> selectedTool = new SimpleObjectProperty<>(CellValue.GROUND);
     private final StringProperty validationMessage = new SimpleStringProperty();
 
 
-    public BoardViewModel(Board board) {
+    public BoardViewModel(Board4Design board) {
         this.board = board;
         this.gridViewModel = new GridViewModel(board);
         this.gridViewModel.setBoardViewModel(this);
@@ -145,8 +143,7 @@ public class BoardViewModel {
     }
 
     //Todo: à separer pour le jeu (boardview4play)
-    public void movePlayer(Board.Direction direction) {
+    public void movePlayer(Board4Play.Direction direction) {
         // Assuming you have a method in Board to move the player
-        board.movePlayer(direction);
     }
 }

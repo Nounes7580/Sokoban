@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import sokoban.model.Board;
+import sokoban.model.Board4Play;
 import sokoban.model.CellValue;
 
 import sokoban.viewmodel.BoardViewModel;
@@ -102,19 +103,19 @@ public class BoardView extends BorderPane {
     //TODO: Separer ca pour le jeu et pour l'editeur
     private void setupKeyControls(Scene scene) {
         scene.setOnKeyPressed(event -> {
-            Board.Direction direction = null;
+            Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
-                    direction = Board.Direction.UP;
+                    direction = Board4Play.Direction.UP;
                     break;
                 case DOWN:
-                    direction = Board.Direction.DOWN;
+                    direction = Board4Play.Direction.DOWN;
                     break;
                 case LEFT:
-                    direction = Board.Direction.LEFT;
+                    direction = Board4Play.Direction.LEFT;
                     break;
                 case RIGHT:
-                    direction = Board.Direction.RIGHT;
+                    direction = Board4Play.Direction.RIGHT;
                     break;
             }
 

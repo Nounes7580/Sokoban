@@ -2,6 +2,7 @@ package sokoban.viewmodel;
 
 import javafx.beans.property.*;
 import sokoban.model.Board;
+import sokoban.model.Board4Design;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
 import sokoban.model.Cell;
@@ -16,7 +17,7 @@ public class CellViewModel {
 
     private int line;
     private int col;
-    private final Board board;
+    private final Board4Design board;
     public Cell cell;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
@@ -27,7 +28,7 @@ public class CellViewModel {
 
     private CellValue selectedTool = CellValue.EMPTY;
 
-    public CellViewModel(int line, int col, Board board) {
+    public CellViewModel(int line, int col, Board4Design board) {
         this.line = line;
         this.col = col;
         this.board = board;
