@@ -18,9 +18,15 @@ public class Board4Design extends Board {
 
     public Board4Design(int width, int height) {
         super(width, height);
+        filledCellsCount.set(grid.filledCellsCountProperty().get());
+        maxFilledCells.set(maxFilledCells());
+        isFull = Bindings.createBooleanBinding(() -> filledCellsCount.get() >= maxFilledCells.get(), filledCellsCount, maxFilledCells);
+        grid.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> filledCellsCount.set(newCount.longValue()));
+        maxFilledCells.addListener((obs, oldVal, newVal) -> isFull = filledCellsCount.greaterThanOrEqualTo(newVal.intValue()));
+
     }
 
-    @Override
+
     public void resetGrid(int newWidth, int newHeight) {
         this.maxFilledCells.set(newWidth * newHeight / 2); // Update maxFilledCells based on new dimensions
 
@@ -48,7 +54,6 @@ public class Board4Design extends Board {
         return grid.filledCellsCountProperty().get();
     }
 
-    @Override
     public int maxFilledCells() {
         // Define maximum filled cells for design
         return (grid.getGridWidth() * grid.getGridHeight()) / 2;

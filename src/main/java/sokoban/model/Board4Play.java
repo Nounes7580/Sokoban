@@ -6,10 +6,7 @@ public class Board4Play extends Board {
         super(width, height);
     }
 
-    @Override
-    public void resetGrid(int newWidth, int newHeight) {
-        // Implementation for resetting grid in gameplay context
-    }
+
 
     @Override
     public boolean isPositionValid(int line, int col) {
@@ -23,11 +20,8 @@ public class Board4Play extends Board {
         return grid.filledCellsCountProperty().get();
     }
 
-    @Override
-    public int maxFilledCells() {
-        // Define maximum filled cells for gameplay
-        return (grid.getGridWidth() * grid.getGridHeight()) / 2;
-    }
+
+
 
     public void play(int line, int col, CellValue toolValue) {
         // Gameplay-specific implementation of play
