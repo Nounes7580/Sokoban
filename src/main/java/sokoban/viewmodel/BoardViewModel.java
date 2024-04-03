@@ -2,10 +2,9 @@ package sokoban.viewmodel;
 
 import javafx.beans.Observable;
 import javafx.beans.property.*;
-import sokoban.model.Board;
-import sokoban.model.CellValue;
-import sokoban.model.Grid;
+import sokoban.model.*;
 import javafx.beans.binding.LongBinding;
+import sokoban.model.element.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,15 +12,17 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
+import static sokoban.model.CellValue.*;
+
 
 public class BoardViewModel {
     private final GridViewModel gridViewModel;
-    private final Board board;
-    private final ObjectProperty<CellValue> selectedTool = new SimpleObjectProperty<>(CellValue.GROUND);
+    private final Board4Design board;
+    private final ObjectProperty<Element> selectedTool = new SimpleObjectProperty<>();
     private final StringProperty validationMessage = new SimpleStringProperty();
 
 
-    public BoardViewModel(Board board) {
+    public BoardViewModel(Board4Design board) {
         this.board = board;
         this.gridViewModel = new GridViewModel(board);
         this.gridViewModel.setBoardViewModel(this);
@@ -39,15 +40,15 @@ public class BoardViewModel {
 
 
     }
-    public ObjectProperty<CellValue> selectedToolProperty() {
+    public ObjectProperty<Element> selectedToolProperty() {
         return selectedTool;
     }
 
-    public void setSelectedTool(CellValue cell) {
+    public void setSelectedTool(Element cell) {
         selectedTool.set(cell);
     }
 
-    public CellValue getSelectedTool() {
+    public Element getSelectedTool() {
         return selectedTool.get();
     }
     public int getGridWidth() {
@@ -57,22 +58,11 @@ public class BoardViewModel {
     public int getGridHeight() {
         return board.getGrid().getGridHeight();
     }
-    public CellValue getSelectedCellValue() {
-        switch (selectedTool.get()) {
-            case GROUND:
-                return CellValue.GROUND;
-            case WALL:
-                return CellValue.WALL;
-            case PLAYER:
-                return CellValue.PLAYER;
-            case BOX:
-                return CellValue.BOX;
-            case GOAL:
-                return CellValue.GOAL;
-            default:
-                return CellValue.EMPTY;
-        }
+   public Element getSelectedCellValue() {
+       return selectedTool.getValue();
     }
+
+
 
 
 
@@ -145,8 +135,7 @@ public class BoardViewModel {
     }
 
     //Todo: à separer pour le jeu (boardview4play)
-    public void movePlayer(Board.Direction direction) {
+    public void movePlayer(Board4Play.Direction direction) {
         // Assuming you have a method in Board to move the player
-        board.movePlayer(direction);
     }
 }
