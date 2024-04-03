@@ -2,8 +2,6 @@ package sokoban.view;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -19,15 +17,15 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import sokoban.model.CellValue;
 import sokoban.model.element.*;
-import sokoban.viewmodel.BoardViewModel;
+import sokoban.viewmodel.BoardViewModel4Design;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.Optional;
 
 public class BoardView4Design extends BoardView {
+    private final BoardViewModel4Design boardDesignViewModel;
+
     private final HBox headerBox = new HBox();
     private final Label validationLabel = new Label();
     private final VBox toolBar = new VBox();
@@ -40,8 +38,10 @@ public class BoardView4Design extends BoardView {
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
 
-    public BoardView4Design(Stage primaryStage, BoardViewModel boardViewModel) {
+    public BoardView4Design(Stage primaryStage, BoardViewModel4Design boardViewModel) {
         super(primaryStage, boardViewModel);
+        this.boardDesignViewModel = boardViewModel;
+
         createPlayButton();
         setLeft(toolBar);
         createHeader(); // Ajoutez le label de validation dans cette méthode
@@ -60,14 +60,14 @@ public class BoardView4Design extends BoardView {
 
     private VBox createHeader() {
         headerLabel.textProperty().bind(Bindings.createStringBinding(() ->
-                        "Number of filled cells: " + boardViewModel.filledCellsCountProperty().get() + " of " + boardViewModel.maxFilledCells(),
-                boardViewModel.filledCellsCountProperty(),
-                boardViewModel.maxFilledCellsProperty() // Assuming there's a property accessor for maxFilledCells in your ViewModel
+                        "Number of filled cells: " + boardDesignViewModel.filledCellsCountProperty().get() + " of " + boardDesignViewModel.maxFilledCells(),
+                boardDesignViewModel.filledCellsCountProperty(),
+                boardDesignViewModel.maxFilledCellsProperty() // Assuming there's a property accessor for maxFilledCells in your ViewModel
         ));
         headerLabel.getStyleClass().add("header");
 
         // Configuration du label de validation
-        validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
+        validationLabel.textProperty().bind(boardDesignViewModel.validationMessageProperty());
         validationLabel.setTextFill(Color.RED);
 
         // Vérifiez que le texte n'est pas null avant d'appeler isEmpty()
@@ -96,7 +96,7 @@ public class BoardView4Design extends BoardView {
     private void configMainComponents(Stage stage) {
         initializeToolBar(stage);
         Label validationLabel = new Label();
-        validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
+        validationLabel.textProperty().bind(boardDesignViewModel.validationMessageProperty());
         headerBox.getChildren().add(validationLabel);
         initializeMenu(stage);
         topContainer.getChildren().addAll(menuBar, createHeader());
@@ -106,7 +106,7 @@ public class BoardView4Design extends BoardView {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
             // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
-            if (boardViewModel.isGridChanged()) {
+            if (boardDesignViewModel.isGridChanged()) {
                 Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmationDialog.setTitle("Confirmation Dialog");
                 confirmationDialog.setHeaderText("Your board has been modified.");
@@ -135,7 +135,7 @@ public class BoardView4Design extends BoardView {
 
         // Désactive le bouton "Play" basé sur le message de validation
         playButton.disableProperty().bind(
-                boardViewModel.validationMessageProperty().isNotEmpty()
+                boardDesignViewModel.validationMessageProperty().isNotEmpty()
         );
 
         // Centre le bouton dans le conteneur
@@ -190,7 +190,7 @@ public class BoardView4Design extends BoardView {
 
 
     private void selectTool(Element tool) {
-        boardViewModel.setSelectedTool(tool); // Mettez à jour l'outil sélectionné dans le ViewModel
+        boardDesignViewModel.setSelectedTool(tool); // Mettez à jour l'outil sélectionné dans le ViewModel
         updateToolHighlights(); // Optionnel: Mettez à jour l'interface utilisateur pour refléter l'outil sélectionné
     }
 
@@ -199,7 +199,7 @@ public class BoardView4Design extends BoardView {
             if (child instanceof ImageView) {
                 ImageView imageView = (ImageView) child;
                 String id = imageView.getId();
-                if (id != null && id.equals(boardViewModel.getSelectedTool())) {
+                if (id != null && id.equals(boardDesignViewModel.getSelectedTool())) {
                     imageView.setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
                 } else {
                     imageView.setStyle(null);
@@ -231,7 +231,7 @@ public class BoardView4Design extends BoardView {
     }
 
     private void handleNew() {
-        if (boardViewModel.isGridChanged()) { // Supposons que isGridChanged() vérifie si des changements ont été faits
+        if (boardDesignViewModel.isGridChanged()) { // Supposons que isGridChanged() vérifie si des changements ont été faits
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Save Changes");
             alert.setHeaderText("Do you want to save changes to the current grid?");
@@ -311,7 +311,12 @@ public class BoardView4Design extends BoardView {
         result.ifPresent(dimensions -> {
             int width = dimensions.getKey();
             int height = dimensions.getValue();
-            boardViewModel.resetGrid(width, height);
+            if (boardViewModel instanceof BoardViewModel4Design) {
+                BoardViewModel4Design designViewModel = (BoardViewModel4Design) boardViewModel;
+                designViewModel.resetGrid(width, height);
+            } else {
+                System.out.println("boardViewModel is not an instance of BoardViewModel4Design. resetGrid cannot be called.");
+            }
             createGrid();
         });
     }
@@ -378,7 +383,7 @@ public class BoardView4Design extends BoardView {
 
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
-            boardViewModel.loadLevelFromFile(file);
+            boardDesignViewModel.loadLevelFromFile(file);
 
         }
 
@@ -390,6 +395,6 @@ public class BoardView4Design extends BoardView {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.xsb)", "*.xsb");
         fileChooser.getExtensionFilters().add(extFilter);
         File selectedFile = fileChooser.showSaveDialog(getScene().getWindow());
-        boardViewModel.saveLevel(selectedFile);
+        boardDesignViewModel.saveLevel(selectedFile);
     }
 }

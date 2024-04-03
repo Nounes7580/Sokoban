@@ -38,21 +38,31 @@ public class CellViewModel {
         this.boardViewModel = boardViewModel;
     }
     public void play() {
-        if (boardViewModel != null) {
-           Element toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
+        if (boardViewModel instanceof BoardViewModel4Design) {
+            BoardViewModel4Design designViewModel = (BoardViewModel4Design) boardViewModel;
+            Element toolValue = designViewModel.getSelectedCellValue();
             board.play(line, col, toolValue);
+        } else {
+            // Handle the case when boardViewModel is not an instance of BoardViewModel4Design
+            // This might involve logging an error, throwing an exception, or providing a fallback behavior
+            System.out.println("boardViewModel is not an instance of BoardViewModel4Design. Cannot execute play action.");
         }
     }
+
     public void addObject() {
-        Element selectedTool = boardViewModel.getSelectedTool();
-        if (selectedTool.getType()== CellValue.PLAYER && boardViewModel.hasPlayer()) {
-            System.out.println("A player is already present on the grid. Cannot add another.");
-            return;
-        }
-        if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
-            updateCellValue(selectedTool);
+        if (boardViewModel instanceof BoardViewModel4Design) {
+            BoardViewModel4Design designViewModel = (BoardViewModel4Design) boardViewModel;
+            Element selectedTool = designViewModel.getSelectedTool();
+            if (selectedTool.getType() == CellValue.PLAYER && designViewModel.hasPlayer()) {
+                System.out.println("A player is already present on the grid. Cannot add another.");
+                return;
+            }
+            if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
+                updateCellValue(selectedTool);
+            }
         }
     }
+
 
 
     // Méthode pour "supprimer" un objet de la cellule

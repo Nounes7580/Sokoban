@@ -6,6 +6,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
 import sokoban.model.element.Element;
+import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.CellViewModel;
 import javafx.beans.binding.DoubleBinding;
@@ -165,7 +166,7 @@ class CellView extends StackPane {
             else if (event.getButton() == MouseButton.PRIMARY) {
 
                 if (viewModel.getSelectedTool().getType() == CellValue.PLAYER) {
-                    if (!boardViewModel.hasPlayer()) {
+                    if (!((BoardViewModel4Design) boardViewModel).hasPlayer()) {
                         viewModel.addObject();
                         System.out.println("Player added");
                     } else {
