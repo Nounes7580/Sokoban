@@ -19,7 +19,7 @@ public class GridViewModel {
     }
 
     public CellViewModel getCellViewModel(int line, int col) {
-        CellViewModel cellViewModel = new CellViewModel(line, col, board);
+        CellViewModel cellViewModel = new CellViewModel4Design(line, col, board);
         cellViewModel.setBoardViewModel(this.boardViewModel); // Set the boardViewModel
         return cellViewModel;
     }

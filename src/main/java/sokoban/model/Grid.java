@@ -37,7 +37,7 @@ public class Grid {
     private void initializeCells() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
-                matrix[i][j] = new Cell();
+                matrix[i][j] = new Cell4Design();
             }
         }
     }

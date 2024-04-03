@@ -9,7 +9,7 @@ import sokoban.model.element.Element;
 import sokoban.model.element.Ground;
 
 
-public class CellViewModel {
+public abstract class CellViewModel {
     private static final double DEFAULT_SCALE = 1;
     private static final double EPSILON = 1e-3;
     private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel

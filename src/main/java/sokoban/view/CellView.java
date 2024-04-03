@@ -15,7 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
-class CellView extends StackPane {
+public abstract class CellView extends StackPane {
     private static final Image playerImage = new Image("player.png");
     private static final Image boxImage = new Image("box.png");
     private static final Image goalImage = new Image("goal.png");
@@ -188,7 +188,6 @@ class CellView extends StackPane {
 
 
     private void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
-
         if (!newVal)
             viewModel.resetScale();
     }
