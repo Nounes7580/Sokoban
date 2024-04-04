@@ -6,6 +6,21 @@ import sokoban.model.Board4Play;
 import sokoban.viewmodel.BoardViewModel;
 
 public class BoardView4Play extends BoardView{
+    @Override
+    protected double getToolbarWidth() {
+        return 0;
+    }
+
+    @Override
+    protected double getTopContainerHeight() {
+        return 0;
+    }
+
+    @Override
+    protected double getPlayButtonContainerHeight() {
+        return 0;
+    }
+
     public BoardView4Play(Stage primaryStage, BoardViewModel boardViewModel) {
         super(primaryStage, boardViewModel);
     }

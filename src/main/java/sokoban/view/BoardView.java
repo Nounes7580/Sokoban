@@ -1,5 +1,6 @@
 package sokoban.view;
 
+import javafx.application.Platform;
 import javafx.beans.binding.NumberBinding;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -37,20 +38,23 @@ public abstract class BoardView extends BorderPane {
     private final HBox playButtonContainer = new HBox();
 
 
+
+    protected abstract double getToolbarWidth();
+
+    protected abstract double getTopContainerHeight();
+
+    protected abstract double getPlayButtonContainerHeight();
+
     public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
         this.boardViewModel = boardViewModel;
 
         setLeft(toolBar);
-        // createHeader(); // Ajoutez le label de validation dans cette méthode
-        createGrid();
         start(primaryStage);
 
 
     }
 
     private void start(Stage stage) {
-        // Mise en place des composants principaux
-        // Mise en place de la scène et affichage de la fenêtre
         Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
@@ -59,7 +63,10 @@ public abstract class BoardView extends BorderPane {
 
         stage.setScene(scene);
         setupKeyControls(stage.getScene());
-
+        stage.setOnShown(event -> {
+            createGrid();
+            setupKeyControls(scene);
+        });
         stage.show();
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
@@ -82,55 +89,45 @@ public abstract class BoardView extends BorderPane {
             ((GridPane) getCenter()).getChildren().clear();
         }
 
-        //taille d'une case
-        NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
-                () -> Math.min(
-                        widthProperty().subtract(toolBar.widthProperty()).divide(boardViewModel.getGridWidth()).get(),
-                        heightProperty().subtract(topContainer.heightProperty()).subtract(playButtonContainer.heightProperty()).divide(boardViewModel.getGridHeight()).get()
-                ),
-                widthProperty(),
-                heightProperty()
-        );
+        Platform.runLater(() -> {
+            //taille d'une case
+            NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
+                    () -> Math.min(
+                            widthProperty().subtract(getToolbarWidth()).divide(boardViewModel.getGridWidth()).get(),
+                            heightProperty().subtract(getTopContainerHeight()).subtract(getPlayButtonContainerHeight()).divide(boardViewModel.getGridHeight()).get()
+                    ),
+                    widthProperty(),
+                    heightProperty()
+            );
 
-        gridSizeBinding.addListener((obs,oldVal,newVal) -> {
-            System.out.println("grid " + newVal);
+            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+                System.out.println("grid " + newVal);
+            });
 
+            DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
+                    () -> gridSizeBinding.doubleValue() * boardViewModel.getGridWidth(),
+                    gridSizeBinding
+            );
+
+            DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
+                    () -> gridSizeBinding.doubleValue() * boardViewModel.getGridHeight(),
+                    gridSizeBinding
+            );
+
+            if (boardViewModel instanceof BoardViewModel4Design) {
+                GridView gridView = new GridView4Design(((BoardViewModel4Design) boardViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
+
+                gridView.minHeightProperty().bind(gridHeightBinding);
+                gridView.maxHeightProperty().bind(gridHeightBinding);
+
+                gridView.minWidthProperty().bind(gridWidthBinding);
+                gridView.maxWidthProperty().bind(gridWidthBinding);
+                setCenter(gridView);
+            } else {
+                // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
+                // This might involve creating a default GridView or handling the error appropriately
+            }
         });
-
-
-        DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-
-                () -> {
-
-                    var width = gridSizeBinding.doubleValue() * boardViewModel.getGridWidth();
-                    System.out.println("WIDTH" + width + " " + boardViewModel.getGridWidth());
-                    return width;
-                },
-                gridSizeBinding
-        );
-
-        DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
-                () -> {
-                    var height = gridSizeBinding.doubleValue() * boardViewModel.getGridHeight();
-                    System.out.println("HEIGHT " + height+ " " + boardViewModel.getGridHeight());
-                    return height;
-                },
-                gridSizeBinding
-        );
-
-        if (boardViewModel instanceof BoardViewModel4Design) {
-            GridView gridView = new GridView4Design(((BoardViewModel4Design) boardViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
-
-            gridView.minHeightProperty().bind(gridHeightBinding);
-            gridView.maxHeightProperty().bind(gridHeightBinding);
-
-            gridView.minWidthProperty().bind(gridWidthBinding);
-            gridView.maxWidthProperty().bind(gridWidthBinding);
-            setCenter(gridView);
-        } else {
-            // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
-            // This might involve creating a default GridView or handling the error appropriately
-        }
     }
 
 
