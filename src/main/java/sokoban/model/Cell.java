@@ -7,7 +7,7 @@ import sokoban.model.element.Goal;
 import sokoban.model.element.Ground;
 import sokoban.model.element.Player;
 
-public class Cell { //Représente une cellule dans la grille
+public abstract class Cell { //Représente une cellule dans la grille
 
     private final ListProperty<Element> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
     public ReadOnlyListProperty<Element> getValue() {

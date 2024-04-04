@@ -9,17 +9,16 @@ import sokoban.model.element.Element;
 import sokoban.model.element.Ground;
 
 
-public class CellViewModel {
-    private static final double DEFAULT_SCALE = 1;
-    private static final double EPSILON = 1e-3;
-    private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel
-    private Element baseElement = new Ground(); // Pour l'élément de base (joueur ou boîte)
-    private boolean hasGoal = false; // Pour savoir si un goal est présent
+public abstract class CellViewModel {
+    protected static final double DEFAULT_SCALE = 1;
+    protected static final double EPSILON = 1e-3;
+    protected   BoardViewModel boardViewModel; // Add a reference to BoardViewModel
+    protected Element baseElement = new Ground(); // Pour l'élément de base (joueur ou boîte)
+    protected boolean hasGoal = false; // Pour savoir si un goal est présent
 
-    private int line;
-    private int col;
-    private final Board4Design board;
-    public Cell cell;
+    protected int line;
+    protected int col;
+    protected final Board4Design board;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
     private final BooleanBinding mayIncrementScale = scale.lessThan(1 - EPSILON);
@@ -34,79 +33,34 @@ public class CellViewModel {
         this.col = col;
         this.board = board;
     }
-    public void setBoardViewModel(BoardViewModel boardViewModel) {
-        this.boardViewModel = boardViewModel;
-    }
-    public void play() {
-        if (boardViewModel != null) {
-           Element toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
-            board.play(line, col, toolValue);
-        }
-    }
-    public void addObject() {
-        Element selectedTool = boardViewModel.getSelectedTool();
-        if (selectedTool.getType()== CellValue.PLAYER && boardViewModel.hasPlayer()) {
-            System.out.println("A player is already present on the grid. Cannot add another.");
-            return;
-        }
-        if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
-            updateCellValue(selectedTool);
-        }
-    }
+
+    protected abstract void setBoardViewModel(BoardViewModel boardViewModel);
+
+    public abstract void play();
+
+    public abstract void addObject();
 
 
     // Méthode pour "supprimer" un objet de la cellule
-    public void deleteObject() {
-        if (!isEmpty()) {
-            Cell cell = board.getGrid().getMatrix()[line][col];
-            cell.clearValues();
-            board.getGrid().triggerGridChange(); // cela a permis la mise a jour lors de la suppression lors du drag
-        }
-    }
+    public abstract void deleteObject();
+
 
     // Méthode privée pour mettre à jour la valeur de la cellule
-    private void updateCellValue(Element newValue) {
-        board.setCellValue(line, col, newValue);
+    protected abstract void updateCellValue(Element newValue);
 
-    }
+    public abstract ReadOnlyListProperty<Element> valueProperty();
 
-    public ReadOnlyListProperty<Element> valueProperty() {
-        return board.valueProperty(line, col);
-    }
+    protected abstract boolean isEmpty();
 
-    public boolean isEmpty() {
-        return board.isEmpty(line, col);
-    }
+    public abstract void handleMouseReleased();
 
-    public SimpleDoubleProperty scaleProperty() {
-        return scale;
-    }
+    public abstract void  resetScale();
 
-    public BooleanBinding mayIncrementScaleProperty() {
-        return mayIncrementScale;
-    }
-
-    public BooleanBinding mayDecrementScaleProperty() {
-        return mayDecrementScale;
-    }
+    public abstract Element getSelectedTool();
 
 
 
 
-    public void handleMouseReleased() {
-
-    }
-    public void resetScale() {
-        scale.set(DEFAULT_SCALE);
-    }
-
-    public Element getSelectedTool() {
-        return this.selectedTool;
-    }
-
-    public void setSelectedTool(Element tool) {
-        this.selectedTool = tool;
-    }
 
 
 

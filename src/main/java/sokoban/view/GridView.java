@@ -6,9 +6,9 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import sokoban.viewmodel.GridViewModel;
 
-class GridView extends GridPane {
-    private static final int PADDING = 20;
-    private GridViewModel gridViewModel;
+public abstract class GridView extends GridPane {
+    protected static final int PADDING = 20;
+    protected GridViewModel gridViewModel;
     GridView(GridViewModel gridViewModel, DoubleBinding gridWidth, DoubleBinding gridHeight) {
         setGridLinesVisible(true);
         setPadding(new Insets(PADDING));
@@ -21,7 +21,7 @@ class GridView extends GridPane {
 
         for (int i = 0; i < gridViewModel.getGridWidth(); i++) {
             for (int j = 0; j < gridViewModel.getGridHeight(); j++) {
-                CellView cellView = new CellView(gridViewModel.getCellViewModel(i, j), cellSize, this, i, j);
+                CellView cellView = new CellView4Design(gridViewModel.getCellViewModel(i, j), cellSize, this, i, j);
                 this.add(cellView, i, j);
             }
         }

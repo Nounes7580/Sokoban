@@ -20,7 +20,7 @@ public abstract class Board {
     protected IntegerProperty maxFilledCells = new SimpleIntegerProperty();
 
     protected Board(int width, int height) {
-        grid = new Grid(width, height);
+        grid = new Grid4Design(width, height);
     }
     public abstract boolean isPositionValid(int line, int col);
     protected abstract long calculateFilledCells();

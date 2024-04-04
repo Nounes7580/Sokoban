@@ -137,7 +137,7 @@ public abstract class BoardView extends BorderPane {
                 gridSizeBinding
         );
 
-        GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
+        GridView gridView = new GridView4Design(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
         gridView.minHeightProperty().bind(gridHeightBinding);
         gridView.maxHeightProperty().bind(gridHeightBinding);
