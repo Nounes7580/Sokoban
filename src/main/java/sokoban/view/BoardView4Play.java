@@ -30,7 +30,7 @@ public class BoardView4Play extends BoardView{
             }
 
             if (direction != null) {
-                boardViewModel.movePlayer(direction);
+              //  boardViewModel.movePlayer(direction);
             }
         });
     }

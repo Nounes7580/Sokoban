@@ -1,43 +1,24 @@
 package sokoban.view;
 
-import javafx.application.Platform;
 import javafx.beans.binding.NumberBinding;
-import javafx.beans.property.ReadOnlyListProperty;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
-import javafx.util.Pair;
-import sokoban.model.Board;
-import sokoban.model.Board4Play;
-import sokoban.model.CellValue;
 
+import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.BoardViewModel;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sokoban.viewmodel.CellViewModel;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
-
 
 
 public abstract class BoardView extends BorderPane {
 
     // ViewModel
     protected final BoardViewModel boardViewModel;
+
 
     // Constantes de mise en page
 
@@ -60,7 +41,7 @@ public abstract class BoardView extends BorderPane {
         this.boardViewModel = boardViewModel;
 
         setLeft(toolBar);
-       // createHeader(); // Ajoutez le label de validation dans cette méthode
+        // createHeader(); // Ajoutez le label de validation dans cette méthode
         createGrid();
         start(primaryStage);
 
@@ -96,7 +77,7 @@ public abstract class BoardView extends BorderPane {
 
 
 
-   protected void createGrid() {
+    protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
         }
@@ -137,14 +118,19 @@ public abstract class BoardView extends BorderPane {
                 gridSizeBinding
         );
 
-        GridView gridView = new GridView4Design(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
+        if (boardViewModel instanceof BoardViewModel4Design) {
+            GridView gridView = new GridView4Design(((BoardViewModel4Design) boardViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
-        gridView.minHeightProperty().bind(gridHeightBinding);
-        gridView.maxHeightProperty().bind(gridHeightBinding);
+            gridView.minHeightProperty().bind(gridHeightBinding);
+            gridView.maxHeightProperty().bind(gridHeightBinding);
 
-        gridView.minWidthProperty().bind(gridWidthBinding);
-        gridView.maxWidthProperty().bind(gridWidthBinding);
-        setCenter(gridView);
+            gridView.minWidthProperty().bind(gridWidthBinding);
+            gridView.maxWidthProperty().bind(gridWidthBinding);
+            setCenter(gridView);
+        } else {
+            // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
+            // This might involve creating a default GridView or handling the error appropriately
+        }
     }
 
 

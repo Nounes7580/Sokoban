@@ -41,6 +41,8 @@ public abstract class CellViewModel {
     public abstract void addObject();
 
 
+
+
     // Méthode pour "supprimer" un objet de la cellule
     public abstract void deleteObject();
 

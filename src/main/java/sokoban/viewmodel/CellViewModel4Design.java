@@ -10,6 +10,8 @@ import sokoban.model.element.Ground;
 
 public class CellViewModel4Design extends CellViewModel{
 
+    private BoardViewModel4Design boardViewModel; // Add a reference to BoardViewModel
+
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
 
     private Element selectedTool = new Ground();
@@ -20,8 +22,9 @@ public class CellViewModel4Design extends CellViewModel{
 
     @Override
     protected void setBoardViewModel(BoardViewModel boardViewModel) {
-        this.boardViewModel = boardViewModel;
+        this.boardViewModel = (BoardViewModel4Design) boardViewModel;
     }
+
     @Override
     public void play() {
         if (boardViewModel != null) {

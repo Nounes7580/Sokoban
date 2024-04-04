@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import sokoban.model.CellValue;
 import sokoban.model.element.Element;
+import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.CellViewModel;
 
@@ -54,8 +55,8 @@ public abstract class CellView extends StackPane {
     protected abstract void addImageViewForCellValue(CellValue cellValue);
 
 
-
     protected abstract void configureBindings();
     protected abstract void setupMouseEvents();
     protected abstract void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal);
+
 }

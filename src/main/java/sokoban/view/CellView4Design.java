@@ -12,11 +12,12 @@ import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
 import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
+import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.CellViewModel;
 
 public class CellView4Design extends CellView {
     private ColorAdjust darkenEffect = new ColorAdjust();
-    private BoardViewModel boardViewModel;
+    private BoardViewModel4Design boardViewModel;
     private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
     private final ImageView goalImageView = new ImageView(goalImage);
     private final ImageView imageView = new ImageView();
