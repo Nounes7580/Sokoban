@@ -35,8 +35,6 @@ public class BoardView4Design extends BoardView {
     private final VBox topContainer = new VBox();
 
     private final HBox playButtonContainer = new HBox();
-    private static final int SCENE_MIN_WIDTH = 700;
-    private static final int SCENE_MIN_HEIGHT = 600;
 
     public BoardView4Design(Stage primaryStage, BoardViewModel4Design boardViewModel) {
         super(primaryStage, boardViewModel);
@@ -87,6 +85,22 @@ public class BoardView4Design extends BoardView {
         return headerContainer;
     }
 
+
+    @Override
+    protected double getToolbarWidth() {
+        return toolBar.getWidth();
+
+    }
+
+    @Override
+    protected double getTopContainerHeight() {
+        return topContainer.getHeight();
+    }
+
+    @Override
+    protected double getPlayButtonContainerHeight() {
+        return playButtonContainer.getHeight();
+    }
 
     @Override
     protected void setupKeyControls(Scene scene) {
