@@ -24,7 +24,7 @@ public class BoardViewModel {
 
     public BoardViewModel(Board4Design board) {
         this.board = board;
-        this.gridViewModel = new GridViewModel(board);
+        this.gridViewModel = new GridViewModel4Design(board);
         this.gridViewModel.setBoardViewModel(this);
         updateValidationMessage();
         board.filledCellsCountProperty().addListener((observable, oldValue, newValue) -> {
