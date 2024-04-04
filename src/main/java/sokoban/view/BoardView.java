@@ -38,23 +38,20 @@ public abstract class BoardView extends BorderPane {
     private final HBox playButtonContainer = new HBox();
 
 
-
-    protected abstract double getToolbarWidth();
-
-    protected abstract double getTopContainerHeight();
-
-    protected abstract double getPlayButtonContainerHeight();
-
     public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
         this.boardViewModel = boardViewModel;
 
         setLeft(toolBar);
+        // createHeader(); // Ajoutez le label de validation dans cette méthode
+        createGrid();
         start(primaryStage);
 
 
     }
 
     private void start(Stage stage) {
+        // Mise en place des composants principaux
+        // Mise en place de la scène et affichage de la fenêtre
         Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
@@ -63,13 +60,13 @@ public abstract class BoardView extends BorderPane {
 
         stage.setScene(scene);
         setupKeyControls(stage.getScene());
-        stage.setOnShown(event -> {
-            createGrid();
-            setupKeyControls(scene);
-        });
+
         stage.show();
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
+
+        Platform.runLater(this::createGrid);
+
 
 
     }
@@ -82,63 +79,71 @@ public abstract class BoardView extends BorderPane {
 
 
 
-
-
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
         }
+        NumberBinding availableWidth = widthProperty().subtract(getToolbarWidth());
 
-        Platform.runLater(() -> {
-            //taille d'une case
-            NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
-                    () -> Math.min(
+        //taille d'une case
+        NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
+                () -> {
+                    double additionalHeight = this instanceof BoardView4Design ? ((BoardView4Design) this).getAdditionalHeightToSubtract() : 0;
+                    double toolbarWidth = this instanceof BoardView4Design ? ((BoardView4Design) this).getToolbarWidth() : 0;
+                    return Math.min(
                             widthProperty().subtract(getToolbarWidth()).divide(boardViewModel.getGridWidth()).get(),
-                            heightProperty().subtract(getTopContainerHeight()).subtract(getPlayButtonContainerHeight()).divide(boardViewModel.getGridHeight()).get()
-                    ),
-                    widthProperty(),
-                    heightProperty()
-            );
+                            heightProperty().subtract(additionalHeight).divide(boardViewModel.getGridHeight()).get()
+                    );
+                },
+                widthProperty(),
+                heightProperty(),
+                toolBar.widthProperty()
+        );
 
-            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
-                System.out.println("grid " + newVal);
-            });
+        gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+            System.out.println("grid " + newVal);
 
-            DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-                    () -> gridSizeBinding.doubleValue() * boardViewModel.getGridWidth(),
-                    gridSizeBinding
-            );
-
-            DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
-                    () -> gridSizeBinding.doubleValue() * boardViewModel.getGridHeight(),
-                    gridSizeBinding
-            );
-
-            if (boardViewModel instanceof BoardViewModel4Design) {
-                GridView gridView = new GridView4Design(((BoardViewModel4Design) boardViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
-
-                gridView.minHeightProperty().bind(gridHeightBinding);
-                gridView.maxHeightProperty().bind(gridHeightBinding);
-
-                gridView.minWidthProperty().bind(gridWidthBinding);
-                gridView.maxWidthProperty().bind(gridWidthBinding);
-                setCenter(gridView);
-            } else {
-                // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
-                // This might involve creating a default GridView or handling the error appropriately
-            }
         });
+
+
+        DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
+
+                () -> {
+
+                    var width = gridSizeBinding.doubleValue() * boardViewModel.getGridWidth();
+                    System.out.println("WIDTH" + width + " " + boardViewModel.getGridWidth());
+                    return width;
+                },
+                gridSizeBinding
+        );
+
+        DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
+                () -> {
+                    var height = gridSizeBinding.doubleValue() * boardViewModel.getGridHeight();
+                    System.out.println("HEIGHT " + height+ " " + boardViewModel.getGridHeight());
+                    return height;
+                },
+                gridSizeBinding
+        );
+
+        if (boardViewModel instanceof BoardViewModel4Design) {
+            GridView gridView = new GridView4Design(((BoardViewModel4Design) boardViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
+
+            gridView.minHeightProperty().bind(gridHeightBinding);
+            gridView.maxHeightProperty().bind(gridHeightBinding);
+
+            gridView.minWidthProperty().bind(gridWidthBinding);
+            gridView.maxWidthProperty().bind(gridWidthBinding);
+            setCenter(gridView);
+        } else {
+            // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
+            // This might involve creating a default GridView or handling the error appropriately
+        }
     }
 
 
+    protected abstract double getAdditionalHeightToSubtract();
 
 
-
-
-
-
-
-
-
-
+    protected abstract double getToolbarWidth();
 }

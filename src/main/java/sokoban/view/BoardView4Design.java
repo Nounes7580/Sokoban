@@ -87,24 +87,28 @@ public class BoardView4Design extends BoardView {
 
 
     @Override
-    protected double getToolbarWidth() {
-        return toolBar.getWidth();
-
-    }
-
-    @Override
-    protected double getTopContainerHeight() {
-        return topContainer.getHeight();
-    }
-
-    @Override
-    protected double getPlayButtonContainerHeight() {
-        return playButtonContainer.getHeight();
-    }
-
-    @Override
     protected void setupKeyControls(Scene scene) {
         //pas de controle clavier pour l'editeur
+    }
+    @Override
+    protected double getAdditionalHeightToSubtract() {
+        if (topContainer == null) {
+            return 0;  // Or handle the uninitialized case appropriately
+        }
+        double topContainerHeight = topContainer.prefHeight(-1);
+        double playButtonContainerHeight = playButtonContainer != null ? playButtonContainer.prefHeight(-1) : 0;
+        System.out.println("Top Container Height: " + topContainerHeight);
+        System.out.println("Play Button Container Height: " + playButtonContainerHeight);
+        return topContainerHeight + playButtonContainerHeight;
+    }
+
+    @Override
+    protected double getToolbarWidth() {
+        if(toolBar == null) {
+            return 0;  // Or handle the uninitialized case appropriately
+        }
+        // Assuming toolBar is the variable name of your toolbar in BoardView4Design
+        return toolBar.widthProperty().get();
     }
 
     private void configMainComponents(Stage stage) {

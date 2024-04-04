@@ -79,37 +79,39 @@ public class Grid4Design extends Grid{
     @Override
     protected void play(int line, int col, Element toolValue) {
         // Assurez-vous que les coordonnées sont valides.
-        if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight()) {
-            return; // Position invalide.
+        if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight() || toolValue == null) {
+            return; // Position invalide ou toolValue est null.
         }
 
         Cell cell = matrix[line][col];
 
-        // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
-        if (toolValue.getType() == CellValue.PLAYER) {
-            int[] playerPos = findPlayerPosition();
-            if (playerPos != null) {
-                matrix[playerPos[0]][playerPos[1]].play(new Player());
+        // Check if toolValue is null before proceeding
+        if (toolValue != null) {
+            // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
+            if (toolValue.getType() == CellValue.PLAYER) {
+                int[] playerPos = findPlayerPosition();
+                if (playerPos != null) {
+                    matrix[playerPos[0]][playerPos[1]].play(new Player());
+                }
             }
+
+            // Logique simplifiée pour l'ajout d'états dans la cellule.
+            if (toolValue.getType() == CellValue.WALL || toolValue.getType() == CellValue.GROUND) {
+                // Pour WALL et GROUND, on remplace tout les états existants.
+                cell.play(toolValue);
+            } else if (!cell.getValue().contains(toolValue)) {
+                // Pour les autres états, on ajoute seulement s'ils ne sont pas déjà présents.
+                // Cela évite les duplications pour des états comme GOAL qui peut être superposé avec PLAYER ou BOX.
+                cell.play(toolValue);
+            }
+
+            // Si on ajoute autre chose qu'un GOAL, et que GOAL est déjà présent, on ne le retire pas.
+            // Cela permet de garder le GOAL même quand on ajoute PLAYER ou BOX sur celui-ci.
+
+            // invalide le compteur de cellules remplies et déclenche le changement de grille.
+            filledCellsCount.invalidate();
+            triggerGridChange();
         }
-
-        // Logique simplifiée pour l'ajout d'états dans la cellule.
-        if (toolValue.getType() == CellValue.WALL || toolValue.getType() == CellValue.GROUND) {
-            // Pour WALL et GROUND, on remplace tout les états existants.
-            cell.play(toolValue);
-        } else if (!cell.getValue().contains(toolValue)) {
-            // Pour les autres états, on ajoute seulement s'ils ne sont pas déjà présents.
-            // Cela évite les duplications pour des états comme GOAL qui peut être superposé avec PLAYER ou BOX.
-            cell.play(toolValue);
-
-        }
-
-        // Si on ajoute autre chose qu'un GOAL, et que GOAL est déjà présent, on ne le retire pas.
-        // Cela permet de garder le GOAL même quand on ajoute PLAYER ou BOX sur celui-ci.
-
-        // invalide le compteur de cellules remplies et déclenche le changement de grille.
-        filledCellsCount.invalidate();
-        triggerGridChange();
     }
     @Override
     protected LongBinding filledCellsCountProperty() {
