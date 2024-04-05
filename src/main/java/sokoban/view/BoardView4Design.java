@@ -71,22 +71,19 @@ public class BoardView4Design extends BorderPane {
 
         stage.setScene(scene);
         setupKeyControls(stage.getScene());
-        stage.setOnShown(event -> {
-            createGrid();
-            setupKeyControls(scene);
-        });
+
         stage.show();
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
 
-
+        Platform.runLater(this::createGrid);
     }
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
         }
 
-        Platform.runLater(() -> {
+        
             //taille d'une case
             NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
                     () -> Math.min(
@@ -124,7 +121,7 @@ public class BoardView4Design extends BorderPane {
                 // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
                 // This might involve creating a default GridView or handling the error appropriately
             }
-        });
+
     }
 
 
