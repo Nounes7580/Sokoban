@@ -29,6 +29,9 @@ import java.util.Optional;
 
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
+    private final Label scoreTitleLabel = new Label("Score");
+    private final Label movesLabel = new Label("Number of moves played: 0");
+    private final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
 
     private final HBox headerBox = new HBox();
     private final Label validationLabel = new Label();
@@ -132,17 +135,27 @@ public class BoardView4Play extends BorderPane {
 
 
     private VBox createHeader() {
+        scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title
+        movesLabel.getStyleClass().add("moves-label");
+        goalsLabel.getStyleClass().add("goals-label");
 
-        headerLabel.getStyleClass().add("header");
+        // Debugging line to print out the CSS classes of scoreTitleLabel
+        System.out.println("CSS classes for scoreTitleLabel: " + scoreTitleLabel.getStyleClass());
 
-        // Ajoutez le label de validation sous le headerLabel
-        VBox headerContainer = new VBox(headerLabel, validationLabel);
+        // Arrange labels vertically
+        VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel);
+        scoreContainer.setAlignment(Pos.CENTER);
+
+        // Include the scoreContainer in the header
+        VBox headerContainer = new VBox(headerLabel, validationLabel, scoreContainer);
         headerContainer.setAlignment(Pos.CENTER);
-        headerContainer.setPadding(new Insets(10));
 
-        // Retourner le container de l'en-tête au lieu de le placer directement en haut du BorderPane
         return headerContainer;
     }
+
+
+
+
 
 
 
@@ -167,15 +180,12 @@ public class BoardView4Play extends BorderPane {
     }
 
     private void configMainComponents(Stage stage) {
+        // Since we're removing the menu, we don't call initializeMenu here
         initializeToolBar(stage);
-        Label validationLabel = new Label();
-
-        headerBox.getChildren().add(validationLabel);
-        initializeMenu(stage);
-        topContainer.getChildren().addAll(menuBar, createHeader());
+        topContainer.getChildren().add(createHeader()); // Removed menuBar from the topContainer
         this.setTop(topContainer);
-
     }
+
 
 
 
