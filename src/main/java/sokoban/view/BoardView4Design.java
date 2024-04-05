@@ -83,7 +83,7 @@ public class BoardView4Design extends BorderPane {
             ((GridPane) getCenter()).getChildren().clear();
         }
 
-        
+
             //taille d'une case
             NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
                     () -> Math.min(
