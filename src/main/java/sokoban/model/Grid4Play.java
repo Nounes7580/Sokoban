@@ -16,15 +16,12 @@ public class Grid4Play extends Grid{
 
 
 
-    public Grid4Play(Grid4Design grid4Design){
+    public Grid4Play(Grid4Design grid4Design) {
         this.gridWidth.set(grid4Design.getGridWidth());
         this.gridHeight.set(grid4Design.getGridHeight());
-        this.cell4Play= new Cell4play[gridWidth.get()][gridHeight.get()];
-        for (int i = 0; i < gridWidth.get(); i++) {
-            for (int j = 0; j < gridHeight.get(); j++) {
-                cell4Play[i][j] = new Cell4play(grid4Design.getCell4Design(i,j));
-            }
-        }
+        this.cell4Play = new Cell4play[gridWidth.get()][gridHeight.get()];
+        initializeCells(grid4Design);
+    }
 
         /*filledCellsCount = Bindings.createLongBinding(() -> Arrays
                 .stream(matrix)
@@ -33,8 +30,20 @@ public class Grid4Play extends Grid{
                 .count(), gridChanged);
 
          */
-    }
 
+    private void initializeCells(Grid4Design grid4Design) {
+        for (int i = 0; i < gridWidth.get(); i++) {
+            for (int j = 0; j < gridHeight.get(); j++) {
+                this.cell4Play[i][j] = new Cell4play(grid4Design.getCell4Design(i,j)); // Ou une autre logique pour initialiser chaque cellule
+            }
+        }
+    }
+    public Cell getCell(int row, int col) {
+        if (row < 0 || row >= gridWidth.get() || col < 0 || col >= gridHeight.get()) {
+            throw new IndexOutOfBoundsException("Tentative d'accès hors des limites de la grille.");
+        }
+        return cell4Play[row][col];
+    }
 
     @Override
     protected void resetGrid(int newWidth, int newHeight) {
@@ -48,12 +57,19 @@ public class Grid4Play extends Grid{
 
     @Override
     public void triggerGridChange() {
-
+        gridChanged.set(!gridChanged.get());
     }
 
     @Override
     public int[] findPlayerPosition() {
-        return new int[0];
+        for (int i = 0; i < gridWidth.get(); i++) {
+            for (int j = 0; j < gridHeight.get(); j++) {
+                if (cell4Play[i][j].getValue().stream().anyMatch(e -> e instanceof Player)) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -111,7 +127,7 @@ public class Grid4Play extends Grid{
 
     @Override
     protected boolean isEmpty(int line, int col) {
-        return false;
+        return cell4Play[line][col].getValue().isEmpty();
     }
 
     @Override
@@ -141,7 +157,7 @@ public class Grid4Play extends Grid{
 
     @Override
     public boolean isGridChanged() {
-        return false;
+        return gridChanged.get();
     }
 
    /* public Cell4Design[][] getMatrix() {

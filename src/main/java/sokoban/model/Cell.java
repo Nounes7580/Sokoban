@@ -42,7 +42,16 @@ public abstract class Cell {
     public void clearValues() {
         this.toolObject.clear();
     }
+    // Dans la classe Cell, ajoutez une méthode contains pour vérifier la présence d'un type spécifique d'Element
 
+    public boolean hasElementOfType(Class<? extends Element> type) {
+        for (Element e : toolObject) {
+            if (type.isInstance(e)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public  void play(Element value) {
         if (toolObject.contains(value)) {

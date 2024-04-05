@@ -1,10 +1,7 @@
 package sokoban.model;
 
 import javafx.beans.property.ReadOnlyListProperty;
-import sokoban.model.element.Element;
-import sokoban.model.element.Goal;
-import sokoban.model.element.Ground;
-import sokoban.model.element.Player;
+import sokoban.model.element.*;
 
 public class Board4Play {
 
@@ -39,18 +36,39 @@ public class Board4Play {
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
-    /*public boolean isPositionValid(int line, int col) {
-        // Validate position for gameplay
-        return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid.getGridHeight();
+    public boolean isPositionValid(int line, int col) {
+        return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid4Play.getGridHeight();
     }
 
-     */
 
 
+    public void movePlayer(Direction direction) {
+        int[] playerPosition = grid4Play.findPlayerPosition();
+        if (playerPosition == null) {
+            System.out.println("Joueur introuvable");
+            return;
+        }
 
+        int newRow = playerPosition[0] + direction.getDeltaRow();
+        int newCol = playerPosition[1] + direction.getDeltaCol();
 
+        if (!isPositionValid(newRow, newCol)) {
+            System.out.println("Déplacement invalide : hors limites");
+            return;
+        }
 
-
+        Cell cell = grid4Play.getCell(newRow, newCol);
+        if (cell.hasElementOfType(Box.class)) {
+            if (canMoveBox(newRow, newCol, direction)) {
+                moveBox(newRow, newCol, direction);
+                grid4Play.setCellValue(playerPosition[0], playerPosition[1], new Ground());
+                grid4Play.setCellValue(newRow, newCol, new Player());
+            }
+        } else if (cell.isEmpty() || cell.hasElementOfType(Goal.class)) {
+            grid4Play.setCellValue(playerPosition[0], playerPosition[1], new Ground());
+            grid4Play.setCellValue(newRow, newCol, new Player());
+        }
+    }
 
 
     public enum Direction {
@@ -72,6 +90,21 @@ public class Board4Play {
             return deltaCol;
         }
     }
+    private boolean canMoveBox(int boxRow, int boxCol, Direction direction) {
+        int newRow = boxRow + direction.getDeltaRow();
+        int newCol = boxCol + direction.getDeltaCol();
+        if (!isPositionValid(newRow, newCol)) {
+            return false;
+        }
+        Cell cell = grid4Play.getCell(newRow, newCol);
+        return cell.isEmpty() ||  cell.hasElementOfType(Goal.class);
+    }
 
-    // Additional gameplay methods like movePlayer()
+    private void moveBox(int boxRow, int boxCol, Direction direction) {
+        int newRow = boxRow + direction.getDeltaRow();
+        int newCol = boxCol + direction.getDeltaCol();
+        grid4Play.setCellValue(boxRow, boxCol, new Ground());
+        grid4Play.setCellValue(newRow, newCol, new Box());
+    }
+
 }
