@@ -1,13 +1,22 @@
 package sokoban.model;
 
+import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.Element;
 import sokoban.model.element.Goal;
 import sokoban.model.element.Ground;
 import sokoban.model.element.Player;
 
-public class Board4Play  {
+public class Board4Play {
+
+    public Grid4Play getGrid4Play() {
+        return grid4Play;
+    }
 
     public Grid4Play grid4Play;
+    public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
+        System.out.println(grid4Play.valueProperty(line, col));
+        return grid4Play.valueProperty(line, col);
+    }
 
     public Board4Play(Board4Design board4Design) {
         grid4Play=new Grid4Play(board4Design.grid4Design);

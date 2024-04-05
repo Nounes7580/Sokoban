@@ -57,18 +57,21 @@ public class Grid4Play extends Grid{
     }
 
     @Override
-    public int getGridWidth() {
-        return 0;
+    public   int getGridWidth() {
+        return gridWidth.get();
     }
 
     @Override
     public int getGridHeight() {
-        return 0;
+        return gridHeight.get();
     }
 
     @Override
     protected ReadOnlyListProperty<Element> valueProperty(int line, int col) {
-        return null;
+        if (line < 0 || col < 0 || line >= gridWidth.get() || col >= gridHeight.get()) {
+            throw new IllegalArgumentException("Index out of bounds");
+        }
+        return cell4Play[line][col].getValue();
     }
 
     @Override

@@ -1,12 +1,15 @@
 package sokoban.viewmodel;
 
+import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import sokoban.model.Board4Design;
 import sokoban.model.Board4Play;
 import sokoban.view.BoardView4Play;
 
 
-public class BoardViewModel4Play extends BoardViewModel {
+public class BoardViewModel4Play{
+
+
 
     private GridViewModel4Play gridViewModel4Play;
     private Board4Play board4Play;
@@ -17,25 +20,29 @@ public class BoardViewModel4Play extends BoardViewModel {
      this.board4Play=new Board4Play(board4Design);
      this.gridViewModel4Play = new GridViewModel4Play(board4Play);
     }
-    @Override
     public BooleanProperty gridResetProperty() {
         return null;
     }
 
-    @Override
-    public int getGridWidth() {
-        return 0;
+    public  int getGridHeight() {
+        return board4Play.getGrid4Play().getGridHeight();
     }
 
-    @Override
-    public int getGridHeight() {
-        return 0;
+    public  int getGridWidth() {
+        return board4Play.getGrid4Play().getGridWidth();
+    }
+    public boolean hasPlayer(){
+        return board4Play.getGrid4Play().hasPlayer();
     }
 
-    @Override
-    public void updateValidationMessage() {
 
+
+
+    public GridViewModel4Play getGridViewModel4Play() {
+        return gridViewModel4Play;
     }
+
+
 
 
 

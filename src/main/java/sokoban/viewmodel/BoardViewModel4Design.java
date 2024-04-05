@@ -11,7 +11,7 @@ import java.io.File;
 
 
 public class BoardViewModel4Design extends BoardViewModel{
-    private final GridViewModel gridViewModel;
+    private final GridViewModel4Design gridViewModel;
 
 
 

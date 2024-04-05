@@ -2,6 +2,8 @@ package sokoban.view;
 
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -9,10 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -24,9 +23,10 @@ import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.BoardViewModel4Play;
 
 import java.io.File;
+import java.util.Objects;
 import java.util.Optional;
 
-public class BoardView4Design extends BoardView {
+public class BoardView4Design extends BorderPane {
     private final BoardViewModel4Design boardDesignViewModel;
 
     private final HBox headerBox = new HBox();
@@ -38,10 +38,14 @@ public class BoardView4Design extends BoardView {
     private final VBox topContainer = new VBox();
 
     private final HBox playButtonContainer = new HBox();
+    private static final int SCENE_MIN_WIDTH = 700;
+    private static final int SCENE_MIN_HEIGHT = 600;
 
     public BoardView4Design(Stage primaryStage, BoardViewModel4Design boardViewModel) {
-        super(primaryStage, boardViewModel);
+
+
         this.boardDesignViewModel = boardViewModel;
+        start(primaryStage);
 
         createPlayButton();
         setLeft(toolBar);
@@ -52,10 +56,75 @@ public class BoardView4Design extends BoardView {
             if (newVal) {
                 createGrid();
                 System.out.println("Grid reset");
-                this.boardViewModel.gridResetProperty().set(false);
+                this.boardDesignViewModel.gridResetProperty().set(false);
             }
         });
 
+    }
+
+    public void start(Stage stage) {
+        Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
+        String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
+        scene.getStylesheets().add(cssFile);
+
+
+
+        stage.setScene(scene);
+        setupKeyControls(stage.getScene());
+        stage.setOnShown(event -> {
+            createGrid();
+            setupKeyControls(scene);
+        });
+        stage.show();
+        stage.setMinHeight(stage.getHeight());
+        stage.setMinWidth(stage.getWidth());
+
+
+    }
+    protected void createGrid() {
+        if (getCenter() != null) {
+            ((GridPane) getCenter()).getChildren().clear();
+        }
+
+        Platform.runLater(() -> {
+            //taille d'une case
+            NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
+                    () -> Math.min(
+                            widthProperty().subtract(getToolbarWidth()).divide(boardDesignViewModel.getGridWidth()).get(),
+                            heightProperty().subtract(getTopContainerHeight()).subtract(getPlayButtonContainerHeight()).divide(boardDesignViewModel.getGridHeight()).get()
+                    ),
+                    widthProperty(),
+                    heightProperty()
+            );
+
+            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+                System.out.println("grid " + newVal);
+            });
+
+            DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
+                    () -> gridSizeBinding.doubleValue() * boardDesignViewModel.getGridWidth(),
+                    gridSizeBinding
+            );
+
+            DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
+                    () -> gridSizeBinding.doubleValue() * boardDesignViewModel.getGridHeight(),
+                    gridSizeBinding
+            );
+
+            if (boardDesignViewModel instanceof BoardViewModel4Design) {
+                GridView4Design gridView = new GridView4Design((boardDesignViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
+
+                gridView.minHeightProperty().bind(gridHeightBinding);
+                gridView.maxHeightProperty().bind(gridHeightBinding);
+
+                gridView.minWidthProperty().bind(gridWidthBinding);
+                gridView.maxWidthProperty().bind(gridWidthBinding);
+                setCenter(gridView);
+            } else {
+                // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
+                // This might involve creating a default GridView or handling the error appropriately
+            }
+        });
     }
 
 
@@ -89,23 +158,23 @@ public class BoardView4Design extends BoardView {
     }
 
 
-    @Override
+
     protected double getToolbarWidth() {
         return toolBar.getWidth();
 
     }
 
-    @Override
+
     protected double getTopContainerHeight() {
         return topContainer.getHeight();
     }
 
-    @Override
+
     protected double getPlayButtonContainerHeight() {
         return playButtonContainer.getHeight();
     }
 
-    @Override
+
     protected void setupKeyControls(Scene scene) {
         //pas de controle clavier pour l'editeur
     }
@@ -336,8 +405,8 @@ public class BoardView4Design extends BoardView {
         result.ifPresent(dimensions -> {
             int width = dimensions.getKey();
             int height = dimensions.getValue();
-            if (boardViewModel instanceof BoardViewModel4Design) {
-                BoardViewModel4Design designViewModel = (BoardViewModel4Design) boardViewModel;
+            if (boardDesignViewModel instanceof BoardViewModel4Design) {
+                BoardViewModel4Design designViewModel =  boardDesignViewModel;
                 designViewModel.resetGrid(width, height);
             } else {
                 System.out.println("boardViewModel is not an instance of BoardViewModel4Design. resetGrid cannot be called.");
