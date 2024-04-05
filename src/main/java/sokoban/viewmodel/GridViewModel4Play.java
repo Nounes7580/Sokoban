@@ -1,29 +1,28 @@
 package sokoban.viewmodel;
 
-import sokoban.model.Board4Design;
+import sokoban.model.Board4Play;
 
-public class GridViewModel4Play extends GridViewModel{
-    GridViewModel4Play(Board4Design board) {
-        super(board);
+public class GridViewModel4Play{
+
+
+    private Board4Play board4Play;
+    GridViewModel4Play(Board4Play board) {
+        this.board4Play=board;
     }
 
-    @Override
     public void setBoardViewModel(BoardViewModel boardViewModel) {
 
     }
 
-    @Override
-    public CellViewModel getCellViewModel(int line, int col) {
-        return null;
+    public CellViewModel4Play getCellViewModel(int line, int col) {
+        return new CellViewModel4Play(line,col,board4Play);
     }
 
-    @Override
     public int getGridWidth() {
-        return 0;
+        return board4Play.getGrid4Play().getGridWidth();
     }
 
-    @Override
     public int getGridHeight() {
-        return 0;
+        return board4Play.getGrid4Play().getGridHeight();
     }
 }

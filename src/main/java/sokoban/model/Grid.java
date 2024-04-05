@@ -17,11 +17,12 @@ public abstract class Grid {
 
 
     protected BooleanProperty gridChanged = new SimpleBooleanProperty();
-    protected Cell[][] matrix;
-    protected final LongBinding filledCellsCount;
+
+  //  protected final LongBinding filledCellsCount;
 
     // Constructeur adapté pour initialiser avec des dimensions spécifiques
-    public Grid(int width, int height) {
+   // public Grid(){}
+    /*public Grid(int width, int height) {
         this.gridWidth.set(width);
         this.gridHeight.set(height);
         this.matrix = new Cell[gridWidth.get()][gridHeight.get()];
@@ -34,9 +35,11 @@ public abstract class Grid {
                 .count(), gridChanged);
     }
 
+     */
+
 
     // Méthode pour réinitialiser la grille avec de nouvelles dimensions
-    protected abstract void initializeCells();
+
 
 
     protected abstract void resetGrid(int newWidth, int newHeight);
@@ -89,7 +92,7 @@ public abstract class Grid {
 
     public abstract boolean isGridChanged();
 
-    public abstract Cell[][] getMatrix();
+
 
     public abstract void setCellValue(int line, int col, Element newValue);
 

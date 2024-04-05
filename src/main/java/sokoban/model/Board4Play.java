@@ -1,71 +1,56 @@
 package sokoban.model;
 
+import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.Element;
 import sokoban.model.element.Goal;
 import sokoban.model.element.Ground;
 import sokoban.model.element.Player;
 
-public class Board4Play extends Board {
+public class Board4Play {
 
-    public Board4Play(int width, int height) {
-        super(width, height);
+    public Grid4Play getGrid4Play() {
+        return grid4Play;
     }
 
-
-
-    @Override
-    public boolean isPositionValid(int line, int col) {
-        // Validate position for gameplay
-        return line >= 0 && line < grid.getGridWidth() && col >= 0 && col < grid.getGridHeight();
+    public Grid4Play grid4Play;
+    public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
+        System.out.println(grid4Play.valueProperty(line, col));
+        return grid4Play.valueProperty(line, col);
     }
 
-    @Override
-    protected long calculateFilledCells() {
-        // Calculate filled cells specific to gameplay
-        return grid.filledCellsCountProperty().get();
+    public Board4Play(Board4Design board4Design) {
+        grid4Play=new Grid4Play(board4Design.grid4Design);
     }
-
-
 
 
     public void play(int line, int col, Element toolValue) {
-        // Gameplay-specific implementation of play
-    }
 
-    public void movePlayer(Direction direction) {
-        int[] playerPosition = grid.findPlayerPosition();
-        if (playerPosition == null) {
-            // Handle the case where the player is not found
-            return;
+
+        if (line < 0 || line >= grid4Play.getGridWidth() || col < 0 || col >= grid4Play.getGridHeight()) {
+            System.out.println("Indices hors limites : line=" + line + ", col=" + col);
+            return; // Aucune valeur à retourner, la méthode peut être de type void.
         }
 
-        int newRow = playerPosition[0] + direction.getDeltaRow();
-        int newCol = playerPosition[1] + direction.getDeltaCol();
+        // Accéder directement à la cellule pour manipuler ses états.
+        grid4Play.play(line,col,toolValue);
 
-        // First, check if the move is valid
-        if (isMoveValid(newRow, newCol)) {
-            // Move the player
-            grid.play(playerPosition[0], playerPosition[1], new Ground()); // Remove the player from the old position
-            grid.play(newRow, newCol, new Player()); // Place the player in the new position
-        }
+        // Si la grille n'est pas pleine ou si la cellule n'est pas vide, procéder à la manipulation.
 
-        // After the move, the filled cells count might have changed
-        filledCellsCount.set(calculateFilledCells());
-
-        // Notify any observers that the grid has changed
-        grid.triggerGridChange();
+        // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
-    private boolean isMoveValid(int newRow, int newCol) {
-        // Check boundaries
-        if (newRow < 0 || newRow >= grid.getGridHeight() || newCol < 0 || newCol >= grid.getGridWidth()) {
-            return false;
-        }
-
-        // Check if the target cell is empty or contains a goal
-        Cell targetCell = grid.getMatrix()[newRow][newCol];
-        return targetCell.isEmpty() || targetCell.getValue().contains(new Goal());
+    /*public boolean isPositionValid(int line, int col) {
+        // Validate position for gameplay
+        return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid.getGridHeight();
     }
+
+     */
+
+
+
+
+
+
 
 
     public enum Direction {

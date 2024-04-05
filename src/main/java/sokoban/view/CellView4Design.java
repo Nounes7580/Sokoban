@@ -9,22 +9,41 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import sokoban.model.CellValue;
 import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.CellViewModel;
 
-public class CellView4Design extends CellView {
+public class CellView4Design extends StackPane {
+    protected static final Image playerImage = new Image("player.png");
+    protected static final Image boxImage = new Image("box.png");
+    protected static final Image goalImage = new Image("goal.png");
+    protected static final Image groundImage = new Image("ground.png");
+    protected static final Image wallImage = new Image("wall.png");
+
+    protected final CellViewModel viewModel;
+    protected final DoubleBinding sizeProperty;
+
+    protected final ImageView backgroundImageView = new ImageView(groundImage);
     private ColorAdjust darkenEffect = new ColorAdjust();
     private BoardViewModel4Design boardViewModel;
-    private final ImageView backgroundImageView = new ImageView(groundImage); // Pour l'image de fond
+
     private final ImageView goalImageView = new ImageView(goalImage);
     private final ImageView imageView = new ImageView();
 
+    private CellView4Design cellView4Design;
+    protected final GridPane gridPane;
+    protected int line;
+    protected int col;
 
     public CellView4Design(CellViewModel cellViewModel, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
-        super(cellViewModel, sizeProperty,gridPane, line, col);
+        this.viewModel = cellViewModel;
+        this.sizeProperty = sizeProperty;
+        this.line = line;
+        this.col = col;
+        this.gridPane = gridPane;
         setAlignment(Pos.CENTER);
 
         layoutControls();
@@ -36,7 +55,7 @@ public class CellView4Design extends CellView {
         viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
-    @Override
+
     protected void layoutControls() {
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
@@ -48,7 +67,7 @@ public class CellView4Design extends CellView {
 
         viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
-    @Override
+
     protected void updateView(ObservableList<Element> list) {
         getChildren().clear();
         getChildren().add(backgroundImageView);
@@ -56,7 +75,7 @@ public class CellView4Design extends CellView {
             addImageViewForCellValue(value.getType());
         }
     }
-    @Override
+
     protected void addImageViewForCellValue(CellValue cellValue) {
         Image image = switch (cellValue) {
             case PLAYER -> playerImage;
@@ -69,20 +88,20 @@ public class CellView4Design extends CellView {
             addImageView(image);
         }
     }
-    @Override
+
     protected void addImageView(Image image) {
         ImageView imageView = new ImageView(image);
         configureImageView(imageView);
         getChildren().add(imageView);
     }
-    @Override
+
     protected void configureImageView(ImageView imageView) {
         imageView.fitWidthProperty().bind(this.widthProperty());
         imageView.fitHeightProperty().bind(this.heightProperty());
         imageView.setPreserveRatio(true);
     }
 
-    @Override
+
     protected void configureBindings() {
         backgroundImageView.fitWidthProperty().bind(sizeProperty);
         backgroundImageView.fitHeightProperty().bind(sizeProperty);
@@ -111,7 +130,7 @@ public class CellView4Design extends CellView {
         });
     }
 
-    @Override
+
     protected void setupMouseEvents() {
         this.setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown() ) {
@@ -165,7 +184,7 @@ public class CellView4Design extends CellView {
 
 
 
-    @Override
+
     protected void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
         if (!newVal)
             viewModel.resetScale();
