@@ -73,11 +73,11 @@ public class BoardView4Play extends BorderPane {
 
 
         stage.setScene(scene);
-        setupKeyControls(stage.getScene());
         stage.setOnShown(event -> {
             createGrid();
             setupKeyControls(scene);
         });
+        scene.getRoot().requestFocus();
         stage.show();
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
@@ -162,9 +162,6 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-    protected void setupKeyControls(Scene scene) {
-        //pas de controle clavier pour l'editeur
-    }
 
     private void configMainComponents(Stage stage) {
         initializeToolBar(stage);
@@ -246,6 +243,33 @@ public class BoardView4Play extends BorderPane {
         menuBar.getMenus().add(fileMenu);
     }
 
+    protected void setupKeyControls(Scene scene) {
+        scene.setOnKeyPressed(event -> {
+            Board4Play.Direction direction = null;
+            switch (event.getCode()) {
+                case UP:
+                case W:
+                    direction = Board4Play.Direction.UP;
+                    break;
+                case DOWN:
+                case S:
+                    direction = Board4Play.Direction.DOWN;
+                    break;
+                case LEFT:
+                case A:
+                    direction = Board4Play.Direction.LEFT;
+                    break;
+                case RIGHT:
+                case D:
+                    direction = Board4Play.Direction.RIGHT;
+                    break;
+            }
+            if (direction != null) {
+                boardViewModel4Play.movePlayer(direction);
+                event.consume(); // Consomme l'événement pour éviter toute action par défaut
+            }
+        });
+    }
 
 
 
