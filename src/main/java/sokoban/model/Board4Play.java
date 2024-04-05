@@ -9,7 +9,7 @@ public class Board4Play {
         return grid4Play;
     }
 
-    public Grid4Play grid4Play;
+    public static Grid4Play grid4Play;
     public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         System.out.println(grid4Play.valueProperty(line, col));
         return grid4Play.valueProperty(line, col);
@@ -36,13 +36,13 @@ public class Board4Play {
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
-    public boolean isPositionValid(int line, int col) {
+    public static boolean isPositionValid(int line, int col) {
         return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid4Play.getGridHeight();
     }
 
 
 
-    public void movePlayer(Direction direction) {
+    public static void movePlayer(Direction direction) {
         int[] playerPosition = grid4Play.findPlayerPosition();
         if (playerPosition == null) {
             System.out.println("Joueur introuvable");
@@ -90,7 +90,7 @@ public class Board4Play {
             return deltaCol;
         }
     }
-    private boolean canMoveBox(int boxRow, int boxCol, Direction direction) {
+    private static boolean canMoveBox(int boxRow, int boxCol, Direction direction) {
         int newRow = boxRow + direction.getDeltaRow();
         int newCol = boxCol + direction.getDeltaCol();
         if (!isPositionValid(newRow, newCol)) {
@@ -100,7 +100,7 @@ public class Board4Play {
         return cell.isEmpty() ||  cell.hasElementOfType(Goal.class);
     }
 
-    private void moveBox(int boxRow, int boxCol, Direction direction) {
+    private static void moveBox(int boxRow, int boxCol, Direction direction) {
         int newRow = boxRow + direction.getDeltaRow();
         int newCol = boxCol + direction.getDeltaCol();
         grid4Play.setCellValue(boxRow, boxCol, new Ground());
