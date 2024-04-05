@@ -90,7 +90,7 @@ public class BoardViewModel4Design extends BoardViewModel{
 
         validationMessage.set(message.toString());
     }
-    public GridViewModel getGridViewModel() {
+    public GridViewModel4Design getGridViewModel() {
         return gridViewModel;
     }
 

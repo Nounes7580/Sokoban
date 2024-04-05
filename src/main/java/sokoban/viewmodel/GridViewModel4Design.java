@@ -10,13 +10,13 @@ public class GridViewModel4Design extends GridViewModel{
     }
 
     @Override
-    public void setBoardViewModel(BoardViewModel boardViewModel) {
+    public void setBoardViewModel(BoardViewModel4Design boardViewModel) {
         this.boardViewModel = boardViewModel;
     }
 
     @Override
-    public CellViewModel getCellViewModel(int line, int col) {
-        CellViewModel cellViewModel = new CellViewModel4Design(line, col, board);
+    public CellViewModel4Design getCellViewModel(int line, int col) {
+        CellViewModel4Design cellViewModel = new CellViewModel4Design(line, col, board);
         cellViewModel.setBoardViewModel(this.boardViewModel); // Set the boardViewModel
         return cellViewModel;
     }

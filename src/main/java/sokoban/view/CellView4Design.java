@@ -15,6 +15,7 @@ import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.CellViewModel;
+import sokoban.viewmodel.CellViewModel4Design;
 
 public class CellView4Design extends StackPane {
     protected static final Image playerImage = new Image("player.png");
@@ -23,7 +24,7 @@ public class CellView4Design extends StackPane {
     protected static final Image groundImage = new Image("ground.png");
     protected static final Image wallImage = new Image("wall.png");
 
-    protected final CellViewModel viewModel;
+    protected final CellViewModel4Design cellViewModel4Design;
     protected final DoubleBinding sizeProperty;
 
     protected final ImageView backgroundImageView = new ImageView(groundImage);
@@ -33,13 +34,13 @@ public class CellView4Design extends StackPane {
     private final ImageView goalImageView = new ImageView(goalImage);
     private final ImageView imageView = new ImageView();
 
-    private CellView4Design cellView4Design;
+
     protected final GridPane gridPane;
     protected int line;
     protected int col;
 
-    public CellView4Design(CellViewModel cellViewModel, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
-        this.viewModel = cellViewModel;
+    public CellView4Design(CellViewModel4Design cellViewModel, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
+        this.cellViewModel4Design = cellViewModel;
         this.sizeProperty = sizeProperty;
         this.line = line;
         this.col = col;
@@ -52,7 +53,7 @@ public class CellView4Design extends StackPane {
 
 
         // Add a listener to the valueProperty of the viewModel.
-        viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
+        cellViewModel4Design.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
 
@@ -65,7 +66,7 @@ public class CellView4Design extends StackPane {
 
         getChildren().add(backgroundImageView);
 
-        viewModel.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
+        cellViewModel4Design.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
     protected void updateView(ObservableList<Element> list) {
@@ -110,9 +111,9 @@ public class CellView4Design extends StackPane {
 
         //imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
 
-        this.setOnMouseClicked(e -> viewModel.play());
+        this.setOnMouseClicked(e -> cellViewModel4Design.play());
 
-        viewModel.valueProperty().addListener((obs, old, newVal) -> updateView( newVal));
+        cellViewModel4Design.valueProperty().addListener((obs, old, newVal) -> updateView( newVal));
 
         hoverProperty().addListener(this::hoverChanged);
 
@@ -153,22 +154,22 @@ public class CellView4Design extends StackPane {
         setOnMouseDragEntered(event -> {
             System.out.println("Mouse drag entered");
             if (event.getButton() == MouseButton.SECONDARY) {
-                viewModel.deleteObject(); // Gestion de la suppression
+                cellViewModel4Design.deleteObject(); // Gestion de la suppression
                 System.out.println("Object deleted");
             }
 
             else if (event.getButton() == MouseButton.PRIMARY) {
 
-                if (viewModel.getSelectedTool().getType() == CellValue.PLAYER) {
+                if (cellViewModel4Design.getSelectedTool().getType() == CellValue.PLAYER) {
                     if (!boardViewModel.hasPlayer()) {
-                        viewModel.addObject();
+                        cellViewModel4Design.addObject();
                         System.out.println("Player added");
                     } else {
                         System.out.println("Cannot add another player.");
                     }
                 } else {
 
-                    viewModel.addObject(); // Ajoute l'objet
+                    cellViewModel4Design.addObject(); // Ajoute l'objet
                     System.out.println("Object added");
                 }
             }
@@ -177,7 +178,7 @@ public class CellView4Design extends StackPane {
 
 
         this.setOnMouseReleased(event -> {
-            viewModel.handleMouseReleased();
+            cellViewModel4Design.handleMouseReleased();
         });
     }
 
@@ -187,6 +188,6 @@ public class CellView4Design extends StackPane {
 
     protected void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
         if (!newVal)
-            viewModel.resetScale();
+            cellViewModel4Design.resetScale();
     }
 }

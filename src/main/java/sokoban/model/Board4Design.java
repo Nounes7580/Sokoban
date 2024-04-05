@@ -75,6 +75,7 @@ public class Board4Design  {
     }
 
 
+
     public void play(int line, int col, Element toolValue) {
         System.out.println("filledCellsCount: " + filledCellsCount.get());
         System.out.println("maxFilledCells: " + maxFilledCells.get());

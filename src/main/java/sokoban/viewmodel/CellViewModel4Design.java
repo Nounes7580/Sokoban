@@ -21,7 +21,7 @@ public class CellViewModel4Design extends CellViewModel{
     }
 
     @Override
-    protected void setBoardViewModel(BoardViewModel boardViewModel) {
+    protected void setBoardViewModel(BoardViewModel4Design boardViewModel) {
         this.boardViewModel = (BoardViewModel4Design) boardViewModel;
     }
 

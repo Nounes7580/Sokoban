@@ -14,7 +14,7 @@ public abstract class CellViewModel {
 
     protected static final double DEFAULT_SCALE = 1;
     protected static final double EPSILON = 1e-3;
-    protected   BoardViewModel boardViewModel; // Add a reference to BoardViewModel
+    protected   BoardViewModel4Design boardViewModel; // Add a reference to BoardViewModel
     protected Element baseElement = new Ground(); // Pour l'élément de base (joueur ou boîte)
     protected boolean hasGoal = false; // Pour savoir si un goal est présent
 
@@ -36,7 +36,7 @@ public abstract class CellViewModel {
         this.board = board;
     }
 
-    protected abstract void setBoardViewModel(BoardViewModel boardViewModel);
+    protected abstract void setBoardViewModel(BoardViewModel4Design boardViewModel);
 
     public abstract void play();
 

@@ -5,10 +5,11 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Insets;
 import javafx.scene.layout.GridPane;
 import sokoban.viewmodel.GridViewModel;
+import sokoban.viewmodel.GridViewModel4Design;
 
 public class GridView4Design extends GridPane {
     protected static final int PADDING = 20;
-    GridView4Design(GridViewModel gridViewModel, DoubleBinding gridWidth, DoubleBinding gridHeight) {
+    GridView4Design(GridViewModel4Design gridViewModel, DoubleBinding gridWidth, DoubleBinding gridHeight) {
         setGridLinesVisible(true);
         setPadding(new Insets(PADDING));
 
