@@ -36,11 +36,14 @@ public class CellViewModel4Design extends CellViewModel{
     @Override
     public void addObject() {
         Element selectedTool = boardViewModel.getSelectedTool();
-        if (selectedTool.getType()== CellValue.PLAYER && boardViewModel.hasPlayer()) {
+        System.out.println("Attempting to add: " + selectedTool.getType());
+        if (selectedTool.getType() == CellValue.PLAYER && boardViewModel.hasPlayer()) {
             System.out.println("A player is already present on the grid. Cannot add another.");
             return;
         }
+        System.out.println("Is cell empty? " + isEmpty());
         if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
+            System.out.println("Adding object to cell");
             updateCellValue(selectedTool);
         }
     }

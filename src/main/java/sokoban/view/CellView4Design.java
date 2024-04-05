@@ -140,6 +140,8 @@ public class CellView4Design extends StackPane {
                 int startLine = (int) Math.round(event.getY() / sizeProperty.get());
                 System.out.println("Start Line: " + startLine);
                 System.out.println("Start Column: " + startCol);
+                cellViewModel4Design.addObject(); // Ajoute l'objet
+
 
             }
         });
