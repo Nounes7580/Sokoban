@@ -10,6 +10,8 @@ import sokoban.model.element.Ground;
 
 
 public abstract class CellViewModel {
+
+
     protected static final double DEFAULT_SCALE = 1;
     protected static final double EPSILON = 1e-3;
     protected   BoardViewModel boardViewModel; // Add a reference to BoardViewModel

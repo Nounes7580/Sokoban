@@ -144,7 +144,6 @@ public class BoardView4Design extends BoardView {
 
                 } else if (result.isPresent() && result.get() == buttonTypeNo) {
                     Stage stage = (Stage) this.getScene().getWindow();
-
                     new BoardView4Play(stage,new BoardViewModel4Play(boardDesignViewModel.getBoard()));
 
                 }
@@ -156,9 +155,11 @@ public class BoardView4Design extends BoardView {
         });
 
         // Désactive le bouton "Play" basé sur le message de validation
-        playButton.disableProperty().bind(
+       /* playButton.disableProperty().bind(
                 boardDesignViewModel.validationMessageProperty().isNotEmpty()
         );
+
+        */
 
         // Centre le bouton dans le conteneur
         playButtonContainer.getChildren().add(playButton);

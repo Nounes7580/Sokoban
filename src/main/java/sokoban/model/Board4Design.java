@@ -30,14 +30,6 @@ public class Board4Design  {
     protected IntegerProperty maxFilledCells = new SimpleIntegerProperty();
 
 
-    public Board4Design(){
-        grid4Design=new Grid4Design();
-        maxFilledCells.set(maxFilledCells());
-        isFull = Bindings.createBooleanBinding(() -> filledCellsCount.get() >= maxFilledCells.get(), filledCellsCount, maxFilledCells);
-        grid4Design.filledCellsCountProperty().addListener((obs, oldCount, newCount) -> filledCellsCount.set(newCount.longValue()));
-        maxFilledCells.addListener((obs, oldVal, newVal) -> isFull = filledCellsCount.greaterThanOrEqualTo(newVal.intValue()));
-    }
-
 
     public Board4Design(int width, int height) {
         grid4Design = new Grid4Design(width, height);

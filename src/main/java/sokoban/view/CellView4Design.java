@@ -22,6 +22,7 @@ public class CellView4Design extends CellView {
     private final ImageView goalImageView = new ImageView(goalImage);
     private final ImageView imageView = new ImageView();
 
+    private CellView4Design cellView4Design;
 
     public CellView4Design(CellViewModel cellViewModel, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
         super(cellViewModel, sizeProperty,gridPane, line, col);

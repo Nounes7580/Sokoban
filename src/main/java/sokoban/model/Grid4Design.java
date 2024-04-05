@@ -14,11 +14,7 @@ import java.util.Arrays;
 public class Grid4Design extends Grid{
     protected LongBinding filledCellsCount;
 
-
-
     protected Cell4Design[][] cell4Design;
-
-    public Grid4Design(){}
 
     public Grid4Design(int width, int height) {
         this.gridWidth.set(width);
