@@ -17,8 +17,11 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import sokoban.model.Board4Play;
 import sokoban.model.element.*;
+import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Design;
+import sokoban.viewmodel.BoardViewModel4Play;
 
 import java.io.File;
 import java.util.Optional;
@@ -135,10 +138,15 @@ public class BoardView4Design extends BoardView {
                 Optional<ButtonType> result = confirmationDialog.showAndWait();
                 if (result.isPresent() && result.get() == buttonTypeYes) {
                     // Méthode pour sauvegarder
-                    handleSaveAs(new Stage());
-                    // TODO : Afficher la nouvelle vue après la sauvegarde
+                    Stage stage = (Stage) this.getScene().getWindow();
+                    handleSaveAs(stage);
+                    new BoardView4Play(stage,new BoardViewModel4Play(boardDesignViewModel.getBoard()));
+
                 } else if (result.isPresent() && result.get() == buttonTypeNo) {
-                    // TODO : Afficher la nouvelle vue sans sauvegarder
+                    Stage stage = (Stage) this.getScene().getWindow();
+
+                    new BoardView4Play(stage,new BoardViewModel4Play(boardDesignViewModel.getBoard()));
+
                 }
                 // Si "Annuler" est choisi, fermez simplement la boîte de dialogue sans rien faire d'autre
             } else {
@@ -160,6 +168,8 @@ public class BoardView4Design extends BoardView {
         // Positionne le conteneur du bouton "Play" en bas du BorderPane
         setBottom(playButtonContainer);
     }
+
+
 
 
 

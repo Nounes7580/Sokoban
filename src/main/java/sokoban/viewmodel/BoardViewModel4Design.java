@@ -12,6 +12,9 @@ import java.io.File;
 
 public class BoardViewModel4Design extends BoardViewModel{
     private final GridViewModel gridViewModel;
+
+
+
     private final Board4Design board;
     private final ObjectProperty<Element> selectedTool = new SimpleObjectProperty<>();
 
@@ -63,6 +66,9 @@ public class BoardViewModel4Design extends BoardViewModel{
 
     public  int getGridWidth() {
         return board.getGrid().getGridWidth();
+    }
+    public Board4Design getBoard() {
+        return board;
     }
 
     public void updateValidationMessage() {

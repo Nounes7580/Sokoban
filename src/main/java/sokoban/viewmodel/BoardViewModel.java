@@ -19,7 +19,6 @@ public abstract class BoardViewModel {
     public abstract BooleanProperty gridResetProperty();
 
     public BoardViewModel() {
-
     }
     public abstract int getGridWidth();
 

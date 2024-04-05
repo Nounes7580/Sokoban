@@ -1,5 +1,6 @@
 package sokoban.model;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -11,15 +12,32 @@ import sokoban.model.element.Player;
 import java.util.Arrays;
 
 public class Grid4Design extends Grid{
+    protected LongBinding filledCellsCount;
+
+
+
+    protected Cell4Design[][] cell4Design;
+
+    public Grid4Design(){}
+
     public Grid4Design(int width, int height) {
-        super(width, height);
+        this.gridWidth.set(width);
+        this.gridHeight.set(height);
+        this.cell4Design = new Cell4Design[gridWidth.get()][gridHeight.get()];
+        initializeCells();
+
+        filledCellsCount = Bindings.createLongBinding(() -> Arrays
+                .stream(cell4Design)
+                .flatMap(Arrays::stream)
+                .filter(cell -> !(cell.isEmpty()))
+                .count(), gridChanged);
     }
 
-    @Override
+
     protected void initializeCells() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
-                matrix[i][j] = new Cell4Design();
+                cell4Design[i][j] = new Cell4Design();
             }
         }
     }
@@ -28,7 +46,7 @@ public class Grid4Design extends Grid{
     public void resetGrid(int newWidth, int newHeight) {
         this.gridWidth.set(newWidth);
         this.gridHeight.set(newHeight);
-        this.matrix = new Cell[newWidth][newHeight];
+        this.cell4Design = new Cell4Design[newWidth][newHeight];
         initializeCells();
         triggerGridChange();
     }
@@ -49,7 +67,7 @@ public class Grid4Design extends Grid{
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
-                if (matrix[i][j].getValue().contains(new Player()) || (matrix[i][j].getValue().contains(new Player())&&matrix[i][j].getValue().contains(new Goal()))) {
+                if (cell4Design[i][j].getValue().contains(new Player()) || (cell4Design[i][j].getValue().contains(new Player())&&cell4Design[i][j].getValue().contains(new Goal()))) {
                     return new int[]{i, j}; // Retourne les coordonnées du joueur
                 }
             }
@@ -67,13 +85,15 @@ public class Grid4Design extends Grid{
     public int getGridHeight() {
         return gridHeight.get();
     }
-
+    public Cell4Design getCell4Design(int i, int j) {
+        return cell4Design[i][j];
+    }
     @Override
    protected ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         if (line < 0 || col < 0 || line >= gridWidth.get() || col >= gridHeight.get()) {
             throw new IllegalArgumentException("Index out of bounds");
         }
-        return matrix[line][col].getValue();
+        return cell4Design[line][col].getValue();
     }
 
     @Override
@@ -83,13 +103,13 @@ public class Grid4Design extends Grid{
             return; // Position invalide.
         }
 
-        Cell cell = matrix[line][col];
+        Cell cell = cell4Design[line][col];
 
         // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
         if (toolValue.getType() == CellValue.PLAYER) {
             int[] playerPos = findPlayerPosition();
             if (playerPos != null) {
-                matrix[playerPos[0]][playerPos[1]].play(new Player());
+                cell4Design[playerPos[0]][playerPos[1]].play(new Player());
             }
         }
 
@@ -118,7 +138,7 @@ public class Grid4Design extends Grid{
 
     @Override
     protected boolean isEmpty(int line, int col) {
-        return matrix[line][col].isEmpty();
+        return cell4Design[line][col].isEmpty();
     }
 
     @Override
@@ -128,21 +148,21 @@ public class Grid4Design extends Grid{
 
     @Override
     public boolean hasAtLeastOneTarget() {
-        return Arrays.stream(matrix)
+        return Arrays.stream(cell4Design)
                 .flatMap(Arrays::stream)
                 .anyMatch(cell -> cell.getValue().contains(new Goal()));
     }
 
     @Override
     public boolean hasAtLeastOneBox() {
-        return Arrays.stream(matrix)
+        return Arrays.stream(cell4Design)
                 .flatMap(Arrays::stream)
                 .anyMatch(cell -> cell.getValue().contains(new Box()));
     }
 
     @Override
     public long getTargetCount() {
-        return Arrays.stream(matrix)
+        return Arrays.stream(cell4Design)
                 .flatMap(Arrays::stream)
                 .filter(cell -> cell.getValue().contains(new Goal()))
                 .count();
@@ -150,7 +170,7 @@ public class Grid4Design extends Grid{
 
     @Override
     public long getBoxCount() {
-        return Arrays.stream(matrix)
+        return Arrays.stream(cell4Design)
                 .flatMap(Arrays::stream)
                 .filter(cell -> cell.getValue().contains(new Box()))
                 .count();
@@ -161,15 +181,16 @@ public class Grid4Design extends Grid{
         return gridChanged.get();
     }
 
-    @Override
-    public Cell[][] getMatrix() {
-        return matrix;
+
+    public Cell4Design[][] getMatrix() {
+        return cell4Design;
     }
+
 
     @Override
     public void setCellValue(int line, int col, Element newValue) {
         if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
-            matrix[line][col].addValue(newValue);
+            cell4Design[line][col].addValue(newValue);
             triggerGridChange();
         }
     }

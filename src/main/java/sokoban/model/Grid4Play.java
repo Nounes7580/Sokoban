@@ -1,19 +1,39 @@
 package sokoban.model;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.Element;
 
+import java.util.Arrays;
+
 public class Grid4Play extends Grid{
-    public Grid4Play(int width, int height) {
-        super(width, height);
+
+    private Cell4play[][] cell4Play;
+
+
+
+
+    public Grid4Play(Grid4Design grid4Design){
+        this.gridWidth.set(grid4Design.getGridWidth());
+        this.gridHeight.set(grid4Design.getGridHeight());
+        this.cell4Play= new Cell4play[gridWidth.get()][gridHeight.get()];
+        for (int i = 0; i < gridWidth.get(); i++) {
+            for (int j = 0; j < gridHeight.get(); j++) {
+                cell4Play[i][j] = new Cell4play(grid4Design.getCell4Design(i,j));
+            }
+        }
+
+        /*filledCellsCount = Bindings.createLongBinding(() -> Arrays
+                .stream(matrix)
+                .flatMap(Arrays::stream)
+                .filter(cell -> !(cell.isEmpty()))
+                .count(), gridChanged);
+
+         */
     }
 
-    @Override
-    protected void initializeCells() {
-
-    }
 
     @Override
     protected void resetGrid(int newWidth, int newHeight) {
@@ -95,10 +115,11 @@ public class Grid4Play extends Grid{
         return false;
     }
 
-    @Override
-    public Cell[][] getMatrix() {
-        return new Cell[0][];
+   /* public Cell4Design[][] getMatrix() {
+        return cell4Design;
     }
+
+    */
 
     @Override
     public void setCellValue(int line, int col, Element newValue) {

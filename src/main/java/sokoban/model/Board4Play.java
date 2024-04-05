@@ -5,25 +5,26 @@ import sokoban.model.element.Goal;
 import sokoban.model.element.Ground;
 import sokoban.model.element.Player;
 
-public class Board4Play extends Board {
+public class Board4Play  {
 
-    public Board4Play(int width, int height) {
-        super(width, height);
+    public Grid4Play grid4Play;
+
+    public Board4Play(Board4Design board4Design) {
+        grid4Play=new Grid4Play(board4Design.grid4Design);
     }
 
 
 
-    @Override
-    public boolean isPositionValid(int line, int col) {
+
+    /*public boolean isPositionValid(int line, int col) {
         // Validate position for gameplay
-        return line >= 0 && line < grid.getGridWidth() && col >= 0 && col < grid.getGridHeight();
+        return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid.getGridHeight();
     }
 
-    @Override
-    protected long calculateFilledCells() {
-        // Calculate filled cells specific to gameplay
-        return grid.filledCellsCountProperty().get();
-    }
+     */
+
+
+
 
 
 
@@ -32,7 +33,7 @@ public class Board4Play extends Board {
         // Gameplay-specific implementation of play
     }
 
-    public void movePlayer(Direction direction) {
+  /*  public void movePlayer(Direction direction) {
         int[] playerPosition = grid.findPlayerPosition();
         if (playerPosition == null) {
             // Handle the case where the player is not found
@@ -67,6 +68,8 @@ public class Board4Play extends Board {
         return targetCell.isEmpty() || targetCell.getValue().contains(new Goal());
     }
 
+
+   */
 
     public enum Direction {
         UP(0, -1), DOWN(0, 1), LEFT(-1, 0), RIGHT(1, 0);

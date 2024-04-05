@@ -9,10 +9,11 @@ import javafx.scene.layout.GridPane;
 import sokoban.model.CellValue;
 import sokoban.model.element.Element;
 import sokoban.viewmodel.CellViewModel;
+import sokoban.viewmodel.CellViewModel4Play;
 
 public class CellView4Play extends CellView {
-    CellView4Play(CellViewModel cellViewModel, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
-        super(cellViewModel, sizeProperty, gridPane, line, col);
+    CellView4Play(CellViewModel4Play cellViewModel4Play, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
+        super(cellViewModel4Play, sizeProperty, gridPane, line, col);
     }
 
     @Override

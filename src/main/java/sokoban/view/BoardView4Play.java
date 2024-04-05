@@ -4,6 +4,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import sokoban.model.Board4Play;
 import sokoban.viewmodel.BoardViewModel;
+import sokoban.viewmodel.BoardViewModel4Play;
 
 public class BoardView4Play extends BoardView{
     @Override
@@ -21,8 +22,8 @@ public class BoardView4Play extends BoardView{
         return 0;
     }
 
-    public BoardView4Play(Stage primaryStage, BoardViewModel boardViewModel) {
-        super(primaryStage, boardViewModel);
+    public BoardView4Play(Stage primaryStage, BoardViewModel4Play boardViewModel4Play) {
+        super(primaryStage, boardViewModel4Play);
     }
 
     //TODO: Separer ca pour le jeu et pour l'editeur

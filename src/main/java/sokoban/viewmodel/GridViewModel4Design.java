@@ -3,8 +3,10 @@ package sokoban.viewmodel;
 import sokoban.model.Board4Design;
 
 public class GridViewModel4Design extends GridViewModel{
+
+    protected final Board4Design board;
     GridViewModel4Design(Board4Design board) {
-        super(board);
+        this.board = board;
     }
 
     @Override
