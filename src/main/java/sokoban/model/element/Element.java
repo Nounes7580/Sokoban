@@ -10,9 +10,9 @@ public abstract class Element {
 
     private CellValue type;
     protected int id;
-    public Element(CellValue type){
-        this.type=type;
-        this.id=id;
+
+    public Element(CellValue type) {
+        this.type = type;
     }
 
     public int getId() {

@@ -3,19 +3,24 @@ package sokoban.view;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import sokoban.model.CellValue;
+import sokoban.model.element.Box;
 import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Play;
 import sokoban.viewmodel.CellViewModel;
 import sokoban.viewmodel.CellViewModel4Play;
+import javafx.scene.text.Font;
 
 public class CellView4Play extends StackPane {
     protected static final Image playerImage = new Image("player.png");
@@ -75,8 +80,21 @@ public class CellView4Play extends StackPane {
     protected void updateView(ObservableList<Element> list) {
         getChildren().clear();
         getChildren().add(backgroundImageView);
-        for (Element value : list) {
-            addImageViewForCellValue(value.getType());
+
+        for (Element element : list) {
+            if (element instanceof Box) {
+                ImageView boxImageView = new ImageView(boxImage);
+                configureImageView(boxImageView);
+                getChildren().add(boxImageView);
+
+                Label numberLabel = new Label(String.valueOf(element.getId())); // Assurez-vous que c'est bien `getId()`
+                numberLabel.setFont(new Font(24));
+                numberLabel.setTextFill(Color.BLACK);
+                StackPane.setAlignment(numberLabel, Pos.TOP_LEFT);
+                getChildren().add(numberLabel);
+            } else {
+                addImageViewForCellValue(element.getType());
+            }
         }
     }
 

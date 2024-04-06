@@ -188,7 +188,9 @@ public class BoardView4Design extends BorderPane {
     private void createPlayButton() {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
-            // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
+            Box.resetIdCounter();
+
+                // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
             if (boardDesignViewModel.isGridChanged()) {
                 Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmationDialog.setTitle("Confirmation Dialog");
