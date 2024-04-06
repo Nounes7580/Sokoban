@@ -59,25 +59,23 @@ public class Board4Play {
             int boxNewRow = newRow + direction.getDeltaRow();
             int boxNewCol = newCol + direction.getDeltaCol();
 
-            // Check if the new position for the box is valid
-            if (!isPositionValid(boxNewRow, boxNewCol)) {
-                System.out.println("Move is invalid: Box cannot be moved to " + boxNewRow + ", " + boxNewCol);
-                return;
+            if (isPositionValid(boxNewRow, boxNewCol)) {
+                System.out.println("Moving box to: (" + boxNewRow + ", " + boxNewCol + ")");
+                grid4Play.play(boxNewRow, boxNewCol, createElementFromCellValue(CellValue.BOX));
+                grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
+            } else {
+                System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
+                return; // Prevent the player from moving into the box if the box can't move.
             }
-
-            // Move the box
-            System.out.println("Moving box to: (" + boxNewRow + ", " + boxNewCol + ")");
-            grid4Play.play(boxNewRow, boxNewCol, createElementFromCellValue(CellValue.BOX));
-            System.out.println("Clearing old box position at: (" + newRow + ", " + newCol + ")");
-            grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
         }
 
-        // Move the player
+        // Move the player if the box's movement is valid or there is no box in the cell.
         grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));
         grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.EMPTY));
-//update the view
+
         moveCount++;
     }
+
     public int getMoveCount() {
         return moveCount;
     }
@@ -124,11 +122,23 @@ public class Board4Play {
 
 
     private boolean isPositionValid(int boxNewRow, int boxNewCol) {
-        if (boxNewRow >= 0 && boxNewRow < grid4Play.getGridHeight() && boxNewCol >= 0 && boxNewCol < grid4Play.getGridWidth()) {
-            Cell boxNewCell = grid4Play.getMatrix()[boxNewRow][boxNewCol];
-            return !(boxNewCell.getValue().contains(CellValue.WALL) || boxNewCell.getValue().contains(CellValue.BOX));
+        // Check if the new position is within the grid boundaries.
+        if (boxNewRow < 0 || boxNewRow >= grid4Play.getGridWidth() || boxNewCol < 0 || boxNewCol >= grid4Play.getGridHeight()) {
+            System.out.println("Box move out of bounds: (" + boxNewRow + ", " + boxNewCol + ")");
+            return false;
         }
-        return false;
+
+        // Retrieve the cell at the box's new position.
+        Cell boxNewCell = grid4Play.getMatrix()[boxNewRow][boxNewCol];
+
+        // Check if the new position is free (not containing a box or a wall).
+        boolean isPositionFree = !(boxNewCell.hasElementOfType(Box.class) || boxNewCell.hasElementOfType(Wall.class));
+
+        if (!isPositionFree) {
+            System.out.println("Box move blocked by another element at: (" + boxNewRow + ", " + boxNewCol + ")");
+        }
+
+        return isPositionFree;
     }
     public Element createElementFromCellValue(CellValue value) {
         switch (value) {
