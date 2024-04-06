@@ -78,10 +78,14 @@ public class BoardView4Play extends BorderPane {
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();
-            setupKeyControls(scene);
         });
         scene.getRoot().requestFocus();
+        setupKeyControls(scene);
+
+
         stage.show();
+        this.requestFocus();  // Request focus on the BorderPane itself
+
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
 
@@ -140,7 +144,6 @@ public class BoardView4Play extends BorderPane {
         goalsLabel.getStyleClass().add("goals-label");
 
         // Debugging line to print out the CSS classes of scoreTitleLabel
-        System.out.println("CSS classes for scoreTitleLabel: " + scoreTitleLabel.getStyleClass());
 
         // Arrange labels vertically
         VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel);
@@ -254,7 +257,10 @@ public class BoardView4Play extends BorderPane {
     }
 
     protected void setupKeyControls(Scene scene) {
+        System.out.println("Setting up key controls");
         scene.setOnKeyPressed(event -> {
+            System.out.println("Key pressed: " + event.getCode()); // This should output the key pressed
+
             Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
@@ -275,9 +281,11 @@ public class BoardView4Play extends BorderPane {
                     break;
             }
             if (direction != null) {
+                System.out.println("Moving player in direction: " + direction);
                 boardViewModel4Play.movePlayer(direction);
-                event.consume(); // Consomme l'événement pour éviter toute action par défaut
+                event.consume();
             }
+
         });
     }
 

@@ -34,7 +34,6 @@ public class CellViewModel4Play {
     }
 
     public ReadOnlyListProperty<Element> valueProperty() {
-        System.out.println(board4Play.valueProperty(line, col));
         return board4Play.valueProperty(line, col);
     }
 

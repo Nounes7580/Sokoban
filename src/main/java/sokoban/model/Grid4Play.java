@@ -5,6 +5,7 @@ import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.Element;
+import sokoban.model.element.Ground;
 import sokoban.model.element.Player;
 
 import java.util.Arrays;
@@ -64,11 +65,14 @@ public class Grid4Play extends Grid{
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
+                System.out.println("Scanning position (" + i + ", " + j + ")");
                 if (cell4Play[i][j].getValue().stream().anyMatch(e -> e instanceof Player)) {
+                    System.out.println("Player found at position (" + i + ", " + j + ")");
                     return new int[]{i, j};
                 }
             }
         }
+        System.out.println("Player not found.");
         return null;
     }
 
@@ -92,34 +96,21 @@ public class Grid4Play extends Grid{
 
     @Override
     protected void play(int line, int col, Element toolValue) {
-        // Assurez-vous que les coordonnées sont valides.
         if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight()) {
-            return; // Position invalide.
+            return; // Invalid position.
         }
 
-         cell4Play[line][col].play(toolValue);
-
-        // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
         if (toolValue.getType() == CellValue.PLAYER) {
             int[] playerPos = findPlayerPosition();
-            if (playerPos != null) {
-                cell4Play[playerPos[0]][playerPos[1]].play(new Player());
+            if (playerPos != null && (playerPos[0] != col || playerPos[1] != line)) {
+                cell4Play[playerPos[0]][playerPos[1]].play(new Ground()); // Clear old player position.
             }
         }
 
-        // Logique simplifiée pour l'ajout d'états dans la cellule.
-        if (toolValue.getType() == CellValue.WALL || toolValue.getType() == CellValue.GROUND) {
-            // Pour WALL et GROUND, on remplace tout les états existants.
-            cell4Play[line][col].play(toolValue);
-        }
+        cell4Play[line][col].play(toolValue); // Set new player position or update cell with new toolValue.
 
-        // Si on ajoute autre chose qu'un GOAL, et que GOAL est déjà présent, on ne le retire pas.
-        // Cela permet de garder le GOAL même quand on ajoute PLAYER ou BOX sur celui-ci.
-
-
-        triggerGridChange();
+        triggerGridChange(); // Notify about grid change.
     }
-
     @Override
     protected LongBinding filledCellsCountProperty() {
         return null;
@@ -169,5 +160,9 @@ public class Grid4Play extends Grid{
     @Override
     public void setCellValue(int line, int col, Element newValue) {
 
+    }
+
+    public Cell[][] getMatrix() {
+        return cell4Play;
     }
 }

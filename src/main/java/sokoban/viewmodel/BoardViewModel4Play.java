@@ -44,12 +44,14 @@ public class BoardViewModel4Play{
 
 
     public void movePlayer(Board4Play.Direction direction) {
+        System.out.println("ViewModel is attempting to move player: " + direction);
         if (board4Play != null) {
             board4Play.movePlayer(direction);
         } else {
-            System.out.println("Erreur : board4Play n'est pas initialisé.");
+            System.out.println("Error: board4Play is not initialized.");
         }
     }
+
 
 
 
