@@ -30,7 +30,7 @@ import java.util.Optional;
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
     private final Label scoreTitleLabel = new Label("Score");
-    private final Label movesLabel = new Label("Number of moves played: 0");
+    private static final Label movesLabel = new Label("Number of moves played: 0");
     private final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
 
     private final HBox headerBox = new HBox();
@@ -53,7 +53,6 @@ public class BoardView4Play extends BorderPane {
         start(primaryStage);
 
 
-
         createHeader(); // Ajoutez le label de validation dans cette méthode
         configMainComponents(primaryStage);
         createGrid();
@@ -74,7 +73,6 @@ public class BoardView4Play extends BorderPane {
         scene.getStylesheets().add(cssFile);
 
 
-
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();
@@ -91,6 +89,7 @@ public class BoardView4Play extends BorderPane {
 
 
     }
+
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
@@ -108,8 +107,7 @@ public class BoardView4Play extends BorderPane {
             );
 
 
-
-            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+            gridSizeBinding.addListener((obs, oldVal, newVal) -> {
                 System.out.println("grid " + newVal);
             });
 
@@ -136,7 +134,10 @@ public class BoardView4Play extends BorderPane {
             }
         });
     }
-
+    public static void updateMovesLabel(int moveCount) {
+        // Assuming movesLabel is static or you have an instance to access it
+        movesLabel.setText("Number of moves played: " + moveCount);
+    }
 
     private VBox createHeader() {
         scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title
@@ -157,11 +158,6 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-
-
-
-
-
     protected double getToolbarWidth() {
         return toolBar.getWidth();
 
@@ -178,22 +174,12 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-
     private void configMainComponents(Stage stage) {
         // Since we're removing the menu, we don't call initializeMenu here
         initializeToolBar(stage);
         topContainer.getChildren().add(createHeader()); // Removed menuBar from the topContainer
         this.setTop(topContainer);
     }
-
-
-
-
-
-
-
-
-
 
 
     private void initializeToolBar(Stage primaryStage) {
@@ -229,10 +215,6 @@ public class BoardView4Play extends BorderPane {
         // Ajoute le conteneur à la barre d'outils
         toolBar.getChildren().add(container);
     }
-
-
-
-
 
 
     private void initializeMenu(Stage primaryStage) {
@@ -290,17 +272,17 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-
-
     private TextField createNumericTextField() {
         return new TextField() {
-            @Override public void replaceText(int start, int end, String text) {
+            @Override
+            public void replaceText(int start, int end, String text) {
                 if (text.matches("[0-9]*")) {
                     super.replaceText(start, end, text);
                 }
             }
 
-            @Override public void replaceSelection(String text) {
+            @Override
+            public void replaceSelection(String text) {
                 if (text.matches("[0-9]*")) {
                     super.replaceSelection(text);
                 }

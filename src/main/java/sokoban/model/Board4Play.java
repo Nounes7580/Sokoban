@@ -19,6 +19,7 @@ public class Board4Play {
     public Board4Play(Board4Design board4Design) {
         grid4Play=new Grid4Play(board4Design.grid4Design);
     }
+    private int moveCount = 0;
 
 
     public void play(int line, int col, Element toolValue) {
@@ -62,6 +63,12 @@ public class Board4Play {
         grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));  // Set new position
 
         System.out.println("Player moved to: " + newRow + ", " + newCol);
+        moveCount++;
+        System.out.println("Move count: " + moveCount);
+
+    }
+    public int getMoveCount() {
+        return moveCount;
     }
 
     private boolean isPositionValid(int boxNewRow, int boxNewCol) {
