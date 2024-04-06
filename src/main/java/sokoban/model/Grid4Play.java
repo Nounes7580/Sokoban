@@ -22,6 +22,8 @@ public class Grid4Play extends Grid{
         this.gridHeight.set(grid4Design.getGridHeight());
         this.cell4Play = new Cell4play[gridWidth.get()][gridHeight.get()];
         initializeCells(grid4Design);
+        System.out.println("Grid Width: " + this.gridWidth.get());
+        System.out.println("Grid Height: " + this.gridHeight.get());
     }
 
         /*filledCellsCount = Bindings.createLongBinding(() -> Arrays
@@ -65,7 +67,6 @@ public class Grid4Play extends Grid{
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
-                System.out.println("Scanning position (" + i + ", " + j + ")");
                 if (cell4Play[i][j].getValue().stream().anyMatch(e -> e instanceof Player)) {
                     System.out.println("Player found at position (" + i + ", " + j + ")");
                     return new int[]{i, j};

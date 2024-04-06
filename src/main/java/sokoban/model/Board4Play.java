@@ -82,7 +82,7 @@ public class Board4Play {
     }
     private boolean isMoveValid(int newRow, int newCol) {
         // Check boundaries
-        if (newRow < 0 || newRow >= grid4Play.getGridHeight() || newCol < 0 || newCol >= grid4Play.getGridWidth()) {
+        if (newRow < 0 || newRow >= grid4Play.getGridWidth() || newCol < 0 || newCol >= grid4Play.getGridHeight()) {
             return false;
         }
         // Check if the target cell is empty or contains a goal
@@ -90,7 +90,10 @@ public class Board4Play {
         return targetCell.isEmpty() || targetCell.getValue().contains(CellValue.GOAL);
     }
     public enum Direction {
-        UP(-1, 0), DOWN(1, 0), LEFT(0, -1), RIGHT(0, 1);
+        LEFT(-1, 0),
+        RIGHT(1, 0),
+        UP(0, -1),
+        DOWN(0, 1);
         private final int deltaRow;
         private final int deltaCol;
         Direction(int deltaRow, int deltaCol) {
