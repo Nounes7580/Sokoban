@@ -5,6 +5,7 @@ import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.Element;
+import sokoban.model.element.Goal;
 import sokoban.model.element.Ground;
 import sokoban.model.element.Player;
 
@@ -165,5 +166,20 @@ public class Grid4Play extends Grid{
 
     public Cell[][] getMatrix() {
         return cell4Play;
+    }
+
+    public void addPlayerToCell(int newRow, int newCol) {
+        if (newRow < 0 || newRow >= gridWidth.get() || newCol < 0 || newCol >= gridHeight.get()) {
+            System.out.println("Move is invalid: Player out of bounds.");
+            return;
+        }
+
+        Cell targetCell = cell4Play[newRow][newCol];
+        System.out.println("Target cell value: " + targetCell.getValue());
+
+        // Check if the target cell is empty or a goal
+        if (targetCell.isEmpty() || targetCell.hasElementOfType(Goal.class)) {
+            play(newRow, newCol, new Player());
+        }
     }
 }
