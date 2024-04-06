@@ -70,12 +70,23 @@ public class Board4Play {
         }
 
         // Move the player if the box's movement is valid or there is no box in the cell.
+        // Before moving the player, save the old cell's type
+        boolean isOldCellGoal = grid4Play.getMatrix()[playerPosition[0]][playerPosition[1]].hasElementOfType(Goal.class);
+
+// Move the player to the new cell
         grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));
-        grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.EMPTY));
+
+// Replace the player's old position with the correct element
+        if (isOldCellGoal) {
+            System.out.println("Player moved from a goal cell.");
+            grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.GOAL));
+        } else {
+            grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.EMPTY));
+        }
+
 
         moveCount++;
     }
-
     public int getMoveCount() {
         return moveCount;
     }
@@ -146,6 +157,8 @@ public class Board4Play {
                 return new Player();
             case BOX:
                 return new Box();
+            case GOAL:
+                return new Goal();
             // Add cases for other CellValue types
             case EMPTY:
             default:
