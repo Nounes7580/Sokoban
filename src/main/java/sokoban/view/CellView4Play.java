@@ -73,10 +73,35 @@ public class CellView4Play extends StackPane {
 
 
     protected void updateView(ObservableList<Element> list) {
-        getChildren().clear();
-        getChildren().add(backgroundImageView);
+        System.out.println("Updating view for cell at (" + line + ", " + col + ")");
+        getChildren().clear();  // Clear current view
+        getChildren().add(backgroundImageView);  // Add the background image
+
         for (Element value : list) {
-            addImageViewForCellValue(value.getType());
+            System.out.println("Element type: " + value.getType());
+            switch (value.getType()) {
+                case PLAYER:
+                    System.out.println("Adding player image to cell at (" + line + ", " + col + ")");
+                    addImageView(playerImage);
+                    break;
+                case GROUND:
+                    System.out.println("Ground cell at (" + line + ", " + col + ")");
+                    // If you have a specific ground image, ensure it's displayed here.
+                    break;
+                // Handle other cases similarly...
+                case BOX:
+                    System.out.println("Adding box image to cell at (" + line + ", " + col + ")");
+                    addImageView(boxImage);
+                    break;
+                    case WALL:
+                    System.out.println("Adding wall image to cell at (" + line + ", " + col + ")");
+                    addImageView(wallImage);
+                    break;
+                case GOAL:
+                    System.out.println("Adding goal image to cell at (" + line + ", " + col + ")");
+                    addImageView(goalImage);
+                    break;
+            }
         }
     }
 
@@ -97,6 +122,7 @@ public class CellView4Play extends StackPane {
         imageView.fitWidthProperty().bind(this.widthProperty());
         imageView.fitHeightProperty().bind(this.heightProperty());
         imageView.setPreserveRatio(true);
+        System.out.println("Image view size: " + imageView.getFitWidth() + "x" + imageView.getFitHeight());
     }
 
     protected void configureBindings() {
@@ -133,13 +159,10 @@ public class CellView4Play extends StackPane {
 
                 int startCol = (int) Math.round(event.getX() / sizeProperty.get());
                 int startLine = (int) Math.round(event.getY() / sizeProperty.get());
-                System.out.println("Start Line: " + startLine);
-                System.out.println("Start Column: " + startCol);
 
             }
         });
         setOnDragDetected(event -> {
-            System.out.println("Drag detected");
             if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
                 this.startFullDrag(); // Prépare l'élément pour le suivi du glissement
             }
@@ -147,10 +170,8 @@ public class CellView4Play extends StackPane {
         });
 
         setOnMouseDragEntered(event -> {
-            System.out.println("Mouse drag entered");
             if (event.getButton() == MouseButton.SECONDARY) {
                 cellViewModel4Play.deleteObject(); // Gestion de la suppression
-                System.out.println("Object deleted");
             }
 
             else if (event.getButton() == MouseButton.PRIMARY) {
@@ -165,7 +186,6 @@ public class CellView4Play extends StackPane {
                 } else {
 
                     cellViewModel4Play.addObject(); // Ajoute l'objet
-                    System.out.println("Object added");
                 }
             }
             event.consume();

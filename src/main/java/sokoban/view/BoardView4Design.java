@@ -55,7 +55,6 @@ public class BoardView4Design extends BorderPane {
         boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 createGrid();
-                System.out.println("Grid reset");
                 this.boardDesignViewModel.gridResetProperty().set(false);
             }
         });
@@ -94,9 +93,7 @@ public class BoardView4Design extends BorderPane {
                     heightProperty()
             );
 
-            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
-                System.out.println("grid " + newVal);
-            });
+
 
             DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
                     () -> gridSizeBinding.doubleValue() * boardDesignViewModel.getGridWidth(),

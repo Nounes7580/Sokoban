@@ -16,7 +16,6 @@ public class GridView4Play extends GridPane {
         setGridLinesVisible(true);
         setPadding(new Insets(PADDING));
 
-        System.out.println("cellule");
 
         DoubleBinding cellWidth = gridWidth.subtract(PADDING * 2).divide(gridViewModel4Play.getGridWidth());
         DoubleBinding cellHeight = gridHeight.subtract(PADDING * 2).divide(gridViewModel4Play.getGridHeight());

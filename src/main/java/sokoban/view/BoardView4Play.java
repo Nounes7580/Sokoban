@@ -30,7 +30,7 @@ import java.util.Optional;
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
     private final Label scoreTitleLabel = new Label("Score");
-    private final Label movesLabel = new Label("Number of moves played: 0");
+    private static final Label movesLabel = new Label("Number of moves played: 0");
     private final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
 
     private final HBox headerBox = new HBox();
@@ -53,7 +53,6 @@ public class BoardView4Play extends BorderPane {
         start(primaryStage);
 
 
-
         createHeader(); // Ajoutez le label de validation dans cette méthode
         configMainComponents(primaryStage);
         createGrid();
@@ -74,19 +73,23 @@ public class BoardView4Play extends BorderPane {
         scene.getStylesheets().add(cssFile);
 
 
-
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();
-            setupKeyControls(scene);
         });
         scene.getRoot().requestFocus();
+        setupKeyControls(scene);
+
+
         stage.show();
+        this.requestFocus();  // Request focus on the BorderPane itself
+
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
 
 
     }
+
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
@@ -104,8 +107,7 @@ public class BoardView4Play extends BorderPane {
             );
 
 
-
-            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+            gridSizeBinding.addListener((obs, oldVal, newVal) -> {
                 System.out.println("grid " + newVal);
             });
 
@@ -132,7 +134,10 @@ public class BoardView4Play extends BorderPane {
             }
         });
     }
-
+    public static void updateMovesLabel(int moveCount) {
+        // Assuming movesLabel is static or you have an instance to access it
+        movesLabel.setText("Number of moves played: " + moveCount);
+    }
 
     private VBox createHeader() {
         scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title
@@ -140,7 +145,6 @@ public class BoardView4Play extends BorderPane {
         goalsLabel.getStyleClass().add("goals-label");
 
         // Debugging line to print out the CSS classes of scoreTitleLabel
-        System.out.println("CSS classes for scoreTitleLabel: " + scoreTitleLabel.getStyleClass());
 
         // Arrange labels vertically
         VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel);
@@ -152,11 +156,6 @@ public class BoardView4Play extends BorderPane {
 
         return headerContainer;
     }
-
-
-
-
-
 
 
     protected double getToolbarWidth() {
@@ -175,22 +174,12 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-
     private void configMainComponents(Stage stage) {
         // Since we're removing the menu, we don't call initializeMenu here
         initializeToolBar(stage);
         topContainer.getChildren().add(createHeader()); // Removed menuBar from the topContainer
         this.setTop(topContainer);
     }
-
-
-
-
-
-
-
-
-
 
 
     private void initializeToolBar(Stage primaryStage) {
@@ -228,10 +217,6 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-
-
-
-
     private void initializeMenu(Stage primaryStage) {
         // creation du menu Fichier
         Menu fileMenu = new Menu("File");
@@ -254,11 +239,14 @@ public class BoardView4Play extends BorderPane {
     }
 
     protected void setupKeyControls(Scene scene) {
+        System.out.println("Setting up key controls");
         scene.setOnKeyPressed(event -> {
+            System.out.println("Key pressed: " + event.getCode()); // This should output the key pressed
+
             Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
-                case W:
+                case Z:
                     direction = Board4Play.Direction.UP;
                     break;
                 case DOWN:
@@ -266,7 +254,7 @@ public class BoardView4Play extends BorderPane {
                     direction = Board4Play.Direction.DOWN;
                     break;
                 case LEFT:
-                case A:
+                case Q:
                     direction = Board4Play.Direction.LEFT;
                     break;
                 case RIGHT:
@@ -275,24 +263,26 @@ public class BoardView4Play extends BorderPane {
                     break;
             }
             if (direction != null) {
+                System.out.println("Moving player in direction: " + direction);
                 boardViewModel4Play.movePlayer(direction);
-                event.consume(); // Consomme l'événement pour éviter toute action par défaut
+                event.consume();
             }
+
         });
     }
 
 
-
-
     private TextField createNumericTextField() {
         return new TextField() {
-            @Override public void replaceText(int start, int end, String text) {
+            @Override
+            public void replaceText(int start, int end, String text) {
                 if (text.matches("[0-9]*")) {
                     super.replaceText(start, end, text);
                 }
             }
 
-            @Override public void replaceSelection(String text) {
+            @Override
+            public void replaceSelection(String text) {
                 if (text.matches("[0-9]*")) {
                     super.replaceSelection(text);
                 }
