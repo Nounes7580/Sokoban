@@ -41,8 +41,6 @@ public class Board4Play {
 
     public void movePlayer(Direction direction) {
         int[] playerPosition = grid4Play.findPlayerPosition();
-        System.out.println("Current player position: " + Arrays.toString(playerPosition));
-
         if (playerPosition == null) {
             System.out.println("Player not found.");
             return;
@@ -50,31 +48,88 @@ public class Board4Play {
 
         int newRow = playerPosition[0] + direction.getDeltaRow();
         int newCol = playerPosition[1] + direction.getDeltaCol();
-        System.out.println("Trying to move player to: " + newRow + ", " + newCol);
 
-        if (!isMoveValid(newRow, newCol)) {
+        if (!isMoveValid(newRow, newCol, direction)) {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
             return;
         }
 
-        // If the move is valid, update the grid.
-        System.out.println("Move is valid. Updating positions...");
-        grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.EMPTY));  // Clear old position
-        grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));  // Set new position
+        Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
+        if (targetCell.hasElementOfType(Box.class)) {
+            int boxNewRow = newRow + direction.getDeltaRow();
+            int boxNewCol = newCol + direction.getDeltaCol();
 
-        System.out.println("Player moved to: " + newRow + ", " + newCol);
+            // Check if the new position for the box is valid
+            if (!isPositionValid(boxNewRow, boxNewCol)) {
+                System.out.println("Move is invalid: Box cannot be moved to " + boxNewRow + ", " + boxNewCol);
+                return;
+            }
+
+            // Move the box
+            System.out.println("Moving box to: (" + boxNewRow + ", " + boxNewCol + ")");
+            grid4Play.play(boxNewRow, boxNewCol, createElementFromCellValue(CellValue.BOX));
+            System.out.println("Clearing old box position at: (" + newRow + ", " + newCol + ")");
+            grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
+        }
+
+        // Move the player
+        grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));
+        grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.EMPTY));
+//update the view
         moveCount++;
-        System.out.println("Move count: " + moveCount);
-
     }
     public int getMoveCount() {
         return moveCount;
     }
+    private boolean isMoveValid(int newRow, int newCol, Direction direction) {
+        System.out.println("Checking move validity for: " + newRow + ", " + newCol);
 
-    private boolean isPositionValid(int boxNewRow, int boxNewCol) {
-        return boxNewRow >= 0 && boxNewRow < grid4Play.getGridHeight() && boxNewCol >= 0 && boxNewCol < grid4Play.getGridWidth();
+        // Validate player movement bounds
+        if (newRow < 0 || newRow >= grid4Play.getGridWidth() || newCol < 0 || newCol >= grid4Play.getGridHeight()) {
+            System.out.println("Move is invalid: Player out of bounds.");
+            return false;
+        }
+
+        Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
+        System.out.println("Target cell value: " + targetCell.getValue());
+
+        // Check if the target cell is empty or a goal
+        if (targetCell.isEmpty() || targetCell.hasElementOfType(Goal.class)) {
+            return true;
+        }
+
+        // Handling box movement
+        if (targetCell.hasElementOfType(Box.class)) {
+            int boxNewRow = newRow + direction.getDeltaRow();
+            int boxNewCol = newCol + direction.getDeltaCol();
+            System.out.println("Checking next cell for box at: " + boxNewRow + ", " + boxNewCol);
+
+            // Validate box movement bounds
+            if (boxNewRow < 0 || boxNewRow >= grid4Play.getGridWidth() || boxNewCol < 0 || boxNewCol >= grid4Play.getGridHeight()) {
+                System.out.println("Move is invalid: Box out of bounds.");
+                return false;
+            }
+
+            Cell boxNextCell = grid4Play.getMatrix()[boxNewRow][boxNewCol];
+            System.out.println("Next cell value for box: " + boxNextCell.getValue());
+
+            // Check if the next cell is suitable for the box
+            boolean canMoveBox = (boxNextCell.isEmpty() || boxNextCell.hasElementOfType(Goal.class)) && !boxNextCell.hasElementOfType(Box.class);
+            System.out.println("Can move box: " + canMoveBox);
+            return canMoveBox;
+        }
+
+        return false;
     }
 
+
+    private boolean isPositionValid(int boxNewRow, int boxNewCol) {
+        if (boxNewRow >= 0 && boxNewRow < grid4Play.getGridHeight() && boxNewCol >= 0 && boxNewCol < grid4Play.getGridWidth()) {
+            Cell boxNewCell = grid4Play.getMatrix()[boxNewRow][boxNewCol];
+            return !(boxNewCell.getValue().contains(CellValue.WALL) || boxNewCell.getValue().contains(CellValue.BOX));
+        }
+        return false;
+    }
     public Element createElementFromCellValue(CellValue value) {
         switch (value) {
             case PLAYER:
@@ -87,15 +142,7 @@ public class Board4Play {
                 return new Ground(); // Assuming Ground represents an empty space
         }
     }
-    private boolean isMoveValid(int newRow, int newCol) {
-        // Check boundaries
-        if (newRow < 0 || newRow >= grid4Play.getGridWidth() || newCol < 0 || newCol >= grid4Play.getGridHeight()) {
-            return false;
-        }
-        // Check if the target cell is empty or contains a goal
-        Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
-        return targetCell.isEmpty() || targetCell.getValue().contains(CellValue.GOAL);
-    }
+
     public enum Direction {
         LEFT(-1, 0),
         RIGHT(1, 0),

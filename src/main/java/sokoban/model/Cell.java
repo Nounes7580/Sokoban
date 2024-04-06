@@ -62,7 +62,7 @@ public abstract class Cell {
         }
     }
 
-   public boolean isEmpty() {
+    public boolean isEmpty() {
         return toolObject.isEmpty() || (toolObject.contains(new Ground()) && toolObject.size() == 1);
     }
 

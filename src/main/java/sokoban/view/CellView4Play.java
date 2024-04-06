@@ -73,38 +73,36 @@ public class CellView4Play extends StackPane {
 
 
     protected void updateView(ObservableList<Element> list) {
-        System.out.println("Updating view for cell at (" + line + ", " + col + ")");
-        getChildren().clear();  // Clear current view
-        getChildren().add(backgroundImageView);  // Add the background image
+        System.out.println("Updating view for cell at (" + line + ", " + col + ") with elements: " + list);
+        getChildren().clear();
+        getChildren().add(backgroundImageView);
 
         for (Element value : list) {
-            System.out.println("Element type: " + value.getType());
+            System.out.println("Processing element type: " + value.getType() + " in cell at (" + line + ", " + col + ")");
             switch (value.getType()) {
                 case PLAYER:
                     System.out.println("Adding player image to cell at (" + line + ", " + col + ")");
                     addImageView(playerImage);
                     break;
-                case GROUND:
-                    System.out.println("Ground cell at (" + line + ", " + col + ")");
-                    // If you have a specific ground image, ensure it's displayed here.
-                    break;
-                // Handle other cases similarly...
                 case BOX:
                     System.out.println("Adding box image to cell at (" + line + ", " + col + ")");
                     addImageView(boxImage);
-                    break;
-                    case WALL:
-                    System.out.println("Adding wall image to cell at (" + line + ", " + col + ")");
-                    addImageView(wallImage);
                     break;
                 case GOAL:
                     System.out.println("Adding goal image to cell at (" + line + ", " + col + ")");
                     addImageView(goalImage);
                     break;
+                    case WALL:
+                    System.out.println("Adding wall image to cell at (" + line + ", " + col + ")");
+                    addImageView(wallImage);
+                    break;
+                case GROUND:
+                    System.out.println("Adding ground image to cell at (" + line + ", " + col + ")");
+                    addImageView(groundImage);
+                    break;
             }
         }
     }
-
     protected void addImageViewForCellValue(CellValue cellValue) {
         Image image = switch (cellValue) {
             case PLAYER -> playerImage;
