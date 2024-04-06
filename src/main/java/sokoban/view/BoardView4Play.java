@@ -246,7 +246,7 @@ public class BoardView4Play extends BorderPane {
             Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
-                case W:
+                case Z:
                     direction = Board4Play.Direction.UP;
                     break;
                 case DOWN:
@@ -254,7 +254,7 @@ public class BoardView4Play extends BorderPane {
                     direction = Board4Play.Direction.DOWN;
                     break;
                 case LEFT:
-                case A:
+                case Q:
                     direction = Board4Play.Direction.LEFT;
                     break;
                 case RIGHT:
