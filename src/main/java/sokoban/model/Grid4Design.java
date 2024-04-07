@@ -30,7 +30,7 @@ public class Grid4Design extends Grid{
     }
 
     public static void decrementBoxCount() {
-        if (boxCount > 0) {
+        if (boxCount > 1) {
             boxCount--;
         }
     }

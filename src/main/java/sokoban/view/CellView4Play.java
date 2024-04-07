@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import sokoban.model.CellValue;
+import sokoban.model.Grid4Design;
 import sokoban.model.element.Box;
 import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
@@ -93,6 +94,10 @@ public class CellView4Play extends StackPane {
                     System.out.println("Adding box image to cell at (" + line + ", " + col + ")");
                     addImageView(boxImage);
                     Box box = (Box) value;
+                    if (box.getId() == 0) { // If the box doesn't have an ID yet
+                        int newId = Grid4Design.incrementBoxCount(); // Increment the box count
+                        box.setId(newId); // Assign the new ID to the box
+                    }
                     Label label = new Label(String.valueOf(box.getId()));
                     label.setFont(new Font("Arial", 20));
                     label.setTextFill(Color.BLACK);

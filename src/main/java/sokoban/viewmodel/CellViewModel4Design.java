@@ -48,8 +48,6 @@ public class CellViewModel4Design extends CellViewModel{
         }
         if (selectedTool.getType() == CellValue.BOX) {
             Box newBox = new Box();
-            int newId = Grid4Design.incrementBoxCount(); // Obtenez l'ID pour cette nouvelle boîte
-            newBox.setId(newId); // Assignez l'ID à la nouvelle boîte
             selectedTool = newBox; // Mettez à jour selectedTool avec la nouvelle instance de Box configurée
         }
 
