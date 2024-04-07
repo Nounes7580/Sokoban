@@ -44,7 +44,10 @@ public class Board4Play {
 
 
     public static void movePlayer(Direction direction) {
-
+        if (boxesOnGoals == grid4Play.getTargetCount()) {
+            System.out.println("All boxes are on the goals. No more moves allowed.");
+            return;
+        }
         int[] playerPosition = grid4Play.findPlayerPosition();
         if (playerPosition == null) {
             System.out.println("Player not found.");
@@ -85,6 +88,7 @@ public class Board4Play {
                     grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
                 }
                 if (boxesOnGoals == grid4Play.getTargetCount()) {
+
                     BoardView4Play.displayYouWinLabel(moveCount);
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);

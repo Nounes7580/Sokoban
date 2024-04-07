@@ -76,6 +76,7 @@ public class BoardView4Play extends BorderPane {
     public static void displayYouWinLabel(int moveCount) {
         moveCount++;
         youWinLabel.setText("You win! " + moveCount + " moves, congratulations!");
+
         youWinLabel.setVisible(true);
     }
 
