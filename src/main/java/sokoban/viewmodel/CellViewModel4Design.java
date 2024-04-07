@@ -63,6 +63,9 @@ public class CellViewModel4Design extends CellViewModel{
     public void deleteObject() {
         if (!isEmpty()) {
             Cell cell = board.getGrid().getMatrix()[line][col];
+            if (cell.getValue().stream().anyMatch(e -> e instanceof Box)) {
+                Grid4Design.decrementBoxCount(); // Decrement the box count
+            }
             cell.clearValues();
             board.getGrid().triggerGridChange(); // cela a permis la mise a jour lors de la suppression lors du drag
         }

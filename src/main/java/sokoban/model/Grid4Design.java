@@ -29,6 +29,12 @@ public class Grid4Design extends Grid{
                 .count(), gridChanged);
     }
 
+    public static void decrementBoxCount() {
+        if (boxCount > 0) {
+            boxCount--;
+        }
+    }
+
 
     protected void initializeCells() {
         for (int i = 0; i < gridWidth.get(); i++) {
