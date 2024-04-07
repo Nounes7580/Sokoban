@@ -2,10 +2,7 @@ package sokoban.model;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import sokoban.model.element.Element;
-import sokoban.model.element.Goal;
-import sokoban.model.element.Ground;
-import sokoban.model.element.Player;
+import sokoban.model.element.*;
 
 public abstract class Cell {
 
@@ -52,6 +49,14 @@ public abstract class Cell {
         }
         return false;
     }
+    public Element getElementOfType(Class<? extends Element> type) {
+        for (Element e : toolObject) {
+            if (type.isInstance(e)) {
+                return e;
+            }
+        }
+        return null;
+    }
 
     public void play(Element value) {
         if (toolObject.contains(value)) {
@@ -68,7 +73,6 @@ public abstract class Cell {
     public boolean isEmpty() {
         return toolObject.isEmpty() || (toolObject.contains(new Ground()) && toolObject.size() == 1);
     }
-
 
 
 

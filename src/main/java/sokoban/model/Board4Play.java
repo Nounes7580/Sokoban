@@ -71,23 +71,20 @@ public class Board4Play {
             boolean willBoxBeOnGoal = grid4Play.getMatrix()[boxNewRow][boxNewCol].hasElementOfType(Goal.class);
 
             if (isPositionValid(boxNewRow, boxNewCol)) {
-                grid4Play.play(boxNewRow, boxNewCol, createElementFromCellValue(CellValue.BOX));
+                // Retrieve the existing Box object from the targetCell
+                Box box = (Box) targetCell.getElementOfType(Box.class);
+                // Move the existing Box object to the new cell
+                grid4Play.play(boxNewRow, boxNewCol, box);
+                if (!isBoxOnGoal && willBoxBeOnGoal) {
+                    boxesOnGoals++; // Increment the number of boxes on goals
+                }
+                if (isBoxOnGoal && !willBoxBeOnGoal) {
+                    boxesOnGoals--; // Decrement the number of boxes on goals
+                }
                 if (!isBoxOnGoal) {
                     grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
-
-                // incremente si la box est déplacée sur un goal
-                if (willBoxBeOnGoal) {
-                    boxesOnGoals++;
-                }
-
-                // décrémente si la box n'est plus sur un goal
-                if (isBoxOnGoal && !willBoxBeOnGoal) {
-                    boxesOnGoals--;
-                }
-
-                // Update  goalsLabel dans BoardView4Play
                 BoardView4Play.updateGoalsReached(boxesOnGoals);
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
@@ -96,7 +93,6 @@ public class Board4Play {
         } else {
             grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));
         }
-
         // If the player is moving from a goal, keep the goal.
         if (isPlayerOnGoal) {
             grid4Play.play(playerPosition[0], playerPosition[1], new Goal());
