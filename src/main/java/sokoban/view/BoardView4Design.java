@@ -211,9 +211,6 @@ public class BoardView4Design extends BorderPane {
 
                 }
                 // Si "Annuler" est choisi, fermez simplement la boîte de dialogue sans rien faire d'autre
-            } else {
-                // Si la grille n'a pas été modifiée, affichez directement la nouvelle vue
-                // TODO: Afficher la nouvelle vue
             }
         });
 

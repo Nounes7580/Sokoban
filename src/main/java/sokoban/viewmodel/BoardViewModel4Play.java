@@ -14,6 +14,9 @@ public class BoardViewModel4Play{
 
     private GridViewModel4Play gridViewModel4Play;
     private Board4Play board4Play;
+
+
+
     private Board4Design board4Design;
 
     public BoardViewModel4Play(Board4Design board4Design){
@@ -41,6 +44,9 @@ public class BoardViewModel4Play{
 
     public GridViewModel4Play getGridViewModel4Play() {
         return gridViewModel4Play;
+    }
+    public Board4Design getBoard() {
+        return board4Design;
     }
 
 

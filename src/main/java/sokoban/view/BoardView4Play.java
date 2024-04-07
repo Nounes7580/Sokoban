@@ -51,7 +51,7 @@ public class BoardView4Play extends BorderPane {
 
         this.boardViewModel4Play = boardViewModel4Play;
         start(primaryStage);
-
+        createFinishButton();
 
         createHeader(); // Ajoutez le label de validation dans cette méthode
         configMainComponents(primaryStage);
@@ -269,6 +269,36 @@ public class BoardView4Play extends BorderPane {
             }
 
         });
+    }
+
+    private void createFinishButton() {
+        Button playButton = new Button("Finish");
+        playButton.setOnAction(event -> {
+            // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
+
+
+
+
+                    Stage stage = (Stage) this.getScene().getWindow();
+                    new BoardView4Design(stage,new BoardViewModel4Design(boardViewModel4Play.getBoard()));
+
+
+        });
+
+        // Désactive le bouton "Play" basé sur le message de validation
+       /* playButton.disableProperty().bind(
+                boardDesignViewModel.validationMessageProperty().isNotEmpty()
+        );
+
+        */
+
+        // Centre le bouton dans le conteneur
+        playButtonContainer.getChildren().add(playButton);
+        playButtonContainer.setAlignment(Pos.CENTER);
+        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
+
+        // Positionne le conteneur du bouton "Play" en bas du BorderPane
+        setBottom(playButtonContainer);
     }
 
 
