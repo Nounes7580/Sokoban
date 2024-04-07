@@ -3,10 +3,7 @@ package sokoban.model;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
-import sokoban.model.element.Element;
-import sokoban.model.element.Goal;
-import sokoban.model.element.Ground;
-import sokoban.model.element.Player;
+import sokoban.model.element.*;
 
 import java.util.Arrays;
 
@@ -147,6 +144,13 @@ public class Grid4Play extends Grid{
     @Override
     public long getBoxCount() {
         return 0;
+    }
+
+    public long getBoxOnGoalCount() {
+        return Arrays.stream(cell4Play)
+                .flatMap(Arrays::stream)
+                .filter(cell -> cell.getValue().contains(new Goal()) && cell.getValue().contains(new Box()))
+                .count();
     }
 
     @Override

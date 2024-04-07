@@ -21,9 +21,15 @@ public class Board4Play {
 
     public Board4Play(Board4Design board4Design) {
         grid4Play=new Grid4Play(board4Design.grid4Design);
+        boxesOnGoals = countInitialBoxesOnGoals();
     }
     private static int moveCount = 0;
-
+    private int countInitialBoxesOnGoals() {
+        return (int) Arrays.stream(grid4Play.getMatrix())
+                .flatMap(Arrays::stream)
+                .filter(cell -> cell.getValue().contains(new Goal()) && cell.getValue().contains(new Box()))
+                .count();
+    }
 
     public void play(int line, int col, Element toolValue) {
 
