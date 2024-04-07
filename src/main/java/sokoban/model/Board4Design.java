@@ -77,9 +77,6 @@ public class Board4Design  {
 
 
     public void play(int line, int col, Element toolValue) {
-        System.out.println("filledCellsCount: " + filledCellsCount.get());
-        System.out.println("maxFilledCells: " + maxFilledCells.get());
-        System.out.println("isFull: " + isFull.get());
 
         if (line < 0 || line >= grid4Design.getGridWidth() || col < 0 || col >= grid4Design.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);

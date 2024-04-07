@@ -53,16 +53,19 @@ public abstract class Cell {
         return false;
     }
 
-    public  void play(Element value) {
+    public void play(Element value) {
         if (toolObject.contains(value)) {
+            boolean isGoal = hasElementOfType(Goal.class);
             removeValue(value);
-        }
-        else {
+            if (isGoal && value.getType() == CellValue.BOX) {
+                addValue(new Goal());
+            }
+        } else {
             addValue(value);
         }
     }
 
-   public boolean isEmpty() {
+    public boolean isEmpty() {
         return toolObject.isEmpty() || (toolObject.contains(new Ground()) && toolObject.size() == 1);
     }
 

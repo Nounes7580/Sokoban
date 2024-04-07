@@ -30,7 +30,7 @@ public class CellViewModel4Design extends CellViewModel{
     @Override
     public void play() {
         if (boardViewModel != null) {
-            Element toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
+            Element toolValue = boardViewModel.getSelectedCellValue();
             board.play(line, col, toolValue);
         }
     }
@@ -38,13 +38,14 @@ public class CellViewModel4Design extends CellViewModel{
     @Override
     public void addObject() {
         Element selectedTool = boardViewModel.getSelectedTool();
+
         System.out.println("Attempting to add: " + selectedTool.getType());
+
 
         if (selectedTool.getType() == CellValue.PLAYER && boardViewModel.hasPlayer()) {
             System.out.println("A player is already present on the grid. Cannot add another.");
             return;
         }
-
         if (selectedTool.getType() == CellValue.BOX) {
             Box newBox = new Box();
             int newId = Grid4Design.incrementBoxCount(); // Obtenez l'ID pour cette nouvelle boîte
@@ -53,8 +54,8 @@ public class CellViewModel4Design extends CellViewModel{
         }
 
         System.out.println("Is cell empty? " + isEmpty());
+
         if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
-            System.out.println("Adding object to cell");
             updateCellValue(selectedTool);
         }
     }
@@ -85,6 +86,7 @@ public class CellViewModel4Design extends CellViewModel{
     public void handleMouseReleased() {
 
     }
+
 
     @Override
     public void resetScale() {

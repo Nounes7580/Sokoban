@@ -30,16 +30,21 @@ import java.util.Optional;
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
 
+
+    private final Label scoreTitleLabel = new Label("Score");
+    private static final Label movesLabel = new Label("Number of moves played: 0");
+    private static final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
+
     private final HBox headerBox = new HBox();
     private final Label validationLabel = new Label();
     private final VBox toolBar = new VBox();
-    private final Label goalsLabel = new Label("Number of boxes : x");
+    //private final Label goalsLabel = new Label("Number of boxes : x");
 
     private final Label headerLabel = new Label("");
     private final MenuBar menuBar = new MenuBar();
     private final VBox topContainer = new VBox();
 
-    private final HBox playButtonContainer = new HBox();
+    private final HBox playFinishContainer = new HBox();
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
 
@@ -47,9 +52,9 @@ public class BoardView4Play extends BorderPane {
 
 
         this.boardViewModel4Play = boardViewModel4Play;
+        updateGoalsReached(boardViewModel4Play.getGoalsReached(), (boardViewModel4Play.getTargetCount()));
         start(primaryStage);
-
-
+        createFinishButton();
 
         createHeader(); // Ajoutez le label de validation dans cette méthode
         configMainComponents(primaryStage);
@@ -71,19 +76,23 @@ public class BoardView4Play extends BorderPane {
         scene.getStylesheets().add(cssFile);
 
 
-
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();
-            setupKeyControls(scene);
         });
         scene.getRoot().requestFocus();
+        setupKeyControls(scene);
+
+
         stage.show();
+        this.requestFocus();  // Request focus on the BorderPane itself
+
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
 
 
     }
+
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
@@ -101,8 +110,7 @@ public class BoardView4Play extends BorderPane {
             );
 
 
-
-            gridSizeBinding.addListener((obs,oldVal,newVal) -> {
+            gridSizeBinding.addListener((obs, oldVal, newVal) -> {
                 System.out.println("grid " + newVal);
             });
 
@@ -129,21 +137,34 @@ public class BoardView4Play extends BorderPane {
             }
         });
     }
+    public static void updateMovesLabel(int moveCount) {
+        // Assuming movesLabel is static or you have an instance to access it
+        movesLabel.setText("Number of moves played: " + moveCount);
+    }
+
+    public static void updateGoalsReached(int goalsReacheed, long totalGoals) {
+        // Assuming movesLabel is static or you have an instance to access it
+        goalsLabel.setText("Number of goals reached: " + goalsReacheed + " of " + totalGoals);
+    }
 
 
     private VBox createHeader() {
+        scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title
+        movesLabel.getStyleClass().add("moves-label");
+        goalsLabel.getStyleClass().add("goals-label");
 
-        headerLabel.getStyleClass().add("header");
+        // Debugging line to print out the CSS classes of scoreTitleLabel
 
-        // Ajoutez le label de validation sous le headerLabel
-        VBox headerContainer = new VBox(headerLabel, validationLabel);
+        // Arrange labels vertically
+        VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel);
+        scoreContainer.setAlignment(Pos.CENTER);
+
+        // Include the scoreContainer in the header
+        VBox headerContainer = new VBox(headerLabel, validationLabel, scoreContainer);
         headerContainer.setAlignment(Pos.CENTER);
-        headerContainer.setPadding(new Insets(10));
 
-        // Retourner le container de l'en-tête au lieu de le placer directement en haut du BorderPane
         return headerContainer;
     }
-
 
 
     protected double getToolbarWidth() {
@@ -158,29 +179,16 @@ public class BoardView4Play extends BorderPane {
 
 
     protected double getPlayButtonContainerHeight() {
-        return playButtonContainer.getHeight();
+        return playFinishContainer.getHeight();
     }
-
 
 
     private void configMainComponents(Stage stage) {
+        // Since we're removing the menu, we don't call initializeMenu here
         initializeToolBar(stage);
-        Label validationLabel = new Label();
-
-        headerBox.getChildren().add(validationLabel);
-        initializeMenu(stage);
-        topContainer.getChildren().addAll(menuBar, createHeader());
+        topContainer.getChildren().add(createHeader()); // Removed menuBar from the topContainer
         this.setTop(topContainer);
-
     }
-
-
-
-
-
-
-
-
 
 
     private void initializeToolBar(Stage primaryStage) {
@@ -220,35 +228,15 @@ public class BoardView4Play extends BorderPane {
 
 
 
-
-
-    private void initializeMenu(Stage primaryStage) {
-        // creation du menu Fichier
-        Menu fileMenu = new Menu("File");
-
-        // Creation des element du menu
-        MenuItem newItem = new MenuItem("New");
-        MenuItem openItem = new MenuItem("Open");
-        MenuItem saveAsItem = new MenuItem("Save As");
-        MenuItem exitItem = new MenuItem("Exit");
-
-        // Ajout des éléments de menu au menu Fichier
-        fileMenu.getItems().addAll(newItem, openItem, saveAsItem, exitItem);
-
-        // Configuration les actions pour les éléments de menu
-
-        exitItem.setOnAction(event -> primaryStage.close());
-
-        // Ajout du menu Fichier à la barre de menu
-        menuBar.getMenus().add(fileMenu);
-    }
-
     protected void setupKeyControls(Scene scene) {
+        System.out.println("Setting up key controls");
         scene.setOnKeyPressed(event -> {
+            System.out.println("Key pressed: " + event.getCode()); // This should output the key pressed
+
             Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
-                case W:
+                case Z:
                     direction = Board4Play.Direction.UP;
                     break;
                 case DOWN:
@@ -256,7 +244,7 @@ public class BoardView4Play extends BorderPane {
                     direction = Board4Play.Direction.DOWN;
                     break;
                 case LEFT:
-                case A:
+                case Q:
                     direction = Board4Play.Direction.LEFT;
                     break;
                 case RIGHT:
@@ -265,24 +253,51 @@ public class BoardView4Play extends BorderPane {
                     break;
             }
             if (direction != null) {
+                System.out.println("Moving player in direction: " + direction);
                 boardViewModel4Play.movePlayer(direction);
-                event.consume(); // Consomme l'événement pour éviter toute action par défaut
+                event.consume();
             }
+
         });
     }
 
+    private void createFinishButton() {
+        Button finishButton = new Button("Finish");
+        finishButton.setOnAction(event -> {
+            // Logique pour fermer la vue actuelle (BoardView4Play)
+            Stage currentStage = (Stage) this.getScene().getWindow();
+            currentStage.close();
 
+            // Rouvrir BoardView4Design avec l'état sauvegardé
+            Stage stage = (Stage) this.getScene().getWindow();
+            new BoardView4Design(stage,new BoardViewModel4Design(boardViewModel4Play.getBoard()));
+
+
+        });
+
+        // Ajoutez finishButton à la vue, par exemple dans un container ou directement à la scène si approprié
+
+        // Centre le bouton dans le conteneur
+        playFinishContainer.getChildren().add(finishButton);
+        playFinishContainer.setAlignment(Pos.CENTER);
+        playFinishContainer.setPadding(new Insets(0, 0, 10, 0));
+
+        // Positionne le conteneur du bouton "Play" en bas du BorderPane
+        setBottom(playFinishContainer);
+    }
 
 
     private TextField createNumericTextField() {
         return new TextField() {
-            @Override public void replaceText(int start, int end, String text) {
+            @Override
+            public void replaceText(int start, int end, String text) {
                 if (text.matches("[0-9]*")) {
                     super.replaceText(start, end, text);
                 }
             }
 
-            @Override public void replaceSelection(String text) {
+            @Override
+            public void replaceSelection(String text) {
                 if (text.matches("[0-9]*")) {
                     super.replaceSelection(text);
                 }

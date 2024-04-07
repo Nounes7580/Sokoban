@@ -50,7 +50,7 @@ public class CellView4Play extends StackPane {
 
         layoutControls();
         configureBindings();
-        setupMouseEvents();
+
 
 
         // Add a listener to the valueProperty of the viewModel.
@@ -78,6 +78,7 @@ public class CellView4Play extends StackPane {
 
 
     protected void updateView(ObservableList<Element> list) {
+        System.out.println("Updating view for cell at (" + line + ", " + col + ") with elements: " + list);
         getChildren().clear();
         getChildren().add(backgroundImageView);
 
@@ -102,7 +103,8 @@ public class CellView4Play extends StackPane {
                     System.out.println("Adding goal image to cell at (" + line + ", " + col + ")");
                     addImageView(goalImage);
                     break;
-                case WALL:
+                    case WALL:
+
                     System.out.println("Adding wall image to cell at (" + line + ", " + col + ")");
                     addImageView(wallImage);
                     break;
@@ -114,7 +116,6 @@ public class CellView4Play extends StackPane {
         }
 
     }
-
     protected void addImageViewForCellValue(CellValue cellValue) {
         Image image = switch (cellValue) {
             case PLAYER -> playerImage;
@@ -132,6 +133,7 @@ public class CellView4Play extends StackPane {
         imageView.fitWidthProperty().bind(this.widthProperty());
         imageView.fitHeightProperty().bind(this.heightProperty());
         imageView.setPreserveRatio(true);
+        System.out.println("Image view size: " + imageView.getFitWidth() + "x" + imageView.getFitHeight());
     }
 
     protected void configureBindings() {
@@ -162,55 +164,6 @@ public class CellView4Play extends StackPane {
         });
     }
 
-    protected void setupMouseEvents() {
-        this.setOnMousePressed(event -> {
-            if (event.isPrimaryButtonDown() ) {
-
-                int startCol = (int) Math.round(event.getX() / sizeProperty.get());
-                int startLine = (int) Math.round(event.getY() / sizeProperty.get());
-                System.out.println("Start Line: " + startLine);
-                System.out.println("Start Column: " + startCol);
-
-            }
-        });
-        setOnDragDetected(event -> {
-            System.out.println("Drag detected");
-            if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
-                this.startFullDrag(); // Prépare l'élément pour le suivi du glissement
-            }
-            event.consume();
-        });
-
-        setOnMouseDragEntered(event -> {
-            System.out.println("Mouse drag entered");
-            if (event.getButton() == MouseButton.SECONDARY) {
-                cellViewModel4Play.deleteObject(); // Gestion de la suppression
-                System.out.println("Object deleted");
-            }
-
-            else if (event.getButton() == MouseButton.PRIMARY) {
-
-                if (cellViewModel4Play.getSelectedTool().getType() == CellValue.PLAYER) {
-                    if (!boardViewModel.hasPlayer()) {
-                        cellViewModel4Play.addObject();
-                        System.out.println("Player added");
-                    } else {
-                        System.out.println("Cannot add another player.");
-                    }
-                } else {
-
-                    cellViewModel4Play.addObject(); // Ajoute l'objet
-                    System.out.println("Object added");
-                }
-            }
-            event.consume();
-        });
-
-
-        this.setOnMouseReleased(event -> {
-            cellViewModel4Play.handleMouseReleased();
-        });
-    }
 
 
 
