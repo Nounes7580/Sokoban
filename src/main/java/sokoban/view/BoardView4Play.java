@@ -35,6 +35,7 @@ public class BoardView4Play extends BorderPane {
     private static final Label movesLabel = new Label("Number of moves played: 0");
     private static final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
 
+    private static final Label youWinLabel = new Label("You win! x moves, congratulations!");
     private final HBox headerBox = new HBox();
     private final Label validationLabel = new Label();
     private final VBox toolBar = new VBox();
@@ -56,6 +57,7 @@ public class BoardView4Play extends BorderPane {
         updateGoalsReached(boardViewModel4Play.getGoalsReached());
         start(primaryStage);
         createFinishButton();
+        youWinLabel.setVisible(false);
 
         createHeader(); // Ajoutez le label de validation dans cette méthode
         configMainComponents(primaryStage);
@@ -69,6 +71,11 @@ public class BoardView4Play extends BorderPane {
             }
         });*/
 
+    }
+
+    public static void displayYouWinLabel(int moveCount) {
+        youWinLabel.setText("You win! " + moveCount + " moves, congratulations!");
+        youWinLabel.setVisible(true);
     }
 
     private void initializeTotalGoals(long targetCount) {
@@ -159,11 +166,12 @@ public class BoardView4Play extends BorderPane {
         scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title
         movesLabel.getStyleClass().add("moves-label");
         goalsLabel.getStyleClass().add("goals-label");
+        youWinLabel.getStyleClass().add("you-win-label");
 
         // Debugging line to print out the CSS classes of scoreTitleLabel
 
         // Arrange labels vertically
-        VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel);
+        VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel, youWinLabel);
         scoreContainer.setAlignment(Pos.CENTER);
 
         // Include the scoreContainer in the header

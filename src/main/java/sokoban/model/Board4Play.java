@@ -84,6 +84,9 @@ public class Board4Play {
                 if (!isBoxOnGoal) {
                     grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
                 }
+                if (boxesOnGoals == grid4Play.getTargetCount()) {
+                    BoardView4Play.displayYouWinLabel(moveCount);
+                }
                 grid4Play.addPlayerToCell(newRow, newCol);
                 BoardView4Play.updateGoalsReached(boxesOnGoals);
             } else {

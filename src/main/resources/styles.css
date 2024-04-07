@@ -50,3 +50,9 @@ body {
     -fx-text-fill: black;
     -fx-font-weight: bold;
 }
+.you-win-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: green;
+    -fx-font-weight: bold;
+}
+
