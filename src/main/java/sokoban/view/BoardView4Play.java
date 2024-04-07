@@ -33,7 +33,7 @@ public class BoardView4Play extends BorderPane {
     private final HBox headerBox = new HBox();
     private final Label validationLabel = new Label();
     private final VBox toolBar = new VBox();
-
+    private final Label goalsLabel = new Label("Number of boxes : x");
 
     private final Label headerLabel = new Label("");
     private final MenuBar menuBar = new MenuBar();

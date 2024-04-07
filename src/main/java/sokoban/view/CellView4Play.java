@@ -81,21 +81,38 @@ public class CellView4Play extends StackPane {
         getChildren().clear();
         getChildren().add(backgroundImageView);
 
-        for (Element element : list) {
-            if (element instanceof Box) {
-                ImageView boxImageView = new ImageView(boxImage);
-                configureImageView(boxImageView);
-                getChildren().add(boxImageView);
-
-                Label numberLabel = new Label(String.valueOf(element.getId())); // Assurez-vous que c'est bien `getId()`
-                numberLabel.setFont(new Font(24));
-                numberLabel.setTextFill(Color.BLACK);
-                StackPane.setAlignment(numberLabel, Pos.TOP_LEFT);
-                getChildren().add(numberLabel);
-            } else {
-                addImageViewForCellValue(element.getType());
+        for (Element value : list) {
+            System.out.println("Processing element type: " + value.getType() + " in cell at (" + line + ", " + col + ")");
+            switch (value.getType()) {
+                case PLAYER:
+                    System.out.println("Adding player image to cell at (" + line + ", " + col + ")");
+                    addImageView(playerImage);
+                    break;
+                case BOX:
+                    System.out.println("Adding box image to cell at (" + line + ", " + col + ")");
+                    addImageView(boxImage);
+                    Box box = (Box) value;
+                    Label label = new Label(String.valueOf(box.getId()));
+                    label.setFont(new Font("Arial", 20));
+                    label.setTextFill(Color.BLACK);
+                    label.setStyle("-fx-background-color: white; -fx-padding: 5px;");
+                    getChildren().add(label);
+                    break;
+                case GOAL:
+                    System.out.println("Adding goal image to cell at (" + line + ", " + col + ")");
+                    addImageView(goalImage);
+                    break;
+                case WALL:
+                    System.out.println("Adding wall image to cell at (" + line + ", " + col + ")");
+                    addImageView(wallImage);
+                    break;
+                case GROUND:
+                    System.out.println("Adding ground image to cell at (" + line + ", " + col + ")");
+                    addImageView(groundImage);
+                    break;
             }
         }
+
     }
 
     protected void addImageViewForCellValue(CellValue cellValue) {

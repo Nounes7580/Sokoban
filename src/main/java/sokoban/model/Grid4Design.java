@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 public class Grid4Design extends Grid{
     protected LongBinding filledCellsCount;
-
+    private static int boxCount = 1;
     protected Cell4Design[][] cell4Design;
 
     public Grid4Design(int width, int height) {
@@ -188,11 +188,15 @@ public class Grid4Design extends Grid{
     public void setCellValue(int line, int col, Element newValue) {
         if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
             cell4Design[line][col].addValue(newValue);
+
             triggerGridChange();
         }
     }
 
-
+    public static int incrementBoxCount() {;
+        System.out.println("box"+boxCount);
+        return boxCount++;
+    }
 
 
 

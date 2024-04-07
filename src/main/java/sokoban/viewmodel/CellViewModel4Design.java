@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import sokoban.model.Board4Design;
 import sokoban.model.Cell;
 import sokoban.model.CellValue;
+import sokoban.model.Grid4Design;
+import sokoban.model.element.Box;
 import sokoban.model.element.Element;
 import sokoban.model.element.Ground;
 
@@ -37,10 +39,19 @@ public class CellViewModel4Design extends CellViewModel{
     public void addObject() {
         Element selectedTool = boardViewModel.getSelectedTool();
         System.out.println("Attempting to add: " + selectedTool.getType());
+
         if (selectedTool.getType() == CellValue.PLAYER && boardViewModel.hasPlayer()) {
             System.out.println("A player is already present on the grid. Cannot add another.");
             return;
         }
+
+        if (selectedTool.getType() == CellValue.BOX) {
+            Box newBox = new Box();
+            int newId = Grid4Design.incrementBoxCount(); // Obtenez l'ID pour cette nouvelle boîte
+            newBox.setId(newId); // Assignez l'ID à la nouvelle boîte
+            selectedTool = newBox; // Mettez à jour selectedTool avec la nouvelle instance de Box configurée
+        }
+
         System.out.println("Is cell empty? " + isEmpty());
         if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
             System.out.println("Adding object to cell");

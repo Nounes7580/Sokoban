@@ -23,7 +23,7 @@ public class Board4Design  {
         return boardUpdated;
     }
 
-
+    private static int nextId = 0;
 
     protected BooleanBinding isFull;
     protected LongProperty filledCellsCount = new SimpleLongProperty();
@@ -207,6 +207,16 @@ public class Board4Design  {
             e.printStackTrace();
         }
     }
+    public void incrementBoxCount() {
+        Grid4Design.incrementBoxCount();
+    }
 
-    // Additional design-specific methods
+
+
+    private boolean isCellEmpty(int line, int col) {
+        // Vérifiez si la cellule à la position donnée ne contient pas déjà un élément
+        return grid4Design.getMatrix()[line][col].isEmpty();
+    }
+
+
 }
