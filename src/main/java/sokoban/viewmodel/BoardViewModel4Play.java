@@ -67,6 +67,11 @@ public class BoardViewModel4Play{
     }
 
 
+    public long getTargetCount() {
+        return board4Play.getGrid4Play().getTargetCount();
+    }
 
-
+    public int getGoalsReached() {
+        return board4Play.getGoalsReached();
+    }
 }

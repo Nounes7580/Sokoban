@@ -33,7 +33,7 @@ public class BoardView4Play extends BorderPane {
 
     private final Label scoreTitleLabel = new Label("Score");
     private static final Label movesLabel = new Label("Number of moves played: 0");
-    private final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
+    private static final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
 
     private final HBox headerBox = new HBox();
     private final Label validationLabel = new Label();
@@ -52,6 +52,7 @@ public class BoardView4Play extends BorderPane {
 
 
         this.boardViewModel4Play = boardViewModel4Play;
+        updateGoalsReached(boardViewModel4Play.getGoalsReached(), (boardViewModel4Play.getTargetCount()));
         start(primaryStage);
         createFinishButton();
 
@@ -140,6 +141,12 @@ public class BoardView4Play extends BorderPane {
         // Assuming movesLabel is static or you have an instance to access it
         movesLabel.setText("Number of moves played: " + moveCount);
     }
+
+    public static void updateGoalsReached(int goalsReacheed, long totalGoals) {
+        // Assuming movesLabel is static or you have an instance to access it
+        goalsLabel.setText("Number of goals reached: " + goalsReacheed + " of " + totalGoals);
+    }
+
 
     private VBox createHeader() {
         scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title

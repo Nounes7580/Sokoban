@@ -1,6 +1,5 @@
 package sokoban.model;
 
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
@@ -138,9 +137,11 @@ public class Grid4Play extends Grid{
         return false;
     }
 
-    @Override
     public long getTargetCount() {
-        return 0;
+        return Arrays.stream(cell4Play)
+                .flatMap(Arrays::stream)
+                .filter(cell -> cell.getValue().contains(new Goal()))
+                .count();
     }
 
     @Override
@@ -181,5 +182,14 @@ public class Grid4Play extends Grid{
         if (targetCell.isEmpty() || targetCell.hasElementOfType(Goal.class)) {
             play(newRow, newCol, new Player());
         }
+    }
+
+    public int getGoalsReached() {
+
+        return 0;
+    }
+
+    public int getBoxesOnGoals() {
+        return 0;
     }
 }

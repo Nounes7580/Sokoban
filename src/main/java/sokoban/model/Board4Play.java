@@ -2,10 +2,13 @@ package sokoban.model;
 
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.*;
+import sokoban.view.BoardView4Play;
 
 import java.util.Arrays;
 
 public class Board4Play {
+    private  int boxesOnGoals = 0;
+
 
     public Grid4Play getGrid4Play() {
         return grid4Play;
@@ -71,6 +74,13 @@ public class Board4Play {
                     grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
+                if (grid4Play.getMatrix()[boxNewRow][boxNewCol].hasElementOfType(Goal.class)) {
+                    System.out.println("Box moved to goal at (" + boxNewRow + ", " + boxNewCol + ")");
+                    boxesOnGoals++;
+                    // Update the goalsLabel in the BoardView4Play class
+                    System.out.println("Updating goals reached: " + boxesOnGoals);
+                    BoardView4Play.updateGoalsReached(boxesOnGoals, grid4Play.getTargetCount());
+                }
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
                 return;
@@ -172,6 +182,10 @@ public class Board4Play {
             default:
                 return new Ground(); // Assuming Ground represents an empty space
         }
+    }
+
+    public int getGoalsReached() {
+        return boxesOnGoals;
     }
 
     public enum Direction {
