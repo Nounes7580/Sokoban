@@ -3,19 +3,24 @@ package sokoban.view;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import sokoban.model.CellValue;
+import sokoban.model.element.Box;
 import sokoban.model.element.Element;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Play;
 import sokoban.viewmodel.CellViewModel;
 import sokoban.viewmodel.CellViewModel4Play;
+import javafx.scene.text.Font;
 
 public class CellView4Play extends StackPane {
     protected static final Image playerImage = new Image("player.png");
@@ -75,9 +80,39 @@ public class CellView4Play extends StackPane {
     protected void updateView(ObservableList<Element> list) {
         getChildren().clear();
         getChildren().add(backgroundImageView);
+
         for (Element value : list) {
-            addImageViewForCellValue(value.getType());
+            System.out.println("Processing element type: " + value.getType() + " in cell at (" + line + ", " + col + ")");
+            switch (value.getType()) {
+                case PLAYER:
+                    System.out.println("Adding player image to cell at (" + line + ", " + col + ")");
+                    addImageView(playerImage);
+                    break;
+                case BOX:
+                    System.out.println("Adding box image to cell at (" + line + ", " + col + ")");
+                    addImageView(boxImage);
+                    Box box = (Box) value;
+                    Label label = new Label(String.valueOf(box.getId()));
+                    label.setFont(new Font("Arial", 20));
+                    label.setTextFill(Color.BLACK);
+                    label.setStyle("-fx-background-color: white; -fx-padding: 5px;");
+                    getChildren().add(label);
+                    break;
+                case GOAL:
+                    System.out.println("Adding goal image to cell at (" + line + ", " + col + ")");
+                    addImageView(goalImage);
+                    break;
+                case WALL:
+                    System.out.println("Adding wall image to cell at (" + line + ", " + col + ")");
+                    addImageView(wallImage);
+                    break;
+                case GROUND:
+                    System.out.println("Adding ground image to cell at (" + line + ", " + col + ")");
+                    addImageView(groundImage);
+                    break;
+            }
         }
+
     }
 
     protected void addImageViewForCellValue(CellValue cellValue) {

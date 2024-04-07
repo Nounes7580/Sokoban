@@ -37,9 +37,11 @@ public class Board4Play {
     }
 
     public static boolean isPositionValid(int line, int col) {
-        return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid4Play.getGridHeight();
+        if (grid4Play != null) {
+            return line >= 0 && line < grid4Play.getGridWidth() && col >= 0 && col < grid4Play.getGridHeight();
+        }
+        return false;
     }
-
 
 
     public static void movePlayer(Direction direction) {
