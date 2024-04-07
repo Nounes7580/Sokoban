@@ -29,6 +29,8 @@ import java.util.Optional;
 
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
+
+
     private final Label scoreTitleLabel = new Label("Score");
     private static final Label movesLabel = new Label("Number of moves played: 0");
     private final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
@@ -42,7 +44,7 @@ public class BoardView4Play extends BorderPane {
     private final MenuBar menuBar = new MenuBar();
     private final VBox topContainer = new VBox();
 
-    private final HBox playButtonContainer = new HBox();
+    private final HBox playFinishContainer = new HBox();
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
 
@@ -170,7 +172,7 @@ public class BoardView4Play extends BorderPane {
 
 
     protected double getPlayButtonContainerHeight() {
-        return playButtonContainer.getHeight();
+        return playFinishContainer.getHeight();
     }
 
 
@@ -217,26 +219,7 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-    private void initializeMenu(Stage primaryStage) {
-        // creation du menu Fichier
-        Menu fileMenu = new Menu("File");
 
-        // Creation des element du menu
-        MenuItem newItem = new MenuItem("New");
-        MenuItem openItem = new MenuItem("Open");
-        MenuItem saveAsItem = new MenuItem("Save As");
-        MenuItem exitItem = new MenuItem("Exit");
-
-        // Ajout des éléments de menu au menu Fichier
-        fileMenu.getItems().addAll(newItem, openItem, saveAsItem, exitItem);
-
-        // Configuration les actions pour les éléments de menu
-
-        exitItem.setOnAction(event -> primaryStage.close());
-
-        // Ajout du menu Fichier à la barre de menu
-        menuBar.getMenus().add(fileMenu);
-    }
 
     protected void setupKeyControls(Scene scene) {
         System.out.println("Setting up key controls");
@@ -272,33 +255,28 @@ public class BoardView4Play extends BorderPane {
     }
 
     private void createFinishButton() {
-        Button playButton = new Button("Finish");
-        playButton.setOnAction(event -> {
-            // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
+        Button finishButton = new Button("Finish");
+        finishButton.setOnAction(event -> {
+            // Logique pour fermer la vue actuelle (BoardView4Play)
+            Stage currentStage = (Stage) this.getScene().getWindow();
+            currentStage.close();
 
-
-
-
-                    Stage stage = (Stage) this.getScene().getWindow();
-                    new BoardView4Design(stage,new BoardViewModel4Design(boardViewModel4Play.getBoard()));
+            // Rouvrir BoardView4Design avec l'état sauvegardé
+            Stage stage = (Stage) this.getScene().getWindow();
+            new BoardView4Design(stage,new BoardViewModel4Design(boardViewModel4Play.getBoard()));
 
 
         });
 
-        // Désactive le bouton "Play" basé sur le message de validation
-       /* playButton.disableProperty().bind(
-                boardDesignViewModel.validationMessageProperty().isNotEmpty()
-        );
-
-        */
+        // Ajoutez finishButton à la vue, par exemple dans un container ou directement à la scène si approprié
 
         // Centre le bouton dans le conteneur
-        playButtonContainer.getChildren().add(playButton);
-        playButtonContainer.setAlignment(Pos.CENTER);
-        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
+        playFinishContainer.getChildren().add(finishButton);
+        playFinishContainer.setAlignment(Pos.CENTER);
+        playFinishContainer.setPadding(new Insets(0, 0, 10, 0));
 
         // Positionne le conteneur du bouton "Play" en bas du BorderPane
-        setBottom(playButtonContainer);
+        setBottom(playFinishContainer);
     }
 
 

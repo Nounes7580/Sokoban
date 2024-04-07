@@ -3,6 +3,7 @@ package sokoban.viewmodel;
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.Board4Design;
 import sokoban.model.Board4Play;
+import sokoban.model.CellValue;
 import sokoban.model.element.Element;
 
 public class CellViewModel4Play {
@@ -29,9 +30,6 @@ public class CellViewModel4Play {
 
     }
 
-    public void deleteObject() {
-
-    }
 
     public ReadOnlyListProperty<Element> valueProperty() {
         return board4Play.valueProperty(line, col);

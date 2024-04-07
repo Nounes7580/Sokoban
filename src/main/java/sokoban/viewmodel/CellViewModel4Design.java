@@ -28,7 +28,7 @@ public class CellViewModel4Design extends CellViewModel{
     @Override
     public void play() {
         if (boardViewModel != null) {
-            Element toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
+            Element toolValue = boardViewModel.getSelectedCellValue();
             board.play(line, col, toolValue);
         }
     }
