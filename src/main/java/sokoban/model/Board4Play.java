@@ -49,7 +49,6 @@ public class Board4Play {
             return;
         }
 
-        // Save the old cell's type
         Cell oldCell = grid4Play.getMatrix()[playerPosition[0]][playerPosition[1]];
         boolean isPlayerOnGoal = oldCell.hasElementOfType(Goal.class);
 
@@ -67,6 +66,7 @@ public class Board4Play {
             int boxNewCol = newCol + direction.getDeltaCol();
 
             boolean isBoxOnGoal = targetCell.hasElementOfType(Goal.class);
+            boolean willBoxBeOnGoal = grid4Play.getMatrix()[boxNewRow][boxNewCol].hasElementOfType(Goal.class);
 
             if (isPositionValid(boxNewRow, boxNewCol)) {
                 grid4Play.play(boxNewRow, boxNewCol, createElementFromCellValue(CellValue.BOX));
@@ -74,34 +74,36 @@ public class Board4Play {
                     grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
-                if (grid4Play.getMatrix()[boxNewRow][boxNewCol].hasElementOfType(Goal.class)) {
-                    System.out.println("Box moved to goal at (" + boxNewRow + ", " + boxNewCol + ")");
+
+                // incremente si la box est déplacée sur un goal
+                if (willBoxBeOnGoal) {
                     boxesOnGoals++;
-                    // Update the goalsLabel in the BoardView4Play class
-                    System.out.println("Updating goals reached: " + boxesOnGoals);
-                    BoardView4Play.updateGoalsReached(boxesOnGoals, grid4Play.getTargetCount());
                 }
+
+                // décrémente si la box n'est plus sur un goal
+                if (isBoxOnGoal && !willBoxBeOnGoal) {
+                    boxesOnGoals--;
+                }
+
+                // Update  goalsLabel dans BoardView4Play
+                BoardView4Play.updateGoalsReached(boxesOnGoals, grid4Play.getTargetCount());
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
                 return;
             }
         } else {
-
             grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));
         }
 
-        // If the player is moving from a goal, keep the goal.
         // If the player is moving from a goal, keep the goal.
         if (isPlayerOnGoal) {
             grid4Play.play(playerPosition[0], playerPosition[1], new Goal());
         } else {
             grid4Play.play(playerPosition[0], playerPosition[1], new Ground());
         }
-    
 
         moveCount++;
     }
-
 
 
     public int getMoveCount() {
