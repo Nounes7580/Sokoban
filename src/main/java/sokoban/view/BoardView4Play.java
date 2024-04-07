@@ -52,7 +52,8 @@ public class BoardView4Play extends BorderPane {
 
 
         this.boardViewModel4Play = boardViewModel4Play;
-        updateGoalsReached(boardViewModel4Play.getGoalsReached(), (boardViewModel4Play.getTargetCount()));
+        initializeTotalGoals(boardViewModel4Play.getTargetCount());
+        updateGoalsReached(boardViewModel4Play.getGoalsReached());
         start(primaryStage);
         createFinishButton();
 
@@ -67,6 +68,11 @@ public class BoardView4Play extends BorderPane {
                 this.boardViewModel4Play.gridResetProperty().set(false);
             }
         });*/
+
+    }
+
+    private void initializeTotalGoals(long targetCount) {
+        goalsLabel.setText("Number of goals reached: 0 of " + targetCount);
 
     }
 
@@ -142,9 +148,10 @@ public class BoardView4Play extends BorderPane {
         movesLabel.setText("Number of moves played: " + moveCount);
     }
 
-    public static void updateGoalsReached(int goalsReacheed, long totalGoals) {
-        // Assuming movesLabel is static or you have an instance to access it
-        goalsLabel.setText("Number of goals reached: " + goalsReacheed + " of " + totalGoals);
+    public static void updateGoalsReached(int goalsReached) {
+        String currentText = goalsLabel.getText();
+        String newText = currentText.replaceFirst("\\d+(?= of)", String.valueOf(goalsReached));
+        goalsLabel.setText(newText);
     }
 
 

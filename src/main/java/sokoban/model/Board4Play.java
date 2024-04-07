@@ -88,7 +88,7 @@ public class Board4Play {
                 }
 
                 // Update  goalsLabel dans BoardView4Play
-                BoardView4Play.updateGoalsReached(boxesOnGoals, grid4Play.getTargetCount());
+                BoardView4Play.updateGoalsReached(boxesOnGoals);
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
                 return;
