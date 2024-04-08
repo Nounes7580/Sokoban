@@ -67,6 +67,7 @@ public class CellView4Design extends StackPane {
         getChildren().add(backgroundImageView);
 
         cellViewModel4Design.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
+        updateView(cellViewModel4Design.valueProperty());
     }
 
     protected void updateView(ObservableList<Element> list) {

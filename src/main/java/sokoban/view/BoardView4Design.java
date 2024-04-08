@@ -185,9 +185,7 @@ public class BoardView4Design extends BorderPane {
     private void createPlayButton() {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
-
-
-                // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
+            // Si la grille a été modifiée, demandez si l'utilisateur souhaite sauvegarder les changements
             if (boardDesignViewModel.isGridChanged()) {
                 Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmationDialog.setTitle("Confirmation Dialog");
@@ -205,23 +203,23 @@ public class BoardView4Design extends BorderPane {
                     // Méthode pour sauvegarder
                     Stage stage = (Stage) this.getScene().getWindow();
                     handleSaveAs(stage);
-                    new BoardView4Play(stage,new BoardViewModel4Play(boardDesignViewModel.getBoard()));
-
+                    showGameWindow(stage); // Affiche la nouvelle fenêtre de jeu
                 } else if (result.isPresent() && result.get() == buttonTypeNo) {
                     Stage stage = (Stage) this.getScene().getWindow();
-                    new BoardView4Play(stage,new BoardViewModel4Play(boardDesignViewModel.getBoard()));
-
+                    showGameWindow(stage); // Affiche la nouvelle fenêtre de jeu sans sauvegarder
                 }
-                // Si "Annuler" est choisi, fermez simplement la boîte de dialogue sans rien faire d'autre
+                // Si "Annuler" est choisi, ne rien faire
+            } else {
+                // Si la grille n'a pas été modifiée, afficher directement la fenêtre de jeu
+                Stage stage = (Stage) this.getScene().getWindow();
+                showGameWindow(stage);
             }
         });
 
         // Désactive le bouton "Play" basé sur le message de validation
-       /* playButton.disableProperty().bind(
+        playButton.disableProperty().bind(
                 boardDesignViewModel.validationMessageProperty().isNotEmpty()
         );
-
-        */
 
         // Centre le bouton dans le conteneur
         playButtonContainer.getChildren().add(playButton);
@@ -230,6 +228,13 @@ public class BoardView4Design extends BorderPane {
 
         // Positionne le conteneur du bouton "Play" en bas du BorderPane
         setBottom(playButtonContainer);
+    }
+
+    private void showGameWindow(Stage stage) {
+        BoardView4Play boardView4Play = new BoardView4Play(stage, new BoardViewModel4Play(boardDesignViewModel.getBoard()));
+        // Supposons que BoardView4Play configure son propre Stage ou scène. Sinon, configurez-le ici.
+        // Par exemple : stage.setScene(new Scene(boardView4Play));
+        stage.show(); // S'assure que la fenêtre est bien affichée
     }
 
 
