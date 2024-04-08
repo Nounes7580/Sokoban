@@ -5,9 +5,6 @@ import sokoban.model.CellValue;
 import java.util.Objects;
 
 public abstract class Element {
-
-
-
     private CellValue type;
 
 
