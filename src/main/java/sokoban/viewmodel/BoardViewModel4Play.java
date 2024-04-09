@@ -49,6 +49,9 @@ public class BoardViewModel4Play{
         return board4Design;
     }
 
+    public Board4Play getBoard4Play() {
+        return board4Play;
+    }
 
     public void movePlayer(Board4Play.Direction direction) {
         System.out.println("ViewModel is attempting to move player: " + direction);

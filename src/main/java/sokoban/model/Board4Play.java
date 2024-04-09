@@ -116,6 +116,9 @@ public class Board4Play {
         moveCount++;
     }
 
+    public int setMoveCount(int moveCount) {
+        return this.moveCount = moveCount;
+    }
 
     public int getMoveCount() {
         return moveCount;

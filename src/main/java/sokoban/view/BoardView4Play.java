@@ -280,7 +280,11 @@ public class BoardView4Play extends BorderPane {
 
     private void createFinishButton() {
         Button finishButton = new Button("Finish");
+
         finishButton.setOnAction(event -> {
+            boardViewModel4Play.getBoard4Play().setMoveCount(0);
+            BoardView4Play.updateMovesLabel(0);
+
             // Logique pour fermer la vue actuelle (BoardView4Play)
             Stage currentStage = (Stage) this.getScene().getWindow();
             currentStage.close();
