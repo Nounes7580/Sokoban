@@ -49,6 +49,7 @@ public class Grid4Design extends Grid{
         this.gridWidth.set(newWidth);
         this.gridHeight.set(newHeight);
         this.cell4Design = new Cell4Design[newWidth][newHeight];
+        boxCount = 1;
         initializeCells();
         triggerGridChange();
     }
