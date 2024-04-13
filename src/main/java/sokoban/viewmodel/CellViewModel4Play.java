@@ -17,18 +17,10 @@ public class CellViewModel4Play {
     }
 
 
-    protected void setBoardViewModel(BoardViewModel boardViewModel) {
-
-    }
-
     public void play() {
 
     }
 
-
-    public void addObject() {
-
-    }
 
 
     public ReadOnlyListProperty<Element> valueProperty() {
@@ -39,15 +31,10 @@ public class CellViewModel4Play {
         return false;
     }
 
-    public void handleMouseReleased() {
-
-    }
 
     public void resetScale() {
 
     }
 
-    public Element getSelectedTool() {
-        return null;
-    }
+
 }

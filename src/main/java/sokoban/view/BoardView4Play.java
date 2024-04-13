@@ -36,13 +36,13 @@ public class BoardView4Play extends BorderPane {
     private static final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
 
     private static final Label youWinLabel = new Label("You win! x moves, congratulations!");
-    private final HBox headerBox = new HBox();
+
     private final Label validationLabel = new Label();
     private final VBox toolBar = new VBox();
     //private final Label goalsLabel = new Label("Number of boxes : x");
 
     private final Label headerLabel = new Label("");
-    private final MenuBar menuBar = new MenuBar();
+
     private final VBox topContainer = new VBox();
 
     private final HBox playFinishContainer = new HBox();
@@ -63,13 +63,6 @@ public class BoardView4Play extends BorderPane {
         configMainComponents(primaryStage);
         createGrid();
 
-        /*boardViewModel4Play.gridResetProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal) {
-                createGrid();
-                System.out.println("Grid reset");
-                this.boardViewModel4Play.gridResetProperty().set(false);
-            }
-        });*/
 
     }
 
@@ -308,57 +301,5 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-    private TextField createNumericTextField() {
-        return new TextField() {
-            @Override
-            public void replaceText(int start, int end, String text) {
-                if (text.matches("[0-9]*")) {
-                    super.replaceText(start, end, text);
-                }
-            }
-
-            @Override
-            public void replaceSelection(String text) {
-                if (text.matches("[0-9]*")) {
-                    super.replaceSelection(text);
-                }
-            }
-        };
-    }
-
-    private Label createErrorLabel(String errorMessage) {
-        Label errorLabel = new Label();
-        errorLabel.setTextFill(Color.RED);
-        errorLabel.setVisible(false);
-        return errorLabel;
-    }
-
-    private Node createDialogButtons(Dialog<Pair<Integer, Integer>> dialog) {
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        Node okButton = dialog.getDialogPane().lookupButton(ButtonType.OK
-
-        );
-        okButton.setDisable(true);
-        return okButton;
-    }
-
-    private void validateDimensionInput(String newValue, Label errorLabel, String errorMessage, Node okButton, TextField otherField) {
-        if (!newValue.isEmpty()) {
-            try {
-                int value = Integer.parseInt(newValue);
-                boolean isValid = value >= 10 && value <= 50;
-                errorLabel.setVisible(!isValid);
-                errorLabel.setText(isValid ? "" : errorMessage);
-                okButton.setDisable(!isValid || otherField.getText().isEmpty());
-            } catch (NumberFormatException e) {
-                errorLabel.setVisible(true);
-                errorLabel.setText(errorMessage);
-                okButton.setDisable(true);
-            }
-        } else {
-            errorLabel.setVisible(false);
-            okButton.setDisable(otherField.getText().isEmpty());
-        }
-    }
 
 }

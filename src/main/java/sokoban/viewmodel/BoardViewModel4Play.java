@@ -10,13 +10,8 @@ import sokoban.view.BoardView4Play;
 
 public class BoardViewModel4Play{
 
-
-
     private GridViewModel4Play gridViewModel4Play;
     private Board4Play board4Play;
-
-
-
     private Board4Design board4Design;
 
     public BoardViewModel4Play(Board4Design board4Design){
@@ -35,11 +30,6 @@ public class BoardViewModel4Play{
     public  int getGridWidth() {
         return board4Play.getGrid4Play().getGridWidth();
     }
-    public boolean hasPlayer(){
-        return board4Play.getGrid4Play().hasPlayer();
-    }
-
-
 
 
     public GridViewModel4Play getGridViewModel4Play() {

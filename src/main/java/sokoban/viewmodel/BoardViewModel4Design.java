@@ -127,7 +127,5 @@ public class BoardViewModel4Design extends BoardViewModel{
         return selectedTool.get();
     }
 
-    public void incrementBoxCount() {
-        board.incrementBoxCount();
-    }
+
 }

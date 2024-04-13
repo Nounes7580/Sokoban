@@ -35,8 +35,7 @@ public class CellView4Play extends StackPane {
 
     protected final ImageView backgroundImageView = new ImageView(groundImage);
     protected ColorAdjust darkenEffect = new ColorAdjust();
-    protected BoardViewModel4Play boardViewModel;
-    protected final ImageView goalImageView = new ImageView(goalImage);
+
     protected final ImageView imageView = new ImageView();
     protected final GridPane gridPane;
     protected int line;
@@ -121,18 +120,7 @@ public class CellView4Play extends StackPane {
         }
 
     }
-    protected void addImageViewForCellValue(CellValue cellValue) {
-        Image image = switch (cellValue) {
-            case PLAYER -> playerImage;
-            case BOX -> boxImage;
-            case WALL -> wallImage;
-            case GOAL -> goalImage;
-            default -> null;
-        };
-        if (image != null) {
-            addImageView(image);
-        }
-    }
+
 
     protected void configureImageView(ImageView imageView) {
         imageView.fitWidthProperty().bind(this.widthProperty());

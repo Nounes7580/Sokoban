@@ -25,20 +25,15 @@ public abstract class BoardViewModel {
     public abstract int getGridHeight();
 
 
-
-
-
-
     // Méthode pour mettre à jour le message de validation
     public abstract void updateValidationMessage();  // Implemented differently based on the subclass
 
 
 
 
-    private final BooleanProperty gridReset = new SimpleBooleanProperty(false);
 
 
 
-    //Todo: à separer pour le jeu (boardview4play)
+
 
 }

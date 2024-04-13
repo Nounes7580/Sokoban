@@ -23,13 +23,6 @@ public class Grid4Play extends Grid{
         System.out.println("Grid Height: " + this.gridHeight.get());
     }
 
-        /*filledCellsCount = Bindings.createLongBinding(() -> Arrays
-                .stream(matrix)
-                .flatMap(Arrays::stream)
-                .filter(cell -> !(cell.isEmpty()))
-                .count(), gridChanged);
-
-         */
 
     private void initializeCells(Grid4Design grid4Design) {
         for (int i = 0; i < gridWidth.get(); i++) {
@@ -158,11 +151,6 @@ public class Grid4Play extends Grid{
         return gridChanged.get();
     }
 
-   /* public Cell4Design[][] getMatrix() {
-        return cell4Design;
-    }
-
-    */
 
     @Override
     public void setCellValue(int line, int col, Element newValue) {
@@ -188,12 +176,4 @@ public class Grid4Play extends Grid{
         }
     }
 
-    public int getGoalsReached() {
-
-        return 0;
-    }
-
-    public int getBoxesOnGoals() {
-        return 0;
-    }
 }

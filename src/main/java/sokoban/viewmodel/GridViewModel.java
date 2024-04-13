@@ -8,7 +8,6 @@ public abstract class GridViewModel {
 
 
 
-
     public abstract void setBoardViewModel(BoardViewModel4Design boardViewModel);
 
     public abstract  CellViewModel4Design getCellViewModel(int line, int col);

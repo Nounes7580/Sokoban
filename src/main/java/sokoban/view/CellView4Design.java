@@ -31,7 +31,7 @@ public class CellView4Design extends StackPane {
     private ColorAdjust darkenEffect = new ColorAdjust();
     private BoardViewModel4Design boardViewModel;
 
-    private final ImageView goalImageView = new ImageView(goalImage);
+
     private final ImageView imageView = new ImageView();
 
 

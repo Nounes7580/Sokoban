@@ -14,11 +14,9 @@ public abstract class CellViewModel {
 
     protected static final double DEFAULT_SCALE = 1;
     protected static final double EPSILON = 1e-3;
-    protected   BoardViewModel4Design boardViewModel; // Add a reference to BoardViewModel
-    protected Element baseElement = new Ground(); // Pour l'élément de base (joueur ou boîte)
-    protected boolean hasGoal = false; // Pour savoir si un goal est présent
 
     protected int line;
+
     protected int col;
     protected final Board4Design board;
 
@@ -26,9 +24,6 @@ public abstract class CellViewModel {
     private final BooleanBinding mayIncrementScale = scale.lessThan(1 - EPSILON);
     private final BooleanBinding mayDecrementScale = scale.greaterThan(0.1 + EPSILON);
 
-
-
-    private Element selectedTool = new Ground();
 
     public CellViewModel(int line, int col, Board4Design board) {
         this.line = line;
