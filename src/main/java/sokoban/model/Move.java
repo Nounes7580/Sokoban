@@ -17,18 +17,21 @@ public class Move implements Command {
 
 
 
-
+/** Initialise le déplacement avec une référence au plateau de jeu (board) et la direction dans laquelle le déplacement doit être effectué (direction).
+ Enregistre la position initiale du joueur et le nombre de mouvements actuel du jeu pour permettre une annulation (undo) efficace.
+ Appelle captureInitialState pour enregistrer l'état initial des boîtes qui pourraient être déplacées par ce mouvement.
+ Lève une exception si la position du joueur n'est pas trouvée, indiquant une erreur d'initialisation possible.**/
     public Move(Board4Play board, Board4Play.Direction direction) {
         this.board = board;
         this.direction = direction;
-        this.previousPosition = board.getGrid4Play().findPlayerPosition(); // Capture the old player position
+        this.previousPosition = board.getGrid4Play().findPlayerPosition();
         this.previousMoveCount = board.getMoveCount();
-        captureInitialState(); // Capture the state of all affected boxes
+        captureInitialState();
         if (this.previousPosition == null) {
             throw new IllegalStateException("Player position could not be found, possibly not initialized.");
         }
     }
-
+  /**  Capture l'état initial des boîtes qui seront affectées par le déplacement. Pour chaque boîte affectée par le déplacement, l'état est enregistré, y compris sa position et si elle était sur un objectif.**/
     private void captureInitialState() {
         int[] playerPos = board.getGrid4Play().findPlayerPosition();
         if (playerPos != null) {
@@ -36,64 +39,62 @@ public class Move implements Command {
             int newCol = playerPos[1] + direction.getDeltaCol();
             if (board.getGrid4Play().getCell(newRow, newCol).hasElementOfType(Box.class)) {
                 Box box = (Box) board.getGrid4Play().getCell(newRow, newCol).getElementOfType(Box.class);
-                boolean wasOnGoal = board.getGrid4Play().getCell(newRow, newCol).hasElementOfType(Goal.class); // Correction ici
+                boolean wasOnGoal = board.getGrid4Play().getCell(newRow, newCol).hasElementOfType(Goal.class);
                 previousBoxStates.add(new BoxState(box, new int[]{newRow, newCol}, wasOnGoal));
             }
         }
     }
 
-
+/** Exécutent le déplacement en appelant movePlayer sur Board4Play avec la direction donnée. redo fait la même chose car dans ce contexte, refaire un mouvement est identique à l'exécuter initialement.**/
     @Override
     public void execute() {
             Board4Play.movePlayer(direction);
         }
-
     @Override
     public void redo() {
         Board4Play.movePlayer(direction);
     }
-
+/** Annule le mouvement. Cette méthode replace le joueur à sa position initiale et restaure l'état initial des boîtes déplacées.
+ Réinitialise le compteur de mouvements et ajuste le nombre de boîtes sur les objectifs si nécessaire, en fonction de l'état initial enregistré des boîtes.**/
     public void undo() {
-        // Restaure le joueur à sa position précédente
+
         board.undoMovePlayer(previousPosition, previousMoveCount);
 
-        // Restaure les états des boîtes
+
         for (BoxState state : previousBoxStates) {
-            // Position actuelle de la boîte (après le mouvement)
+
             int boxCurrentRow = state.position[0] + direction.getDeltaRow();
             int boxCurrentCol = state.position[1] + direction.getDeltaCol();
             Cell currentCell = board.getGrid4Play().getCell(boxCurrentRow, boxCurrentCol);
 
-            // Remet la boîte à sa position originale
             Cell originalCell = board.getGrid4Play().getCell(state.position[0], state.position[1]);
             originalCell.setValue(state.box);
 
-            // Restaure l'état de la cellule actuelle en fonction de si elle avait un goal
             if (state.wasOnGoal) {
-                // La boîte était sur un goal, donc la cellule originale doit être un goal aussi
+
                 originalCell.setValue(new Goal());
-                board.incrementGoalsFilled(); // Il faut incrémenter parce qu'on remet la boîte sur le goal
+                board.incrementGoalsFilled();
             }
 
-            // La cellule actuelle devrait être soit un ground soit un goal, jamais rien d'autre
             if (currentCell.hasElementOfType(Goal.class)) {
-                // Si le goal était déjà là, il reste
+
                 currentCell.setValue(new Goal());
             } else {
-                // Sinon, on met un ground
+
                 currentCell.setValue(new Ground());
             }
 
-            // Décrémente le compteur de boîtes sur les goals
             if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class)) {
                 board.decrementGoalsFilled();
             }
         }
     }
+   /** Une classe utilitaire pour stocker l'état d'une boîte, y compris l'élément de la boîte, sa position,
+    et si elle était sur un objectif au début du mouvement. Ceci est crucial pour pouvoir annuler les mouvements de boîtes correctement.**/
     static class BoxState {
-        Element box; // L'élément boîte.
-        int[] position; // La position [x, y] de la boîte.
-        boolean wasOnGoal; // Indique si la boîte était sur un objectif.
+        Element box;
+        int[] position;
+        boolean wasOnGoal;
 
         public BoxState(Element box, int[] position, boolean wasOnGoal) {
             this.box = box;

@@ -15,8 +15,12 @@ public class Grid4Design extends Grid{
     protected LongBinding filledCellsCount;
     private static int boxCount = 1;
     protected Cell4Design[][] cell4Design;
-
-    public Grid4Design(int width, int height) {
+/** Initialise la grille avec les dimensions spécifiées (width et height).
+ Crée un tableau bidimensionnel de Cell4Design pour stocker les cellules de la grille.
+ Initialise chaque cellule dans le tableau.
+ Configure une liaison (filledCellsCount) qui calcule le nombre de cellules non vides.
+**/
+ public Grid4Design(int width, int height) {
         this.gridWidth.set(width);
         this.gridHeight.set(height);
         this.cell4Design = new Cell4Design[gridWidth.get()][gridHeight.get()];
@@ -28,14 +32,14 @@ public class Grid4Design extends Grid{
                 .filter(cell -> !(cell.isEmpty()))
                 .count(), gridChanged);
     }
-
+/** Décrémente le compteur de boîtes s'il est supérieur à 1. Cette méthode pourrait être utilisée pour ajuster le nombre de boîtes disponibles lors de la conception du niveau.**/
     public static void decrementBoxCount() {
         if (boxCount > 1) {
             boxCount--;
         }
     }
 
-
+/** Initialise chaque cellule de la grille en créant de nouvelles instances de Cell4Design.**/
     protected void initializeCells() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
@@ -43,7 +47,7 @@ public class Grid4Design extends Grid{
             }
         }
     }
-
+/** Réinitialise la grille avec de nouvelles dimensions, recrée le tableau de cellules, réinitialise le compteur de boîtes à 1, et déclenche un changement de la grille. **/
     @Override
     public void resetGrid(int newWidth, int newHeight) {
         this.gridWidth.set(newWidth);
@@ -53,20 +57,18 @@ public class Grid4Design extends Grid{
         initializeCells();
         triggerGridChange();
     }
-
+/** Retourne la propriété BooleanProperty qui indique si la grille a changé. Utile pour la liaison avec la vue.**/
     @Override
     public BooleanProperty gridChangedProperty() {
         return gridChanged;
     }
-
+/** Change la valeur de la propriété gridChanged pour déclencher une notification de changement.**/
     @Override
     public void triggerGridChange() {
         gridChanged.set(!gridChanged.get()); // Change la valeur pour déclencher l'écouteur
     }
-
+/** Cherche et retourne les coordonnées du joueur dans la grille, ou null si aucun joueur n'est trouvé. **/
     @Override
-    // Cette méthode retourne les coordonnées du joueur sous forme d'un tableau [x, y]
-    // ou null si aucun joueur n'est trouvé.
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
@@ -88,9 +90,11 @@ public class Grid4Design extends Grid{
     public int getGridHeight() {
         return gridHeight.get();
     }
+    /** Retourne la cellule située aux coordonnées (i, j) dans la grille. **/
     public Cell4Design getCell4Design(int i, int j) {
         return cell4Design[i][j];
     }
+    /** Retourne la propriété de liste en lecture seule contenant les éléments à une position spécifique. Lève une exception si les indices sont hors limites. **/
     @Override
    protected ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         if (line < 0 || col < 0 || line >= gridWidth.get() || col >= gridHeight.get()) {
@@ -98,18 +102,18 @@ public class Grid4Design extends Grid{
         }
         return cell4Design[line][col].getValue();
     }
-
+/** Traite un jeu d'éléments sur la grille, vérifie les conditions pour placer ou déplacer un joueur ou d'autres éléments, et gère les interactions complexes entre les éléments.**/
     @Override
     protected void play(int line, int col, Element toolValue) {
-        // Assurez-vous que les coordonnées sont valides.
+
         if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight() || toolValue == null) {
-            return; // Position invalide ou toolValue est null.
+            return;
         }
 
         Cell cell = cell4Design[line][col];
 
 
-        // Si c'est pour placer un joueur, on d'abord le joueur de sa position actuelle.
+
         if (toolValue.getType() == CellValue.PLAYER) {
             int[] playerPos = findPlayerPosition();
             if (playerPos != null) {
@@ -117,34 +121,29 @@ public class Grid4Design extends Grid{
 
             }
 
-            // Logique simplifiée pour l'ajout d'états dans la cellule.
             if (toolValue.getType() == CellValue.WALL || toolValue.getType() == CellValue.GROUND) {
-                // Pour WALL et GROUND, on remplace tout les états existants.
+
                 cell.play(toolValue);
             } else if (!cell.getValue().contains(toolValue)) {
-                // Pour les autres états, on ajoute seulement s'ils ne sont pas déjà présents.
-                // Cela évite les duplications pour des états comme GOAL qui peut être superposé avec PLAYER ou BOX.
+
                 cell.play(toolValue);
             }
 
-            // Si on ajoute autre chose qu'un GOAL, et que GOAL est déjà présent, on ne le retire pas.
-            // Cela permet de garder le GOAL même quand on ajoute PLAYER ou BOX sur celui-ci.
-
-            // invalide le compteur de cellules remplies et déclenche le changement de grille.
             filledCellsCount.invalidate();
             triggerGridChange();
         }
     }
+    /** Retourne une liaison qui calcule le nombre de cellules remplies dans la grille.**/
     @Override
     protected LongBinding filledCellsCountProperty() {
         return filledCellsCount;
     }
-
+/** Vérifie si une cellule spécifiée est vide.**/
     @Override
     protected boolean isEmpty(int line, int col) {
         return cell4Design[line][col].isEmpty();
     }
-
+/** Méthodes qui vérifient la présence de joueurs, d'objectifs, ou de boîtes dans la grille.**/
     @Override
     public boolean hasPlayer() {
         return findPlayerPosition() != null;
@@ -163,7 +162,7 @@ public class Grid4Design extends Grid{
                 .flatMap(Arrays::stream)
                 .anyMatch(cell -> cell.getValue().contains(new Box()));
     }
-
+    /** Calculent et retournent le nombre total d'objectifs présents dans la grille.**/
     @Override
     public long getTargetCount() {
         return Arrays.stream(cell4Design)
@@ -171,7 +170,7 @@ public class Grid4Design extends Grid{
                 .filter(cell -> cell.getValue().contains(new Goal()))
                 .count();
     }
-
+    /** Calculent et retournent le nombre total de boîtes présents dans la grille.**/
     @Override
     public long getBoxCount() {
         return Arrays.stream(cell4Design)
@@ -179,18 +178,18 @@ public class Grid4Design extends Grid{
                 .filter(cell -> cell.getValue().contains(new Box()))
                 .count();
     }
-
+   /** Vérifie si la grille a subi des changements.**/
     @Override
     public boolean isGridChanged() {
         return gridChanged.get();
     }
 
-
+/** Retourne le tableau de cellules de la grille, utilisé pour l'accès direct aux cellules.**/
     public Cell4Design[][] getMatrix() {
         return cell4Design;
     }
 
-
+/** Définit la valeur d'une cellule spécifique, ajoutant un nouvel élément et déclenchant un changement de grille si les indices sont valides.**/
     @Override
     public void setCellValue(int line, int col, Element newValue) {
         if (line >= 0 && line < gridWidth.get() && col >= 0 && col < gridHeight.get()) {
@@ -199,7 +198,7 @@ public class Grid4Design extends Grid{
             triggerGridChange();
         }
     }
-
+/** Incrémente le compteur global de boîtes et retourne la nouvelle valeur.**/
     public static int incrementBoxCount() {;
         System.out.println("box"+boxCount);
         return boxCount++;
