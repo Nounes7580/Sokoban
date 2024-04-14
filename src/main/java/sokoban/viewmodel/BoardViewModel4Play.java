@@ -14,6 +14,7 @@ public class BoardViewModel4Play{
 
 
 
+
     private Board4Play board4Play;
     private Board4Design board4Design;
 

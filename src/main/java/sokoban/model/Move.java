@@ -1,6 +1,7 @@
 package sokoban.model;
 
 
+
 import sokoban.model.element.Box;
 import sokoban.model.element.Element;
 import sokoban.model.element.Player;
@@ -8,14 +9,15 @@ import sokoban.model.element.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Move implements Command {
     private Board4Play board;
     private Grid4Play grid4Play;
     private Board4Play.Direction direction;
     private int[] previousPosition;
     private int previousMoveCount;
-
     private List<BoxState> previousBoxStates = new ArrayList<>();
+
 
 
 
@@ -42,10 +44,12 @@ public class Move implements Command {
         }
     }
 
+
         @Override
         public void redo() {
             Board4Play.movePlayer(direction);
         }
+
     static class BoxState {
         Element box; // L'élément boîte.
         int[] position; // La position [x, y] de la boîte.
@@ -58,4 +62,5 @@ public class Move implements Command {
         }
     }
     }
+
 

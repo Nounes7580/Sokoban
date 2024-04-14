@@ -32,6 +32,8 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
+import static sokoban.model.CommandManager.*;
+
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
 
@@ -81,6 +83,10 @@ public class BoardView4Play extends BorderPane {
 
 
 
+
+    public void setBoard4Play(Board4Play board) {
+        this.board4Play = board;
+    }
 
     private void initializeTotalGoals(long targetCount) {
         goalsLabel.setText("Number of goals reached: 0 of " + targetCount);

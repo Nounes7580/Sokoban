@@ -4,7 +4,9 @@ import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.*;
 import sokoban.view.BoardView4Play;
 
+
 import java.util.Arrays;
+
 import java.util.Stack;
 
 public class Board4Play {
@@ -17,6 +19,7 @@ public class Board4Play {
     private static Stack<Move> undoStack = new Stack<>();
     private static Stack<Move> redoStack = new Stack<>();
     public static Grid4Play grid4Play;
+    private static boolean lastMoveWasSuccessful = false;
     public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         return grid4Play.valueProperty(line, col);
     }
@@ -52,10 +55,12 @@ public class Board4Play {
 
 
     public static void movePlayer(Direction direction) {
+
         if (boxesOnGoals == grid4Play.getTargetCount()) {
             System.out.println("All boxes are on the goals. No more moves allowed.");
             return;
         }
+
         int[] playerPosition = grid4Play.findPlayerPosition();
         if (playerPosition == null) {
             System.out.println("Player not found.");
@@ -68,12 +73,16 @@ public class Board4Play {
         int newRow = playerPosition[0] + direction.getDeltaRow();
         int newCol = playerPosition[1] + direction.getDeltaCol();
 
+
         if (!isMoveValid(newRow, newCol, direction)) {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
             return;
         }
         Integer[] boxStart = null;
         Integer[] boxEnd = null;
+
+
+
 
         Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
         if (targetCell.hasElementOfType(Box.class)) {
@@ -103,6 +112,7 @@ public class Board4Play {
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
                 BoardView4Play.updateGoalsReached(boxesOnGoals);
+                lastMoveWasSuccessful = true;
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
                 return;
@@ -113,11 +123,23 @@ public class Board4Play {
         // If the player is moving from a goal, keep the goal.
         if (isPlayerOnGoal) {
             grid4Play.play(playerPosition[0], playerPosition[1], new Goal());
+            lastMoveWasSuccessful = true;
         } else {
             grid4Play.play(playerPosition[0], playerPosition[1], new Ground());
+            lastMoveWasSuccessful = true;
         }
+        System.out.println(lastMoveWasSuccessful);
 
         moveCount++;
+
+
+
+    }
+
+
+    public static boolean getLastMoveWasSuccessful() {
+
+        return lastMoveWasSuccessful;
 
     }
 
@@ -254,6 +276,7 @@ public class Board4Play {
             return deltaCol;
         }
     }
+
 
 
 }
