@@ -131,6 +131,7 @@ public class Board4Play {
         System.out.println(lastMoveWasSuccessful);
 
         moveCount++;
+        BoardView4Play.updateMovesLabel(moveCount);
 
 
 
@@ -144,8 +145,7 @@ public class Board4Play {
     }
 
 
-    public int setMoveCount(int moveCount) {
-        return this.moveCount = moveCount;
+    public void setMoveCount(int moveCount) {
     }
     public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
 
@@ -166,9 +166,10 @@ public class Board4Play {
         grid4Play.play(currentPlayerPosition[0], currentPlayerPosition[1], wasOnGoal ? new Goal() : new Ground());
 
         // Restaurer le nombre de mouvements
-        this.moveCount = previousMoveCount;
+        moveCount += 5;
 
-        BoardView4Play.updateMovesLabel(moveCount+5);
+        BoardView4Play.updateMovesLabel(moveCount);
+
 
     }
 
