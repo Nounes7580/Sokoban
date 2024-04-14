@@ -5,6 +5,7 @@ import sokoban.model.element.*;
 import sokoban.view.BoardView4Play;
 
 import java.util.Arrays;
+import java.util.Stack;
 
 public class Board4Play {
     private static int boxesOnGoals = 0;
@@ -13,7 +14,8 @@ public class Board4Play {
     public Grid4Play getGrid4Play() {
         return grid4Play;
     }
-
+    private static Stack<Move> undoStack = new Stack<>();
+    private static Stack<Move> redoStack = new Stack<>();
     public static Grid4Play grid4Play;
     public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         return grid4Play.valueProperty(line, col);
@@ -70,6 +72,8 @@ public class Board4Play {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
             return;
         }
+        Integer[] boxStart = null;
+        Integer[] boxEnd = null;
 
         Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
         if (targetCell.hasElementOfType(Box.class)) {
@@ -114,6 +118,7 @@ public class Board4Play {
         }
 
         moveCount++;
+        makeMove(playerPosition, new int[]{newRow, newCol}, boxStart, boxEnd);
     }
 
     public int setMoveCount(int moveCount) {
@@ -223,7 +228,25 @@ public class Board4Play {
         }
     }
 
+    public void undo() {
+        if (!undoStack.isEmpty()) {
+            Move move = undoStack.pop();
+            // Appliquez la logique pour inverser le mouvement basée sur `move`
+            redoStack.push(move); // Ajoutez le mouvement à redoStack pour permettre le rétablissement
+        }
+    }
 
-
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            Move move = redoStack.pop();
+            // Appliquez la logique pour exécuter à nouveau le mouvement basée sur `move`
+            undoStack.push(move); // Remettez le mouvement dans undoStack pour d'autres undos
+        }
+    }
+    private static void makeMove(int[] playerStart, int[] playerEnd, Integer[] boxStart, Integer[] boxEnd) {
+        Move move = new Move(playerStart, playerEnd, boxStart, boxEnd);
+        undoStack.push(move);
+        redoStack.clear(); // Nettoyez la pile redo à chaque nouveau mouvement
+    }
 
 }

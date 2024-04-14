@@ -11,6 +11,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -48,7 +50,7 @@ public class BoardView4Play extends BorderPane {
     private final HBox playFinishContainer = new HBox();
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
-
+    private Board4Play board4Play;
     public BoardView4Play(Stage primaryStage, BoardViewModel4Play boardViewModel4Play) {
 
 
@@ -66,12 +68,16 @@ public class BoardView4Play extends BorderPane {
 
     }
 
+
     public static void displayYouWinLabel(int moveCount) {
         moveCount++;
         youWinLabel.setText("You win! " + moveCount + " moves, congratulations!");
 
         youWinLabel.setVisible(true);
     }
+
+
+
 
     private void initializeTotalGoals(long targetCount) {
         goalsLabel.setText("Number of goals reached: 0 of " + targetCount);
@@ -83,7 +89,19 @@ public class BoardView4Play extends BorderPane {
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
 
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.Z) {
+                // Votre logique d'undo ici
 
+
+                System.out.println("CTRL+Z pressed");
+                board4Play.undo();
+                event.consume();
+            } else if (event.isControlDown() && event.getCode() == KeyCode.Y) {
+                board4Play.redo();
+                event.consume();
+            }
+        });
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();
