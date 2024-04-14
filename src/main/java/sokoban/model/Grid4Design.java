@@ -65,7 +65,7 @@ public class Grid4Design extends Grid{
 /** Change la valeur de la propriété gridChanged pour déclencher une notification de changement.**/
     @Override
     public void triggerGridChange() {
-        gridChanged.set(!gridChanged.get()); // Change la valeur pour déclencher l'écouteur
+        gridChanged.set(!gridChanged.get());
     }
 /** Cherche et retourne les coordonnées du joueur dans la grille, ou null si aucun joueur n'est trouvé. **/
     @Override
@@ -73,7 +73,7 @@ public class Grid4Design extends Grid{
         for (int i = 0; i < gridWidth.get(); i++) {
             for (int j = 0; j < gridHeight.get(); j++) {
                 if (cell4Design[i][j].getValue().contains(new Player()) || (cell4Design[i][j].getValue().contains(new Player())&&cell4Design[i][j].getValue().contains(new Goal()))) {
-                    return new int[]{i, j}; // Retourne les coordonnées du joueur
+                    return new int[]{i, j};
                 }
             }
         }

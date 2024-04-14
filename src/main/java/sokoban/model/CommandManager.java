@@ -12,7 +12,7 @@ public class CommandManager {
     public void executeCommand(Command command) {
         command.execute();
         undoStack.push(command);
-        redoStack.clear();  // Clear redo stack on new command
+        redoStack.clear();
     }
 /** Annule la dernière commande exécutée si la pile d'annulation n'est pas vide.
  La commande annulée est retirée de la pile d'annulation et poussée sur la pile de réexécution (redoStack).

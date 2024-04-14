@@ -26,7 +26,7 @@ public abstract class BoardViewModel {
 
 
     // Méthode pour mettre à jour le message de validation
-    public abstract void updateValidationMessage();  // Implemented differently based on the subclass
+    public abstract void updateValidationMessage();
 
 
 

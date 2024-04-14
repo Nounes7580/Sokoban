@@ -51,7 +51,7 @@ public class CellView4Play extends StackPane {
         layoutControls();
         configureBindings();
 
-        // Add a listener to the valueProperty of the viewModel.
+
         cellViewModel4Play.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
@@ -91,9 +91,9 @@ public class CellView4Play extends StackPane {
                     System.out.println("Adding box image to cell at (" + line + ", " + col + ")");
                     addImageView(boxImage);
                     Box box = (Box) value;
-                    if (box.getId() == 0) { // If the box doesn't have an ID yet
-                        int newId = Grid4Design.incrementBoxCount(); // Increment the box count
-                        box.setId(newId); // Assign the new ID to the box
+                    if (box.getId() == 0) {
+                        int newId = Grid4Design.incrementBoxCount();
+                        box.setId(newId);
                     }
                     Label label = new Label(String.valueOf(box.getId()));
                     label.setFont(new Font("Arial", 20));

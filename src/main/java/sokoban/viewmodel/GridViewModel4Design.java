@@ -17,7 +17,7 @@ public class GridViewModel4Design extends GridViewModel{
     @Override
     public CellViewModel4Design getCellViewModel(int line, int col) {
         CellViewModel4Design cellViewModel = new CellViewModel4Design(line, col, board);
-        cellViewModel.setBoardViewModel(this.boardViewModel); // Set the boardViewModel
+        cellViewModel.setBoardViewModel(this.boardViewModel);
         return cellViewModel;
     }
     @Override

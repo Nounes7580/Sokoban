@@ -4,7 +4,7 @@ import sokoban.model.Board4Design;
 
 public abstract class GridViewModel {
 
-    protected BoardViewModel4Design boardViewModel; // Add a reference to BoardViewModel
+    protected BoardViewModel4Design boardViewModel;
 
 
 

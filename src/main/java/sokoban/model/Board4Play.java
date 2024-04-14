@@ -143,22 +143,22 @@ public class Board4Play {
      Utilisée pour implémenter une fonctionnalité d'annulation dans le jeu.**/
     public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
         int[] currentPlayerPosition = grid4Play.findPlayerPosition();
-        if (currentPlayerPosition == null) return; // Si le joueur n'est pas trouvé, sortie anticipée
+        if (currentPlayerPosition == null) return;
 
-        // Restaure la position initiale du joueur
+
         Element player = createElementFromCellValue(CellValue.PLAYER);
         Cell previousCell = grid4Play.getMatrix()[previousPosition[0]][previousPosition[1]];
         Cell currentCell = grid4Play.getMatrix()[currentPlayerPosition[0]][currentPlayerPosition[1]];
 
-        // Si la cellule actuelle du joueur a un goal, le goal doit rester
+
         boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
 
-        // Restaure la position initiale du joueur comme vide ou avec un objectif si c'était le cas
+
         if (!previousCell.hasElementOfType(Box.class)) {
             grid4Play.play(previousPosition[0], previousPosition[1], player);
         }
 
-        // La cellule actuelle du joueur devient un goal si elle en avait un, sinon un ground
+
         grid4Play.play(currentPlayerPosition[0], currentPlayerPosition[1], wasOnGoal ? new Goal() : new Ground());
 
         // Restaure le nombre de mouvements
@@ -176,7 +176,7 @@ public class Board4Play {
     private static boolean isMoveValid(int newRow, int newCol, Direction direction) {
         System.out.println("Checking move validity for: " + newRow + ", " + newCol);
 
-        // Validate player movement bounds
+
         if (newRow < 0 || newRow >= grid4Play.getGridWidth() || newCol < 0 || newCol >= grid4Play.getGridHeight()) {
             System.out.println("Move is invalid: Player out of bounds.");
             return false;
@@ -185,19 +185,18 @@ public class Board4Play {
         Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
         System.out.println("Target cell value: " + targetCell.getValue());
 
-        // Check if the target cell is empty or a goal
+
         if (targetCell.isEmpty() || targetCell.hasElementOfType(Goal.class)) {
             return true;
         }
 
-        // Handling box movement
         if (targetCell.hasElementOfType(Box.class)) {
             int boxNewRow = newRow + direction.getDeltaRow();
             int boxNewCol = newCol + direction.getDeltaCol();
 
             System.out.println("Checking next cell for box at: " + boxNewRow + ", " + boxNewCol);
 
-            // Validate box movement bounds
+
             if (boxNewRow < 0 || boxNewRow >= grid4Play.getGridWidth() || boxNewCol < 0 || boxNewCol >= grid4Play.getGridHeight()) {
                 System.out.println("Move is invalid: Box out of bounds.");
                 return false;
@@ -206,7 +205,7 @@ public class Board4Play {
             Cell boxNextCell = grid4Play.getMatrix()[boxNewRow][boxNewCol];
             System.out.println("Next cell value for box: " + boxNextCell.getValue());
 
-            // Check if the next cell is suitable for the box
+
             boolean canMoveBox = (boxNextCell.isEmpty() || boxNextCell.hasElementOfType(Goal.class)) && !boxNextCell.hasElementOfType(Box.class);
             System.out.println("Can move box: " + canMoveBox);
             return canMoveBox;
@@ -217,16 +216,16 @@ public class Board4Play {
 
 /** Vérifie si la nouvelle position pour une boîte est valide dans la grille, notamment si la position n'est pas bloquée par d'autres boîtes ou des murs. **/
     private static boolean isPositionValid(int boxNewRow, int boxNewCol) {
-        // Check if the new position is within the grid boundaries.
+
         if (boxNewRow < 0 || boxNewRow >= grid4Play.getGridWidth() || boxNewCol < 0 || boxNewCol >= grid4Play.getGridHeight()) {
             System.out.println("Box move out of bounds: (" + boxNewRow + ", " + boxNewCol + ")");
             return false;
         }
 
-        // Retrieve the cell at the box's new position.
+
         Cell boxNewCell = grid4Play.getMatrix()[boxNewRow][boxNewCol];
 
-        // Check if the new position is free (not containing a box or a wall).
+
         boolean isPositionFree = !(boxNewCell.hasElementOfType(Box.class) || boxNewCell.hasElementOfType(Wall.class));
 
         if (!isPositionFree) {
@@ -244,10 +243,10 @@ public class Board4Play {
                 return new Box();
             case GOAL:
                 return new Goal();
-            // Add cases for other CellValue types
+
             case EMPTY:
             default:
-                return new Ground(); // Assuming Ground represents an empty space
+                return new Ground();
         }
     }
 /** Retourne le nombre actuel de boîtes placées correctement sur les objectifs. **/

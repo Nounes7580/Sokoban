@@ -66,7 +66,7 @@ public class BoardView4Play extends BorderPane {
         createFinishButton();
         youWinLabel.setVisible(false);
 
-        createHeader(); // Ajoutez le label de validation dans cette méthode
+        createHeader();
         configMainComponents(primaryStage);
         createGrid();
 
@@ -102,7 +102,7 @@ public class BoardView4Play extends BorderPane {
 
 
         stage.show();
-        this.requestFocus();  // Request focus on the BorderPane itself
+        this.requestFocus();
 
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
@@ -116,7 +116,7 @@ public class BoardView4Play extends BorderPane {
         }
 
         Platform.runLater(() -> {
-            //taille d'une case
+
             NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
                     () -> Math.min(
                             widthProperty().subtract(getToolbarWidth()).divide(boardViewModel4Play.getGridWidth()).get(),
@@ -155,7 +155,7 @@ public class BoardView4Play extends BorderPane {
         });
     }
     public static void updateMovesLabel(int moveCount) {
-        // Assuming movesLabel is static or you have an instance to access it
+
         movesLabel.setText("Number of moves played: " + moveCount);
     }
 
@@ -167,18 +167,16 @@ public class BoardView4Play extends BorderPane {
 
 
     private VBox createHeader() {
-        scoreTitleLabel.getStyleClass().add("score-title"); // Add style class for big title
+        scoreTitleLabel.getStyleClass().add("score-title");
         movesLabel.getStyleClass().add("moves-label");
         goalsLabel.getStyleClass().add("goals-label");
         youWinLabel.getStyleClass().add("you-win-label");
 
-        // Debugging line to print out the CSS classes of scoreTitleLabel
 
-        // Arrange labels vertically
         VBox scoreContainer = new VBox(scoreTitleLabel, movesLabel, goalsLabel, youWinLabel);
         scoreContainer.setAlignment(Pos.CENTER);
 
-        // Include the scoreContainer in the header
+
         VBox headerContainer = new VBox(headerLabel, validationLabel, scoreContainer);
         headerContainer.setAlignment(Pos.CENTER);
 
@@ -203,9 +201,9 @@ public class BoardView4Play extends BorderPane {
 
 
     private void configMainComponents(Stage stage) {
-        // Since we're removing the menu, we don't call initializeMenu here
+
         initializeToolBar(stage);
-        topContainer.getChildren().add(createHeader()); // Removed menuBar from the topContainer
+        topContainer.getChildren().add(createHeader());
         this.setTop(topContainer);
     }
 
@@ -216,7 +214,7 @@ public class BoardView4Play extends BorderPane {
         toolBar.setPadding(new Insets(0, 0, 110, 50)); // Ajuste le padding
         toolBar.setSpacing(10);
 
-        // Création et ajout des outils à la VBox en utilisant une méthode modifiée
+
         addToolToBar("/ground.png", new Ground());
         addToolToBar("/wall.png", new Wall());
         addToolToBar("/player.png", new Player());
@@ -230,17 +228,14 @@ public class BoardView4Play extends BorderPane {
         imageView.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1)); // Ajuste la hauteur de l'image
 
         StackPane container = new StackPane(imageView);
-        container.setPadding(new Insets(5)); // Un peu de padding autour de l'image
+        container.setPadding(new Insets(5));
         container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;"); // Bordure transparente par défaut
 
-        // Applique un style de bordure bleue au conteneur lors du survol
+
         container.setOnMouseEntered(e -> container.setStyle("-fx-border-color: lightblue; -fx-border-width: 2; -fx-background-radius: 5;"));
         container.setOnMouseExited(e -> container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;"));
 
-        // Sélectionne l'outil lors du clic sur le conteneur
 
-
-        // Ajoute le conteneur à la barre d'outils
         toolBar.getChildren().add(container);
     }
 
@@ -250,25 +245,25 @@ public class BoardView4Play extends BorderPane {
     protected void setupKeyControls(Scene scene, CommandManager commandManager) {
         System.out.println("Setting up key controls");
         scene.setOnKeyPressed(event -> {
-            System.out.println("Key pressed: " + event.getCode()); // This outputs the key pressed
+            System.out.println("Key pressed: " + event.getCode());
 
-            // Check if CTRL is held down for undo/redo
+
             if (event.isControlDown()) {
                 if (event.getCode() == KeyCode.Z) {
                     commandManager.undo();
-                    event.consume(); // Consume the event so it doesn't propagate further
+                    event.consume();
                 } else if (event.getCode() == KeyCode.Y) {
                     commandManager.redo();
-                    event.consume(); // Consume the event so it doesn't propagate further
+                    event.consume();
                 }
-                return; // Exit the method to avoid moving the player
+                return;
             }
 
-            // Handling directional input for movement
+
             Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
-                case W: // Change Z to W for standard WASD controls
+                case W:
                     direction = Board4Play.Direction.UP;
                     break;
                 case DOWN:
@@ -276,7 +271,7 @@ public class BoardView4Play extends BorderPane {
                     direction = Board4Play.Direction.DOWN;
                     break;
                 case LEFT:
-                case A: // Change Q to A for standard WASD controls
+                case A:
                     direction = Board4Play.Direction.LEFT;
                     break;
                 case RIGHT:
@@ -284,16 +279,16 @@ public class BoardView4Play extends BorderPane {
                     direction = Board4Play.Direction.RIGHT;
                     break;
                 default:
-                    // If no recognized key is pressed, do nothing
+
                     return;
             }
 
             if (direction != null) {
-                // Create a new move command and execute it
+
                 Command command = new Move(boardViewModel4Play.getBoard4Play(), direction);
                 commandManager.executeCommand(command);
                 System.out.println("Moving player in direction: " + direction);
-                event.consume(); // Consume the event so it doesn't propagate further
+                event.consume();
             }
         });
     }
@@ -305,7 +300,7 @@ public class BoardView4Play extends BorderPane {
             boardViewModel4Play.getBoard4Play().setMoveCount(0);
             BoardView4Play.updateMovesLabel(0);
 
-            // Logique pour fermer la vue actuelle (BoardView4Play)
+
             Stage currentStage = (Stage) this.getScene().getWindow();
             currentStage.close();
 
@@ -316,14 +311,13 @@ public class BoardView4Play extends BorderPane {
 
         });
 
-        // Ajoutez finishButton à la vue, par exemple dans un container ou directement à la scène si approprié
 
-        // Centre le bouton dans le conteneur
+
         playFinishContainer.getChildren().add(finishButton);
         playFinishContainer.setAlignment(Pos.CENTER);
         playFinishContainer.setPadding(new Insets(0, 0, 10, 0));
 
-        // Positionne le conteneur du bouton "Play" en bas du BorderPane
+
         setBottom(playFinishContainer);
     }
 

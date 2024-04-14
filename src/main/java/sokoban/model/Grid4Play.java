@@ -93,19 +93,19 @@ public class Grid4Play extends Grid{
     @Override
     protected void play(int line, int col, Element toolValue) {
         if (line < 0 || line >= getGridWidth() || col < 0 || col >= getGridHeight()) {
-            return; // Invalid position.
+            return;
         }
 
         if (toolValue.getType() == CellValue.PLAYER) {
             int[] playerPos = findPlayerPosition();
             if (playerPos != null && (playerPos[0] != col || playerPos[1] != line)) {
-                cell4Play[playerPos[0]][playerPos[1]].play(new Ground()); // Clear old player position.
+                cell4Play[playerPos[0]][playerPos[1]].play(new Ground());
             }
         }
 
-        cell4Play[line][col].play(toolValue); // Set new player position or update cell with new toolValue.
+        cell4Play[line][col].play(toolValue);
 
-        triggerGridChange(); // Notify about grid change.
+        triggerGridChange();
     }
     /** Méthode abstraite à implémenter pour fournir une liaison indiquant le nombre de cellules remplies.**/
     @Override
@@ -171,7 +171,6 @@ public class Grid4Play extends Grid{
         Cell targetCell = cell4Play[newRow][newCol];
         System.out.println("Target cell value: " + targetCell.getValue());
 
-        // Check if the target cell is empty or a goal
         if (targetCell.isEmpty() || targetCell.hasElementOfType(Goal.class)) {
             play(newRow, newCol, new Player());
         }

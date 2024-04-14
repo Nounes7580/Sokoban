@@ -45,14 +45,14 @@ public class Board4Design  {
  Met à jour le compteur des cellules remplies pour refléter les changements de la grille.
  Réactualise la liaison pour isFull pour s'adapter aux nouvelles dimensions.**/
     public void resetGrid(int newWidth, int newHeight) {
-        this.maxFilledCells.set(newWidth * newHeight / 2); // Update maxFilledCells based on new dimensions
+        this.maxFilledCells.set(newWidth * newHeight / 2);
 
         this.grid4Design.resetGrid(newWidth, newHeight);
         this.maxFilledCells.set(newWidth * newHeight / 2);
-        // Mise à jour immédiate du nombre de cellules remplies pour refléter la nouvelle grille
+
         this.filledCellsCount.set(grid4Design.filledCellsCountProperty().get());
 
-        // Update isFull binding
+
         isFull = Bindings.createBooleanBinding(() ->
                         filledCellsCount.get() >= maxFilledCells.get(),
                 filledCellsCount, maxFilledCells
@@ -67,12 +67,12 @@ public class Board4Design  {
 
 /** Calcule et retourne le nombre de cellules actuellement remplies dans la grille. **/
     protected long calculateFilledCells() {
-        // Calculate filled cells specific to design
+
         return grid4Design.filledCellsCountProperty().get();
     }
 /** Calcule et retourne le nombre maximal de cellules qui peuvent être remplies, basé sur la moitié des cellules totales de la grille. **/
     public int maxFilledCells() {
-        // Define maximum filled cells for design
+
         return (grid4Design.getGridWidth() * grid4Design.getGridHeight()) / 2;
     }
 
@@ -83,19 +83,18 @@ public class Board4Design  {
 
         if (line < 0 || line >= grid4Design.getGridWidth() || col < 0 || col >= grid4Design.getGridHeight()) {
             System.out.println("Indices hors limites : line=" + line + ", col=" + col);
-            return; // Aucune valeur à retourner, la méthode peut être de type void.
+            return;
         }
 
-        // Accéder directement à la cellule pour manipuler ses états.
+
         Cell cell = grid4Design.getMatrix()[line][col];
 
-        // Si la grille n'est pas pleine ou si la cellule n'est pas vide, procéder à la manipulation.
         if (!isFull.get() || !cell.getValue().isEmpty()) {
-            // Utiliser une méthode adaptée de Grid pour gérer l'ajout des états.
+
             grid4Design.play(line, col, toolValue);
-            filledCellsCount.set(calculateFilledCells()); // Recalculer après manipulation.
+            filledCellsCount.set(calculateFilledCells());
         }
-        // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
+
     }
    /** Définit la valeur d'une cellule spécifique dans la grille, si la position est valide et si la grille n'est pas pleine ou la cellule n'est pas vide. **/
     public void setCellValue(int line, int col, Element newValue) {
@@ -152,7 +151,7 @@ public class Board4Design  {
         if (values.contains(new Goal())) return '.';
         if (values.contains(new Player()) && values.contains(new Goal())) return '+';
         if (values.contains(new Box()) && values.contains(new Goal())) return '*';
-        return ' ';  // Default character for empty cell or ground
+        return ' ';
     }
     /**   Ouvre et lit un fichier, puis charge son contenu comme configuration de la grille, en respectant les éléments et leurs positions.**/
     public void handleOpen(File selectedFile){
