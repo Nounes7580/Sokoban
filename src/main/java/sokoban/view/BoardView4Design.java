@@ -185,8 +185,7 @@ public class BoardView4Design extends BorderPane {
     private void createPlayButton() {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
-            // Vérifie si la grille a été modifiée
-            if (boardDesignViewModel.isGridChanged()) {
+
                 Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
                 confirmationDialog.setTitle("Confirmation Dialog");
                 confirmationDialog.setHeaderText("Your board has been modified.");
@@ -211,7 +210,7 @@ public class BoardView4Design extends BorderPane {
                 if (!result.isPresent() || result.get() == buttonTypeCancel) {
                     return;
                 }
-            }
+            
 
             // Configure et affiche la fenêtre de jeu ici directement
             showGameWindowDirectly();
