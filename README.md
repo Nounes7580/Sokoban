@@ -21,8 +21,14 @@
 
 ## Notes de version itération 2
 
-...
+* lorsqu'on lance un niveau qu on fait des mouvement avec le joueur puis qu'on appuie sur finish et qu'on
+  retourne sur le niveau . le nbre de mouvement commence a 0 puis apres un mouvement . cela reprend le nombre
+  de mouvement de l'ancien niveau.
+
 
 ## Notes de version itération 3
 
-...
+* lorsqu'on place une box sur un goal et qu'on fait un ctrl+Z depuis ce goal. le number of goal reached
+  reste a 1 jusqu a ce qu on deplace une autre boite et ca redescend a 0.
+*  quand je fait ctrlz et que je passe par un goal avec la box la box disparait
+   sur le goal.
