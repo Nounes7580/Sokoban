@@ -10,7 +10,6 @@ import java.util.List;
 
 public class Move implements Command {
     private Board4Play board;
-    private Grid4Play grid4Play;
     private Board4Play.Direction direction;
     private int[] previousPosition;
     private int previousMoveCount;
@@ -45,15 +44,20 @@ public class Move implements Command {
 
 
     @Override
-        public void execute() {
+    public void execute() {
             Board4Play.movePlayer(direction);
         }
 
+    @Override
+    public void redo() {
+        Board4Play.movePlayer(direction);
+    }
+
     public void undo() {
-        // Restaurer le joueur à sa position précédente
+        // Restaure le joueur à sa position précédente
         board.undoMovePlayer(previousPosition, previousMoveCount);
 
-        // Restaurer les états des boîtes
+        // Restaure les états des boîtes
         for (BoxState state : previousBoxStates) {
             // Position actuelle de la boîte (après le mouvement)
             int boxCurrentRow = state.position[0] + direction.getDeltaRow();
@@ -64,26 +68,34 @@ public class Move implements Command {
             Cell originalCell = board.getGrid4Play().getCell(state.position[0], state.position[1]);
             originalCell.setValue(state.box);
 
-            // Si la boîte était sur un objectif, restaurer l'objectif à l'emplacement actuel de la boîte
+            // Restaure l'état de la cellule actuelle en fonction de si elle avait un goal
             if (state.wasOnGoal) {
+                // La boîte était sur un goal, donc la cellule originale doit être un goal aussi
+                originalCell.setValue(new Goal());
+                board.incrementGoalsFilled(); // Il faut incrémenter parce qu'on remet la boîte sur le goal
+            }
+
+            // La cellule actuelle devrait être soit un ground soit un goal, jamais rien d'autre
+            if (currentCell.hasElementOfType(Goal.class)) {
+                // Si le goal était déjà là, il reste
                 currentCell.setValue(new Goal());
             } else {
+                // Sinon, on met un ground
                 currentCell.setValue(new Ground());
             }
 
-            // Ajuster le compteur de boîtes sur les objectifs si nécessaire
-            if (state.wasOnGoal) {
+            // Décrémente le compteur de boîtes sur les goals
+            if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class)) {
                 board.decrementGoalsFilled();
             }
         }
     }
+/*
+
+ */
 
 
 
-    @Override
-        public void redo() {
-            Board4Play.movePlayer(direction);
-        }
 
     static class BoxState {
         Element box; // L'élément boîte.
@@ -96,6 +108,6 @@ public class Move implements Command {
             this.wasOnGoal = wasOnGoal;
         }
     }
-    }
+}
 
 

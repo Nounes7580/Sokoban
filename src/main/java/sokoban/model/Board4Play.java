@@ -16,8 +16,7 @@ public class Board4Play {
     public Grid4Play getGrid4Play() {
         return grid4Play;
     }
-    private static Stack<Move> undoStack = new Stack<>();
-    private static Stack<Move> redoStack = new Stack<>();
+
     public static Grid4Play grid4Play;
     private static boolean lastMoveWasSuccessful = false;
     public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
@@ -153,30 +152,30 @@ public class Board4Play {
     public void setMoveCount(int moveCount) {
     }
     public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
-
         int[] currentPlayerPosition = grid4Play.findPlayerPosition();
         if (currentPlayerPosition == null) return; // Si le joueur n'est pas trouvé, sortie anticipée
 
-        // Déplacer le joueur à sa position précédente
+        // Restaure la position initiale du joueur
         Element player = createElementFromCellValue(CellValue.PLAYER);
-        // Assurez-vous que l'ancienne position est libre ou qu'elle a seulement un objectif (Goal)
         Cell previousCell = grid4Play.getMatrix()[previousPosition[0]][previousPosition[1]];
-        if (!previousCell.hasElementOfType(Box.class)) { // Ne pas placer le joueur si une boîte est là
+        Cell currentCell = grid4Play.getMatrix()[currentPlayerPosition[0]][currentPlayerPosition[1]];
+
+        // Si la cellule actuelle du joueur a un goal, le goal doit rester
+        boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
+
+        // Restaure la position initiale du joueur comme vide ou avec un objectif si c'était le cas
+        if (!previousCell.hasElementOfType(Box.class)) {
             grid4Play.play(previousPosition[0], previousPosition[1], player);
         }
 
-        // Restaurer la position initiale du joueur comme vide ou avec un objectif si c'était le cas
-        Cell currentCell = grid4Play.getMatrix()[currentPlayerPosition[0]][currentPlayerPosition[1]];
-        boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
+        // La cellule actuelle du joueur devient un goal si elle en avait un, sinon un ground
         grid4Play.play(currentPlayerPosition[0], currentPlayerPosition[1], wasOnGoal ? new Goal() : new Ground());
 
-        // Restaurer le nombre de mouvements
+        // Restaure le nombre de mouvements
         moveCount += 5;
-
         BoardView4Play.updateMovesLabel(moveCount);
-
-
     }
+
 
 
 
@@ -287,6 +286,10 @@ public class Board4Play {
             return deltaCol;
         }
     }
+    public void incrementGoalsFilled() {
+        boxesOnGoals++;
+    }
+
 
 
 

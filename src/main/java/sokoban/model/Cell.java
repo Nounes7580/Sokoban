@@ -7,8 +7,6 @@ import sokoban.model.element.*;
 public abstract class Cell {
     private int row;
     private int column;
-    // autres attributs et méthodes...
-
     public Cell(int row, int column) {
         this.row = row;
         this.column = column;
