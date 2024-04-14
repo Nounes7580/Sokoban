@@ -1,47 +1,21 @@
 package sokoban.viewmodel;
 
-import javafx.beans.Observable;
-import javafx.beans.property.IntegerProperty;
-import sokoban.model.Board;
-import sokoban.model.CellValue;
+import sokoban.model.Board4Design;
 
-public class GridViewModel {
-    private final Board board;
-    private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel
+public abstract class GridViewModel {
+
+    protected BoardViewModel4Design boardViewModel;
 
 
-    GridViewModel(Board board) {
-        this.board = board;
-    }
-    public void setBoardViewModel(BoardViewModel boardViewModel) {
-        this.boardViewModel = boardViewModel;
-    }
 
-    public CellViewModel getCellViewModel(int line, int col) {
-        CellViewModel cellViewModel = new CellViewModel(line, col, board);
-        cellViewModel.setBoardViewModel(this.boardViewModel); // Set the boardViewModel
-        return cellViewModel;
-    }
+    public abstract void setBoardViewModel(BoardViewModel4Design boardViewModel);
 
-    public CellValue getCellValue(int line, int col) {
-        return getCellViewModel(line, col).valueProperty().get();
+    public abstract  CellViewModel4Design getCellViewModel(int line, int col);
 
-    }
+   public abstract int getGridWidth();
 
-    public int getGridWidth() {
-        return board.getGrid().getGridWidth();
-    }
+    public abstract int getGridHeight();
 
-    public int getGridHeight() {
-        return board.getGrid().getGridHeight();
-    }
-    // Forward the observable properties
-    public IntegerProperty gridWidthProperty() {
-        return board.getGrid().gridWidthProperty();
-    }
 
-    public IntegerProperty gridHeightProperty() {
-        return board.getGrid().gridHeightProperty();
-    }
 
 }

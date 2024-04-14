@@ -1,118 +1,136 @@
 package sokoban.view;
 
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import javafx.util.Pair;
-import sokoban.model.CellValue;
-
-import sokoban.viewmodel.BoardViewModel;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.DoubleBinding;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sokoban.viewmodel.CellViewModel;
+import javafx.util.Pair;
+import sokoban.model.Board4Play;
+import sokoban.model.element.*;
+import sokoban.viewmodel.BoardViewModel;
+import sokoban.viewmodel.BoardViewModel4Design;
+import sokoban.viewmodel.BoardViewModel4Play;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-public class BoardView extends BorderPane {
+public class BoardView4Design extends BorderPane {
+    private final BoardViewModel4Design boardDesignViewModel;
 
-    // ViewModel
-    private final BoardViewModel boardViewModel;
-    private GridView gridView; // Declare gridView as a member variable
+    private final HBox headerBox = new HBox();
+    private final Label validationLabel = new Label();
+    private final VBox toolBar = new VBox();
 
+    private final Label headerLabel = new Label("");
+    private final MenuBar menuBar = new MenuBar();
+    private final VBox topContainer = new VBox();
 
-    // Constantes de mise en page
-
+    private final HBox playButtonContainer = new HBox();
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
 
-    // Composants principaux
-    private final Label headerLabel = new Label("");
-    private final HBox headerBox = new HBox();
-    private final VBox toolBar = new VBox(); // La VBox pour la barre d'outils avec un espacement de 10
-    // Label pour les messages de validation
-    private final Label validationLabel = new Label();
-
-    // Ajout pour la barre de menu
-    private final MenuBar menuBar = new MenuBar();
+    public BoardView4Design(Stage primaryStage, BoardViewModel4Design boardViewModel) {
 
 
-    public BoardView(Stage primaryStage, BoardViewModel boardViewModel) {
-        this.boardViewModel = boardViewModel;
-
-        setLeft(toolBar);
-        createHeader(); // Ajoutez le label de validation dans cette méthode
-        createGrid();
+        this.boardDesignViewModel = boardViewModel;
         start(primaryStage);
+
+        createPlayButton();
+        setLeft(toolBar);
+        createHeader();
+        configMainComponents(primaryStage);
+
         boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 createGrid();
-                boardViewModel.gridResetProperty().set(false); // Reset the property to false
+                this.boardDesignViewModel.gridResetProperty().set(false);
             }
         });
 
     }
 
-    private void start(Stage stage) {
-        // Mise en place des composants principaux
-        configMainComponents(stage);
-
-        // Mise en place de la scène et affichage de la fenêtre
+    public void start(Stage stage) {
         Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
+
+
+
         stage.setScene(scene);
+        setupKeyControls(stage.getScene());
+
         stage.show();
         stage.setMinHeight(stage.getHeight());
         stage.setMinWidth(stage.getWidth());
+
+        Platform.runLater(this::createGrid);
+    }
+    protected void createGrid() {
+        if (getCenter() != null) {
+            ((GridPane) getCenter()).getChildren().clear();
+        }
+
+
+
+            NumberBinding gridSizeBinding = Bindings.createDoubleBinding(
+                    () -> Math.min(
+                            widthProperty().subtract(getToolbarWidth()).divide(boardDesignViewModel.getGridWidth()).get(),
+                            heightProperty().subtract(getTopContainerHeight()).subtract(getPlayButtonContainerHeight()).divide(boardDesignViewModel.getGridHeight()).get()
+                    ),
+                    widthProperty(),
+                    heightProperty()
+            );
+
+
+
+            DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
+                    () -> gridSizeBinding.doubleValue() * boardDesignViewModel.getGridWidth(),
+                    gridSizeBinding
+            );
+
+            DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
+                    () -> gridSizeBinding.doubleValue() * boardDesignViewModel.getGridHeight(),
+                    gridSizeBinding
+            );
+
+            if (boardDesignViewModel != null) {
+                GridView4Design gridView = new GridView4Design((boardDesignViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
+
+                gridView.minHeightProperty().bind(gridHeightBinding);
+                gridView.maxHeightProperty().bind(gridHeightBinding);
+
+                gridView.minWidthProperty().bind(gridWidthBinding);
+                gridView.maxWidthProperty().bind(gridWidthBinding);
+                setCenter(gridView);
+            }
+
     }
 
-    private void configMainComponents(Stage stage) {
-        stage.setTitle("Sokoban");
-        initializeToolBar(stage);
-
-        Label validationLabel = new Label();
-        validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
-        // Add the label to the UI
-        headerBox.getChildren().add(validationLabel);
-        // Initialiser le menu Fichier dans la barre de menu
-        initializeMenu(stage);
-        // Création du container pour le menu et l'en-tête
-        VBox topContainer = new VBox(menuBar, createHeader());
-
-        // Ajout du container combiné à l'interface utilisateur
-        this.setTop(topContainer);
-
-    }
 
     private VBox createHeader() {
         headerLabel.textProperty().bind(Bindings.createStringBinding(() ->
-                        "Number of filled cells: " + boardViewModel.filledCellsCountProperty().get() + " of " + boardViewModel.maxFilledCells(),
-                boardViewModel.filledCellsCountProperty(),
-                boardViewModel.maxFilledCellsProperty() // Assuming there's a property accessor for maxFilledCells in your ViewModel
+                        "Number of filled cells: " + boardDesignViewModel.filledCellsCountProperty().get() + " of " + boardDesignViewModel.maxFilledCells(),
+                boardDesignViewModel.filledCellsCountProperty(),
+                boardDesignViewModel.maxFilledCellsProperty()
         ));
         headerLabel.getStyleClass().add("header");
 
-        // Configuration du label de validation
-        validationLabel.textProperty().bind(boardViewModel.validationMessageProperty());
+
+        validationLabel.textProperty().bind(boardDesignViewModel.validationMessageProperty());
         validationLabel.setTextFill(Color.RED);
 
-        // Vérifiez que le texte n'est pas null avant d'appeler isEmpty()
         validationLabel.visibleProperty().bind(
                 Bindings.createBooleanBinding(
                         () -> validationLabel.getText() != null && !validationLabel.getText().isEmpty(),
@@ -120,97 +138,143 @@ public class BoardView extends BorderPane {
                 )
         );
 
-        // Ajoutez le label de validation sous le headerLabel
         VBox headerContainer = new VBox(headerLabel, validationLabel);
         headerContainer.setAlignment(Pos.CENTER);
         headerContainer.setPadding(new Insets(10));
 
-        // Retourner le container de l'en-tête au lieu de le placer directement en haut du BorderPane
         return headerContainer;
     }
 
-    private void createGrid() {
-        if (getCenter() != null) {
-            ((GridPane) getCenter()).getChildren().clear();
-        }
 
-        NumberBinding gridSizeBinding = Bindings.min(
-                widthProperty()
-                        .subtract(toolBar.widthProperty())
-                ,
-                heightProperty()
-                        .subtract(headerBox.heightProperty())
-                        .subtract(validationLabel.heightProperty())
-                        .subtract(menuBar.heightProperty())
-        );
 
-        DoubleBinding gridWidthBinding = Bindings.createDoubleBinding(
-                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridWidth()) * boardViewModel.getGridWidth(),
-                gridSizeBinding
-        );
+    protected double getToolbarWidth() {
+        return toolBar.getWidth();
 
-        DoubleBinding gridHeightBinding = Bindings.createDoubleBinding(
-                () -> Math.floor(gridSizeBinding.doubleValue() / boardViewModel.getGridHeight()) * boardViewModel.getGridHeight(),
-                gridSizeBinding
-        );
-
-        GridView gridView = new GridView(boardViewModel.getGridViewModel(), gridWidthBinding, gridHeightBinding);
-
-        gridView.minHeightProperty().bind(gridHeightBinding);
-        gridView.maxHeightProperty().bind(gridHeightBinding);
-
-        gridView.minWidthProperty().bind(gridWidthBinding);
-        gridView.maxWidthProperty().bind(gridWidthBinding);
-
-        setCenter(gridView);
     }
 
-    private ImageView createImageView(String resourcePath, CellValue toolType) {
-        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(resourcePath)));
-        imageView.setPreserveRatio(true);
-        imageView.fitWidthProperty().bind(toolBar.prefWidthProperty()); // Lie la largeur de l'ImageView à celle de la VBox
 
-        return imageView;
+    protected double getTopContainerHeight() {
+        return topContainer.getHeight();
     }
+
+
+    protected double getPlayButtonContainerHeight() {
+        return playButtonContainer.getHeight();
+    }
+
+
+    protected void setupKeyControls(Scene scene) {
+        //pas de controle clavier pour l'editeur
+    }
+
+    private void configMainComponents(Stage stage) {
+        initializeToolBar(stage);
+        Label validationLabel = new Label();
+        validationLabel.textProperty().bind(boardDesignViewModel.validationMessageProperty());
+        headerBox.getChildren().add(validationLabel);
+        initializeMenu(stage);
+        topContainer.getChildren().addAll(menuBar, createHeader());
+        this.setTop(topContainer);
+    }
+    private void createPlayButton() {
+        Button playButton = new Button("Play");
+        playButton.setOnAction(event -> {
+
+                Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+                confirmationDialog.setTitle("Confirmation Dialog");
+                confirmationDialog.setHeaderText("Your board has been modified.");
+                confirmationDialog.setContentText("Do you want to save your changes?");
+
+                ButtonType buttonTypeYes = new ButtonType("Oui", ButtonBar.ButtonData.YES);
+                ButtonType buttonTypeNo = new ButtonType("Non", ButtonBar.ButtonData.NO);
+                ButtonType buttonTypeCancel = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                confirmationDialog.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
+
+
+                Optional<ButtonType> result = confirmationDialog.showAndWait();
+
+
+                if (result.isPresent() && result.get() == buttonTypeYes) {
+
+                    handleSaveAs((Stage) this.getScene().getWindow());
+                }
+
+
+                if (!result.isPresent() || result.get() == buttonTypeCancel) {
+                    return;
+                }
+            
+
+
+            showGameWindowDirectly();
+        });
+
+
+        playButton.disableProperty().bind(
+                boardDesignViewModel.validationMessageProperty().isNotEmpty()
+        );
+
+
+        playButtonContainer.getChildren().add(playButton);
+        playButtonContainer.setAlignment(Pos.CENTER);
+        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
+        setBottom(playButtonContainer);
+    }
+
+    private void showGameWindowDirectly() {
+        Stage gameStage = (Stage) this.getScene().getWindow();
+        BoardView4Play boardView4Play = new BoardView4Play(gameStage, new BoardViewModel4Play(boardDesignViewModel.getBoard()));
+        Scene scene = new Scene(boardView4Play);
+        gameStage.setScene(scene);
+        gameStage.show();
+    }
+
+
+
+
+
+
+
+
+
     private void initializeToolBar(Stage primaryStage) {
-        // Définit l'alignement des outils à l'intérieur de la VBox
+
         toolBar.setAlignment(Pos.CENTER);
         toolBar.setPadding(new Insets(0, 0, 110, 50)); // Ajuste le padding
         toolBar.setSpacing(10);
 
-        // Création et ajout des outils à la VBox en utilisant une méthode modifiée
-        addToolToBar("/ground.png", CellValue.GROUND);
-        addToolToBar("/wall.png", CellValue.WALL);
-        addToolToBar("/player.png", CellValue.PLAYER);
-        addToolToBar("/box.png", CellValue.BOX);
-        addToolToBar("/goal.png", CellValue.GOAL);
+
+        addToolToBar("/ground.png", new Ground());
+        addToolToBar("/wall.png", new Wall());
+        addToolToBar("/player.png", new Player());
+        addToolToBar("/box.png", new Box());
+        addToolToBar("/goal.png", new Goal());
     }
 
-    private void addToolToBar(String imagePath, CellValue toolType) {
+    private void addToolToBar(String imagePath, Element toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
         imageView.setPreserveRatio(true);
-        imageView.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1)); // Ajuste la hauteur de l'image
+        imageView.fitHeightProperty().bind(toolBar.heightProperty().multiply(0.1));
 
         StackPane container = new StackPane(imageView);
-        container.setPadding(new Insets(5)); // Un peu de padding autour de l'image
-        container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;"); // Bordure transparente par défaut
+        container.setPadding(new Insets(5));
+        container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;");
 
-        // Applique un style de bordure bleue au conteneur lors du survol
+
         container.setOnMouseEntered(e -> container.setStyle("-fx-border-color: lightblue; -fx-border-width: 2; -fx-background-radius: 5;"));
         container.setOnMouseExited(e -> container.setStyle("-fx-border-color: transparent; -fx-border-width: 2; -fx-background-radius: 5;"));
 
-        // Sélectionne l'outil lors du clic sur le conteneur
         container.setOnMouseClicked(e -> selectTool(toolType));
 
-        // Ajoute le conteneur à la barre d'outils
         toolBar.getChildren().add(container);
     }
 
 
 
-    private void selectTool(CellValue tool) {
-        boardViewModel.setSelectedTool(tool); // Mettez à jour l'outil sélectionné dans le ViewModel
-        updateToolHighlights(); // Optionnel: Mettez à jour l'interface utilisateur pour refléter l'outil sélectionné
+    private void selectTool(Element tool) {
+        boardDesignViewModel.setSelectedTool(tool);
+        updateToolHighlights();
     }
 
     private void updateToolHighlights() {
@@ -218,7 +282,7 @@ public class BoardView extends BorderPane {
             if (child instanceof ImageView) {
                 ImageView imageView = (ImageView) child;
                 String id = imageView.getId();
-                if (id != null && id.equals(boardViewModel.getSelectedTool().name())) {
+                if (id != null && id.equals(boardDesignViewModel.getSelectedTool())) {
                     imageView.setStyle("-fx-effect: innershadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);");
                 } else {
                     imageView.setStyle(null);
@@ -227,30 +291,30 @@ public class BoardView extends BorderPane {
         }
     }
     private void initializeMenu(Stage primaryStage) {
-        // creation du menu Fichier
+
         Menu fileMenu = new Menu("File");
 
-        // Creation des element du menu
+
         MenuItem newItem = new MenuItem("New");
         MenuItem openItem = new MenuItem("Open");
         MenuItem saveAsItem = new MenuItem("Save As");
         MenuItem exitItem = new MenuItem("Exit");
 
-        // Ajout des éléments de menu au menu Fichier
+
         fileMenu.getItems().addAll(newItem, openItem, saveAsItem, exitItem);
 
-        // Configuration les actions pour les éléments de menu
+
         newItem.setOnAction(event -> handleNew());
         openItem.setOnAction(event -> handleOpen(primaryStage));
         saveAsItem.setOnAction(event -> handleSaveAs(primaryStage));
         exitItem.setOnAction(event -> primaryStage.close());
 
-        // Ajout du menu Fichier à la barre de menu
+
         menuBar.getMenus().add(fileMenu);
     }
 
     private void handleNew() {
-        if (boardViewModel.isGridChanged()) { // Supposons que isGridChanged() vérifie si des changements ont été faits
+        if (boardDesignViewModel.isGridChanged()) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Save Changes");
             alert.setHeaderText("Do you want to save changes to the current grid?");
@@ -264,15 +328,15 @@ public class BoardView extends BorderPane {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == buttonTypeYes) {
-                 // Méthode pour sauvegarder
+
                 handleSaveAs(new Stage());
-                requestNewGridDimensions(); // Créez une nouvelle grille après la sauvegarde
+                requestNewGridDimensions();
             } else if (result.get() == buttonTypeNo) {
-                requestNewGridDimensions(); // Créez une nouvelle grille sans sauvegarder
+                requestNewGridDimensions();
             }
-            // Si "Cancel" est choisi, ne rien faire pour revenir à la grille actuelle
+
         } else {
-            requestNewGridDimensions(); // Directement demander les nouvelles dimensions si pas de changements
+            requestNewGridDimensions();
         }
     }
 
@@ -305,7 +369,7 @@ public class BoardView extends BorderPane {
 
         Node okButton = createDialogButtons(dialog);
 
-        // Validation listeners
+
         widthField.textProperty().addListener((observable, oldValue, newValue) ->
                 validateDimensionInput(newValue, widthErrorLabel, "Width must be at least 10.", okButton, heightField)
         );
@@ -330,7 +394,12 @@ public class BoardView extends BorderPane {
         result.ifPresent(dimensions -> {
             int width = dimensions.getKey();
             int height = dimensions.getValue();
-            boardViewModel.resetGrid(width, height);
+            if (boardDesignViewModel != null) {
+                BoardViewModel4Design designViewModel =  boardDesignViewModel;
+                designViewModel.resetGrid(width, height);
+            } else {
+                System.out.println("boardViewModel is not an instance of BoardViewModel4Design. resetGrid cannot be called.");
+            }
             createGrid();
         });
     }
@@ -397,9 +466,7 @@ public class BoardView extends BorderPane {
 
         File file = fileChooser.showOpenDialog(primaryStage);
         if (file != null) {
-            boardViewModel.loadLevelFromFile(file);
-
-
+            boardDesignViewModel.loadLevelFromFile(file);
 
         }
 
@@ -407,49 +474,9 @@ public class BoardView extends BorderPane {
 
     private void handleSaveAs(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
-        // Define the extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.xsb)", "*.xsb");
         fileChooser.getExtensionFilters().add(extFilter);
-
-        // Show the save file dialog
-        File file = fileChooser.showSaveDialog(primaryStage);
-        if (file != null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                int gridWidth = boardViewModel.getGridWidth(); // Assurez-vous que cette méthode existe dans BoardViewModel
-                int gridHeight = boardViewModel.getGridHeight(); // Assurez-vous que cette méthode existe dans BoardViewModel
-                for (int i = 0; i < gridWidth; i++) {
-                    for (int j = 0; j < gridHeight; j++) {
-                        CellValue cellValue = boardViewModel.getGridViewModel().getCellValue(i, j);
-                        switch (cellValue) {
-                            case WALL:
-                                writer.write('#');
-                                break;
-                            case PLAYER:
-                                writer.write('@');
-                                break;
-                            case BOX:
-                                writer.write('$');
-                                break;
-                            case GOAL:
-                                writer.write('.');
-                                break;
-                            case BOX_ON_GOAL:
-                                writer.write('*');
-                                break;
-                            case PLAYER_ON_GOAL:
-                                writer.write('+');
-                                break;
-                            case GROUND:
-                            default:
-                                writer.write(' ');
-                                break;
-                        }
-                    }
-                    writer.newLine();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        File selectedFile = fileChooser.showSaveDialog(getScene().getWindow());
+        boardDesignViewModel.saveLevel(selectedFile);
     }
 }

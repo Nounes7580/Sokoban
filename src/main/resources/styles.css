@@ -1,6 +1,6 @@
 /* General body styling */
 body {
-    background-color: #f0f0f0;
+    background-color: #313131;
     font-family: Arial, sans-serif;
     color: #333;
 }
@@ -45,3 +45,14 @@ body {
     text-align: center;
     margin-top: 10px;
 }
+.score-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+}
+.you-win-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: green;
+    -fx-font-weight: bold;
+}
+

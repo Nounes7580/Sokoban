@@ -1,109 +1,65 @@
 package sokoban.viewmodel;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import sokoban.model.Board;
+import javafx.beans.property.*;
+import sokoban.model.Board4Design;
 import sokoban.model.CellValue;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import sokoban.model.Cell;
+import sokoban.model.element.Element;
+import sokoban.model.element.Ground;
 
 
-public class CellViewModel {
-    private static final double DEFAULT_SCALE = 1;
-    private static final double EPSILON = 1e-3;
-    private  BoardViewModel boardViewModel; // Add a reference to BoardViewModel
-    private CellValue baseElement = CellValue.EMPTY; // Pour l'élément de base (joueur ou boîte)
-    private boolean hasGoal = false; // Pour savoir si un goal est présent
+public abstract class CellViewModel {
 
-    private int line;
-    private int col;
-    private final Board board;
+
+    protected static final double DEFAULT_SCALE = 1;
+    protected static final double EPSILON = 1e-3;
+
+    protected int line;
+
+    protected int col;
+    protected final Board4Design board;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
     private final BooleanBinding mayIncrementScale = scale.lessThan(1 - EPSILON);
     private final BooleanBinding mayDecrementScale = scale.greaterThan(0.1 + EPSILON);
 
 
-
-    private CellValue selectedTool = CellValue.EMPTY;
-
-    public CellViewModel(int line, int col, Board board) {
+    public CellViewModel(int line, int col, Board4Design board) {
         this.line = line;
         this.col = col;
         this.board = board;
     }
-    public void setBoardViewModel(BoardViewModel boardViewModel) {
-        this.boardViewModel = boardViewModel;
-    }
-    public void play() {
-        if (boardViewModel != null) {
-            CellValue toolValue = boardViewModel.getSelectedCellValue(); // Now we're calling the method on BoardViewModel
-            board.play(line, col, toolValue);
-        }
-    }
-    public void addObject() {
-        CellValue selectedTool = boardViewModel.getSelectedTool();
-        if (selectedTool == CellValue.PLAYER && boardViewModel.hasPlayer()) {
-            System.out.println("A player is already present on the grid. Cannot add another.");
-            return;
-        }
-        if (selectedTool != CellValue.EMPTY && isEmpty()) {
-            updateCellValue(selectedTool);
-        }
-    }
+
+    protected abstract void setBoardViewModel(BoardViewModel4Design boardViewModel);
+
+    public abstract void play();
+
+    public abstract void addObject();
+
+
 
 
     // Méthode pour "supprimer" un objet de la cellule
-    public void deleteObject() {
-        if (!isEmpty()) {
-            updateCellValue(CellValue.EMPTY);
-        }
-    }
+    public abstract void deleteObject();
+
 
     // Méthode privée pour mettre à jour la valeur de la cellule
-    private void updateCellValue(CellValue newValue) {
-        board.setCellValue(line, col, newValue);
+    protected abstract void updateCellValue(Element newValue);
 
-    }
+    public abstract ReadOnlyListProperty<Element> valueProperty();
 
-    public ReadOnlyObjectProperty<CellValue> valueProperty() {
-        return board.valueProperty(line, col);
-    }
+    protected abstract boolean isEmpty();
 
-    public boolean isEmpty() {
-        return board.isEmpty(line, col);
-    }
+    public abstract void handleMouseReleased();
 
-    public SimpleDoubleProperty scaleProperty() {
-        return scale;
-    }
+    public abstract void  resetScale();
 
-    public BooleanBinding mayIncrementScaleProperty() {
-        return mayIncrementScale;
-    }
-
-    public BooleanBinding mayDecrementScaleProperty() {
-        return mayDecrementScale;
-    }
+    public abstract Element getSelectedTool();
 
 
 
 
-    public void handleMouseReleased() {
-
-    }
-    public void resetScale() {
-        scale.set(DEFAULT_SCALE);
-    }
-
-    public CellValue getSelectedTool() {
-        return this.selectedTool;
-    }
-
-    public void setSelectedTool(CellValue tool) {
-        this.selectedTool = tool;
-    }
 
 
 

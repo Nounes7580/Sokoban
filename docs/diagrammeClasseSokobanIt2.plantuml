@@ -1,0 +1,108 @@
+@startuml
+skinparam linetype ortho
+' Définition des packages
+package sokoban.model {
+    class Board4Design
+    class Board4Play
+    abstract class Cell
+    class Cell4Design
+    class Cell4Play
+    interface Command
+    class CommandManager
+    abstract class Grid
+    class Grid4Design
+    class Grid4Play
+    class Move
+    enum CellValue {
+        EMPTY
+        PLAYER
+        BOX
+        GOAL
+        GROUND
+        WALL
+    }
+}
+
+package sokoban.model.element {
+    abstract class Element {
+        + getType() : CellValue
+    }
+    class Box
+    class Goal
+    class Ground
+    class Player
+    class Wall
+}
+
+package sokoban.view {
+    class BoardView4Design
+    class BoardView4Play
+    class CellView4Design
+    class CellView4Play
+    class GridView4Design
+    class GridView4Play
+}
+
+package sokoban.viewmodel {
+    abstract class BoardViewModel {
+        {method} +updateValidationMessage()
+    }
+    class BoardViewModel4Design
+    class BoardViewModel4Play
+    abstract class CellViewModel
+    class CellViewModel4Design
+    class CellViewModel4Play
+    abstract class GridViewModel
+    class GridViewModel4Design
+    class GridViewModel4Play
+}
+
+ BoardView4Design --|> javafx.BorderPane
+ BoardView4Play --|> javafx.BorderPane
+ CellView4Design --|> javafx.StackPane
+ CellView4Play --|> javafx.StackPane
+ GridView4Design --|> javafx.GridPane
+ GridView4Play --|> javafx.GridPane
+
+
+Grid <|-- Grid4Design
+Grid <|--- Grid4Play
+BoardViewModel <|--- BoardViewModel4Design
+BoardViewModel <|-- BoardViewModel4Play
+CellViewModel <|--- CellViewModel4Design
+CellViewModel <|-- CellViewModel4Play
+GridViewModel <|-- GridViewModel4Design
+GridViewModel <|-- GridViewModel4Play
+
+' Relations et dépendances
+Board4Design "1" *-- "1" Grid4Design
+Board4Play "1" *-- "1" Grid4Play
+Grid4Design "1" *-- "*" Cell4Design
+Grid4Play "1" *-- "*" Cell4Play
+
+BoardView4Design ..> BoardViewModel4Design
+BoardView4Play ..> BoardViewModel4Play
+CellView4Design ..> CellViewModel4Design
+CellView4Play ..> CellViewModel4Play
+GridView4Design ..> GridViewModel4Design
+GridView4Play ..> GridViewModel4Play
+
+Move ..> Command : implements
+CommandManager "1" *-- "*" Command : manages
+
+' Liaisons ViewModel vers Model
+BoardViewModel4Design -right-> Board4Design
+BoardViewModel4Play -right-> Board4Play
+CellViewModel4Design -right-> Cell4Design
+CellViewModel4Play -right-> Cell4Play
+GridViewModel4Design -right-> Grid4Design
+GridViewModel4Play -right-> Grid4Play
+
+
+sokoban.model.element.Element <|-- sokoban.model.element.Box
+sokoban.model.element.Element <|-- sokoban.model.element.Goal
+sokoban.model.element.Element <|-- sokoban.model.element.Ground
+sokoban.model.element.Element <|-- sokoban.model.element.Player
+sokoban.model.element.Element <|-- sokoban.model.element.Wall
+
+@enduml

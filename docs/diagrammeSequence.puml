@@ -1,0 +1,30 @@
+@startuml
+actor Player
+
+participant Client
+participant CommandManager
+participant Move
+participant Board4Play
+
+== Déplacement ==
+Player -> Client: Initiate move (e.g., right)
+Client -> CommandManager: executeCommand(new Move(board, direction))
+CommandManager -> Move: execute()
+Move -> Board4Play: movePlayer(direction)
+Board4Play -> Move: // (move complete, no explicit game state update method)
+
+== Annulation ==
+Player -> Client: Request undo (CTRL-Z)
+Client -> CommandManager: undoCommand()
+CommandManager -> Move: undo()
+Move -> Board4Play: undoMovePlayer(previousPosition, previousMoveCount)
+Board4Play -> Move: // (undo complete, no explicit game state update method)
+
+== Replay ==
+Player -> Client: Request redo (CTRL-Y)
+Client -> CommandManager: redoCommand()
+CommandManager -> Move: redo()
+Move -> Board4Play: movePlayer(direction)
+Board4Play -> Move: // (redo complete, no explicit game state update method)
+
+@enduml
