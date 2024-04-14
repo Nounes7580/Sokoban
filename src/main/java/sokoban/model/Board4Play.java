@@ -52,7 +52,12 @@ public class Board4Play {
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
+    public void setBoxesOnGoals(int boxesOnGoals) {
+        this.boxesOnGoals = boxesOnGoals;
+        BoardView4Play.updateGoalsReached(boxesOnGoals);
 
+
+    }
 
     public static void movePlayer(Direction direction) {
 
@@ -258,6 +263,11 @@ public class Board4Play {
     public int getGoalsReached() {
         return boxesOnGoals;
     }
+
+    public void decrementGoalsFilled() {
+        boxesOnGoals--;
+    }
+
 
     public enum Direction {
         LEFT(-1, 0),
