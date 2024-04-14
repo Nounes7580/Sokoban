@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import sokoban.model.Board4Play;
+import sokoban.model.CommandManager;
 import sokoban.model.element.*;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Design;
@@ -88,18 +89,17 @@ public class BoardView4Play extends BorderPane {
         scene.getStylesheets().add(cssFile);
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.Z) {
-                // Votre logique d'undo ici
-
-
-                System.out.println("CTRL+Z pressed");
-                board4Play.undo();
-                event.consume();
-            } else if (event.isControlDown() && event.getCode() == KeyCode.Y) {
-                board4Play.redo();
-                event.consume();
+            if (event.getCode() == KeyCode.Z && event.isControlDown()) {
+                System.out.println("CTRL+Z pressed - Undo");
+                CommandManager.undo();
+                event.consume(); // Consommez l'événement pour éviter d'autres traitements
+            } else if (event.getCode() == KeyCode.Y && event.isControlDown()) {
+                System.out.println("CTRL+Y pressed - Redo");
+                CommandManager.redo();
+                event.consume(); // Consommez l'événement pour éviter d'autres traitements
             }
         });
+
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();

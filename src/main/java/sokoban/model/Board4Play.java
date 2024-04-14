@@ -1,6 +1,7 @@
 package sokoban.model;
 
 import javafx.beans.property.ReadOnlyListProperty;
+import sokoban.commands.Command;
 import sokoban.model.element.*;
 import sokoban.view.BoardView4Play;
 
@@ -17,6 +18,7 @@ public class Board4Play {
     private static Stack<Move> undoStack = new Stack<>();
     private static Stack<Move> redoStack = new Stack<>();
     public static Grid4Play grid4Play;
+    private static boolean lastMoveWasSuccessful = false;
     public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         return grid4Play.valueProperty(line, col);
     }
@@ -46,7 +48,9 @@ public class Board4Play {
 
 
     public static void movePlayer(Direction direction) {
+        boolean lastMoveWasSuccessful = false;
 
+        System.out.println("Tentative de déplacement du joueur dans la direction : " + direction);
         int[] playerPosition = grid4Play.findPlayerPosition();
         if (playerPosition == null) {
             System.out.println("Player not found.");
@@ -63,6 +67,8 @@ public class Board4Play {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
             return;
         }
+
+
         Integer[] boxStart = null;
         Integer[] boxEnd = null;
 
@@ -90,6 +96,7 @@ public class Board4Play {
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
                 BoardView4Play.updateGoalsReached(boxesOnGoals);
+                lastMoveWasSuccessful = true;
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
                 return;
@@ -100,12 +107,21 @@ public class Board4Play {
         // If the player is moving from a goal, keep the goal.
         if (isPlayerOnGoal) {
             grid4Play.play(playerPosition[0], playerPosition[1], new Goal());
+            lastMoveWasSuccessful = true;
         } else {
             grid4Play.play(playerPosition[0], playerPosition[1], new Ground());
+            lastMoveWasSuccessful = true;
         }
+        System.out.println(lastMoveWasSuccessful);
 
         moveCount++;
-        makeMove(playerPosition, new int[]{newRow, newCol}, boxStart, boxEnd);
+
+
+    }
+
+    public static boolean getLastMoveWasSuccessful() {
+
+        return lastMoveWasSuccessful;
     }
 
 
@@ -226,11 +242,6 @@ public class Board4Play {
             // Appliquez la logique pour exécuter à nouveau le mouvement basée sur `move`
             undoStack.push(move); // Remettez le mouvement dans undoStack pour d'autres undos
         }
-    }
-    private static void makeMove(int[] playerStart, int[] playerEnd, Integer[] boxStart, Integer[] boxEnd) {
-        Move move = new Move(playerStart, playerEnd, boxStart, boxEnd);
-        undoStack.push(move);
-        redoStack.clear(); // Nettoyez la pile redo à chaque nouveau mouvement
     }
 
 }
