@@ -11,6 +11,9 @@ import sokoban.view.BoardView4Play;
 public class BoardViewModel4Play{
 
     private GridViewModel4Play gridViewModel4Play;
+
+
+
     private Board4Play board4Play;
     private Board4Design board4Design;
 

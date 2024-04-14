@@ -118,12 +118,39 @@ public class Board4Play {
         }
 
         moveCount++;
-        makeMove(playerPosition, new int[]{newRow, newCol}, boxStart, boxEnd);
+
     }
+
 
     public int setMoveCount(int moveCount) {
         return this.moveCount = moveCount;
     }
+    public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
+
+        int[] currentPlayerPosition = grid4Play.findPlayerPosition();
+        if (currentPlayerPosition == null) return; // Si le joueur n'est pas trouvé, sortie anticipée
+
+        // Déplacer le joueur à sa position précédente
+        Element player = createElementFromCellValue(CellValue.PLAYER);
+        // Assurez-vous que l'ancienne position est libre ou qu'elle a seulement un objectif (Goal)
+        Cell previousCell = grid4Play.getMatrix()[previousPosition[0]][previousPosition[1]];
+        if (!previousCell.hasElementOfType(Box.class)) { // Ne pas placer le joueur si une boîte est là
+            grid4Play.play(previousPosition[0], previousPosition[1], player);
+        }
+
+        // Restaurer la position initiale du joueur comme vide ou avec un objectif si c'était le cas
+        Cell currentCell = grid4Play.getMatrix()[currentPlayerPosition[0]][currentPlayerPosition[1]];
+        boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
+        grid4Play.play(currentPlayerPosition[0], currentPlayerPosition[1], wasOnGoal ? new Goal() : new Ground());
+
+        // Restaurer le nombre de mouvements
+        this.moveCount = previousMoveCount;
+
+        BoardView4Play.updateMovesLabel(moveCount+5);
+
+    }
+
+
 
     public int getMoveCount() {
         return moveCount;
@@ -228,25 +255,6 @@ public class Board4Play {
         }
     }
 
-    public void undo() {
-        if (!undoStack.isEmpty()) {
-            Move move = undoStack.pop();
-            // Appliquez la logique pour inverser le mouvement basée sur `move`
-            redoStack.push(move); // Ajoutez le mouvement à redoStack pour permettre le rétablissement
-        }
-    }
-
-    public void redo() {
-        if (!redoStack.isEmpty()) {
-            Move move = redoStack.pop();
-            // Appliquez la logique pour exécuter à nouveau le mouvement basée sur `move`
-            undoStack.push(move); // Remettez le mouvement dans undoStack pour d'autres undos
-        }
-    }
-    private static void makeMove(int[] playerStart, int[] playerEnd, Integer[] boxStart, Integer[] boxEnd) {
-        Move move = new Move(playerStart, playerEnd, boxStart, boxEnd);
-        undoStack.push(move);
-        redoStack.clear(); // Nettoyez la pile redo à chaque nouveau mouvement
-    }
 
 }
+

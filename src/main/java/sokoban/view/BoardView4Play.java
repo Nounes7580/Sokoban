@@ -19,6 +19,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import sokoban.model.Board4Play;
+import sokoban.model.Command;
+import sokoban.model.CommandManager;
+import sokoban.model.Move;
 import sokoban.model.element.*;
 import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Design;
@@ -89,25 +92,13 @@ public class BoardView4Play extends BorderPane {
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
 
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.isControlDown() && event.getCode() == KeyCode.Z) {
-                // Votre logique d'undo ici
-
-
-                System.out.println("CTRL+Z pressed");
-                board4Play.undo();
-                event.consume();
-            } else if (event.isControlDown() && event.getCode() == KeyCode.Y) {
-                board4Play.redo();
-                event.consume();
-            }
-        });
         stage.setScene(scene);
         stage.setOnShown(event -> {
             createGrid();
         });
         scene.getRoot().requestFocus();
-        setupKeyControls(scene);
+        CommandManager commandManager = new CommandManager();
+        setupKeyControls(scene, commandManager);
 
 
         stage.show();
@@ -256,15 +247,28 @@ public class BoardView4Play extends BorderPane {
 
 
 
-    protected void setupKeyControls(Scene scene) {
+    protected void setupKeyControls(Scene scene, CommandManager commandManager) {
         System.out.println("Setting up key controls");
         scene.setOnKeyPressed(event -> {
-            System.out.println("Key pressed: " + event.getCode()); // This should output the key pressed
+            System.out.println("Key pressed: " + event.getCode()); // This outputs the key pressed
 
+            // Check if CTRL is held down for undo/redo
+            if (event.isControlDown()) {
+                if (event.getCode() == KeyCode.Z) {
+                    commandManager.undo();
+                    event.consume(); // Consume the event so it doesn't propagate further
+                } else if (event.getCode() == KeyCode.Y) {
+                    commandManager.redo();
+                    event.consume(); // Consume the event so it doesn't propagate further
+                }
+                return; // Exit the method to avoid moving the player
+            }
+
+            // Handling directional input for movement
             Board4Play.Direction direction = null;
             switch (event.getCode()) {
                 case UP:
-                case Z:
+                case W: // Change Z to W for standard WASD controls
                     direction = Board4Play.Direction.UP;
                     break;
                 case DOWN:
@@ -272,20 +276,25 @@ public class BoardView4Play extends BorderPane {
                     direction = Board4Play.Direction.DOWN;
                     break;
                 case LEFT:
-                case Q:
+                case A: // Change Q to A for standard WASD controls
                     direction = Board4Play.Direction.LEFT;
                     break;
                 case RIGHT:
                 case D:
                     direction = Board4Play.Direction.RIGHT;
                     break;
-            }
-            if (direction != null) {
-                System.out.println("Moving player in direction: " + direction);
-                boardViewModel4Play.movePlayer(direction);
-                event.consume();
+                default:
+                    // If no recognized key is pressed, do nothing
+                    return;
             }
 
+            if (direction != null) {
+                // Create a new move command and execute it
+                Command command = new Move(boardViewModel4Play.getBoard4Play(), direction);
+                commandManager.executeCommand(command);
+                System.out.println("Moving player in direction: " + direction);
+                event.consume(); // Consume the event so it doesn't propagate further
+            }
         });
     }
 
