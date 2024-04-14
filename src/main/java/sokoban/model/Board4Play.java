@@ -1,11 +1,9 @@
 package sokoban.model;
 
 import javafx.beans.property.ReadOnlyListProperty;
-import sokoban.commands.Command;
 import sokoban.model.element.*;
 import sokoban.view.BoardView4Play;
 
-import java.util.Arrays;
 import java.util.Stack;
 
 public class Board4Play {
@@ -45,14 +43,7 @@ public class Board4Play {
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
-    public static void executeCommand(Command command) {
-        if (command.execute()) {
-            undoStack.push((Move) command);
-            System.out.println("Command added to undo stack");
-        } else {
-            System.out.println("Command execution failed, not added to stack");
-        }
-    }
+
 
     public static void movePlayer(Direction direction) {
         boolean lastMoveWasSuccessful = false;
@@ -124,6 +115,31 @@ public class Board4Play {
 
         moveCount++;
 
+
+    }
+
+    public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
+
+        int[] currentPlayerPosition = grid4Play.findPlayerPosition();
+        if (currentPlayerPosition == null) return; // Si le joueur n'est pas trouvé, sortie anticipée
+
+        // Déplacer le joueur à sa position précédente
+        Element player = createElementFromCellValue(CellValue.PLAYER);
+        // Assurez-vous que l'ancienne position est libre ou qu'elle a seulement un objectif (Goal)
+        Cell previousCell = grid4Play.getMatrix()[previousPosition[0]][previousPosition[1]];
+        if (!previousCell.hasElementOfType(Box.class)) { // Ne pas placer le joueur si une boîte est là
+            grid4Play.play(previousPosition[0], previousPosition[1], player);
+        }
+
+        // Restaurer la position initiale du joueur comme vide ou avec un objectif si c'était le cas
+        Cell currentCell = grid4Play.getMatrix()[currentPlayerPosition[0]][currentPlayerPosition[1]];
+        boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
+        grid4Play.play(currentPlayerPosition[0], currentPlayerPosition[1], wasOnGoal ? new Goal() : new Ground());
+
+        // Restaurer le nombre de mouvements
+        this.moveCount = previousMoveCount;
+
+        BoardView4Play.updateMovesLabel(moveCount+5);
 
     }
 

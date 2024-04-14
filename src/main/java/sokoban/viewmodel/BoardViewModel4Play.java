@@ -13,6 +13,11 @@ public class BoardViewModel4Play{
 
 
     private GridViewModel4Play gridViewModel4Play;
+
+    public Board4Play getBoard4Play() {
+        return board4Play;
+    }
+
     private Board4Play board4Play;
 
 
