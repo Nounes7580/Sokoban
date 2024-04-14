@@ -134,19 +134,22 @@ public class CellView4Design extends StackPane {
 
     protected void setupMouseEvents() {
         this.setOnMousePressed(event -> {
-            if (event.isPrimaryButtonDown() ) {
-
+            if (event.isPrimaryButtonDown()) {
+                // Start position calculation only necessary if it affects dragging logic or initial placement
                 int startCol = (int) Math.round(event.getX() / sizeProperty.get());
                 int startLine = (int) Math.round(event.getY() / sizeProperty.get());
-                cellViewModel4Design.addObject(); // Ajoute l'objet
-
-
+                cellViewModel4Design.addObject(); // Adds the object where the drag begins
+                this.startFullDrag(); // Start drag for left-click to allow adding objects by dragging
+            } else if (event.isSecondaryButtonDown()) {
+                cellViewModel4Design.deleteObject(); // Deletes the object where the right-click occurs
+                this.startFullDrag(); // Also start drag for right-click for consistent drag detection
             }
         });
+
         setOnDragDetected(event -> {
-            System.out.println("Drag detected");
             if (event.getButton() == MouseButton.PRIMARY || event.getButton() == MouseButton.SECONDARY) {
-                this.startFullDrag(); // Prépare l'élément pour le suivi du glissement
+                this.startFullDrag(); // Prepare the element for drag tracking on both clicks
+                System.out.println("Drag detected for " + (event.getButton() == MouseButton.PRIMARY ? "adding" : "deleting"));
             }
             event.consume();
         });
@@ -154,34 +157,21 @@ public class CellView4Design extends StackPane {
         setOnMouseDragEntered(event -> {
             System.out.println("Mouse drag entered");
             if (event.getButton() == MouseButton.SECONDARY) {
-                cellViewModel4Design.deleteObject(); // Gestion de la suppression
-                System.out.println("Object deleted");
+                cellViewModel4Design.deleteObject(); // Handle deletion during drag with right-click
+                System.out.println("Object deleted during drag");
             }
-
+            // Optionally, handle continuous adding while dragging with left-click
             else if (event.getButton() == MouseButton.PRIMARY) {
-
-                if (cellViewModel4Design.getSelectedTool().getType() == CellValue.PLAYER) {
-                    if (!boardViewModel.hasPlayer()) {
-                        cellViewModel4Design.addObject();
-                        System.out.println("Player added");
-                    } else {
-                        System.out.println("Cannot add another player.");
-                    }
-                } else {
-
-                    cellViewModel4Design.addObject(); // Ajoute l'objet
-                    System.out.println("Object added");
-                }
+                cellViewModel4Design.addObject(); // Adds the object continuously while dragging
+                System.out.println("Object added during drag");
             }
             event.consume();
         });
-
 
         this.setOnMouseReleased(event -> {
             cellViewModel4Design.handleMouseReleased();
         });
     }
-
 
 
 
