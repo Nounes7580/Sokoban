@@ -105,7 +105,7 @@ public class BoardView4Design extends BorderPane {
                     gridSizeBinding
             );
 
-            if (boardDesignViewModel instanceof BoardViewModel4Design) {
+            if (boardDesignViewModel != null) {
                 GridView4Design gridView = new GridView4Design((boardDesignViewModel).getGridViewModel(), gridWidthBinding, gridHeightBinding);
 
                 gridView.minHeightProperty().bind(gridHeightBinding);
@@ -114,9 +114,6 @@ public class BoardView4Design extends BorderPane {
                 gridView.minWidthProperty().bind(gridWidthBinding);
                 gridView.maxWidthProperty().bind(gridWidthBinding);
                 setCenter(gridView);
-            } else {
-                // Handle the case where boardViewModel is not an instance of BoardViewModel4Design
-                // This might involve creating a default GridView or handling the error appropriately
             }
 
     }
@@ -402,7 +399,7 @@ public class BoardView4Design extends BorderPane {
         result.ifPresent(dimensions -> {
             int width = dimensions.getKey();
             int height = dimensions.getValue();
-            if (boardDesignViewModel instanceof BoardViewModel4Design) {
+            if (boardDesignViewModel != null) {
                 BoardViewModel4Design designViewModel =  boardDesignViewModel;
                 designViewModel.resetGrid(width, height);
             } else {

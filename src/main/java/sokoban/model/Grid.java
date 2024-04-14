@@ -57,17 +57,6 @@ public abstract class Grid {
     public abstract long getBoxCount();
 
 
-
-  /*  public IntegerProperty gridWidthProperty() {
-        return new SimpleIntegerProperty(gridWidth.get());
-    }
-
-    public IntegerProperty gridHeightProperty() {
-        return new SimpleIntegerProperty(gridHeight.get());
-    }
-
-   */
-
     public abstract boolean isGridChanged();
 
 

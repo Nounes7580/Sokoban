@@ -196,11 +196,5 @@ public class Board4Design  {
             e.printStackTrace();
         }
     }
-    public void incrementBoxCount() {
-        Grid4Design.incrementBoxCount();
-    }
-
-
-
 
 }

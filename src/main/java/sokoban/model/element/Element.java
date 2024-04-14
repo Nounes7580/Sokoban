@@ -7,11 +7,9 @@ import java.util.Objects;
 public abstract class Element {
     private CellValue type;
 
-
     public Element(CellValue type) {
         this.type = type;
     }
-
 
     @Override
     public boolean equals(Object o) {

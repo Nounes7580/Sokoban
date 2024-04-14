@@ -51,8 +51,6 @@ public class CellView4Play extends StackPane {
         layoutControls();
         configureBindings();
 
-
-
         // Add a listener to the valueProperty of the viewModel.
         cellViewModel4Play.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
@@ -134,8 +132,6 @@ public class CellView4Play extends StackPane {
         backgroundImageView.fitHeightProperty().bind(sizeProperty);
         minWidthProperty().bind(sizeProperty);
         minHeightProperty().bind(sizeProperty);
-
-        //imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
 
         this.setOnMouseClicked(e -> cellViewModel4Play.play());
 

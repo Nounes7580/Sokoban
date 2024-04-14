@@ -35,7 +35,7 @@ public class Grid4Play extends Grid{
     }
     public Cell getCell(int row, int col) {
         if (row < 0 || row >= gridWidth.get() || col < 0 || col >= gridHeight.get()) {
-            throw new IndexOutOfBoundsException("Tentative d'accès hors des limites de la grille.");
+            System.out.println("Tentative d'accès hors des limites de la grille");
         }
         return cell4Play[row][col];
     }
@@ -54,17 +54,7 @@ public class Grid4Play extends Grid{
     public void triggerGridChange() {
         gridChanged.set(!gridChanged.get());
     }
-    public List<Cell> getCellsContainingBoxes() {
-        List<Cell> cellsWithBoxes = new ArrayList<>();
-        for (int i = 0; i < gridWidth.get(); i++) {
-            for (int j = 0; j < gridHeight.get(); j++) {
-                if (cell4Play[i][j].hasElementOfType(Box.class)) {
-                    cellsWithBoxes.add(cell4Play[i][j]);
-                }
-            }
-        }
-        return cellsWithBoxes;
-    }
+
     @Override
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
@@ -158,12 +148,6 @@ public class Grid4Play extends Grid{
         return 0;
     }
 
-    public long getBoxOnGoalCount() {
-        return Arrays.stream(cell4Play)
-                .flatMap(Arrays::stream)
-                .filter(cell -> cell.getValue().contains(new Goal()) && cell.getValue().contains(new Box()))
-                .count();
-    }
 
     @Override
     public boolean isGridChanged() {

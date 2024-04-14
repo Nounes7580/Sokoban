@@ -90,13 +90,6 @@ public class Move implements Command {
             }
         }
     }
-/*
-
- */
-
-
-
-
     static class BoxState {
         Element box; // L'élément boîte.
         int[] position; // La position [x, y] de la boîte.

@@ -11,19 +11,9 @@ public abstract class Cell {
         this.row = row;
         this.column = column;
     }
-    public int[] getPosition() {
-        return new int[] {row, column};
-    }
-    public int getRow() {
-        return row;
-    }
     public void setValue(Element element) {
-
         clearValues();
         addValue(element);
-    }
-    public int getColumn() {
-        return column;
     }
     protected final ListProperty<Element> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
     public ReadOnlyListProperty<Element> getValue() {

@@ -12,7 +12,6 @@ import java.util.Stack;
 public class Board4Play {
     private static int boxesOnGoals = 0;
 
-
     public Grid4Play getGrid4Play() {
         return grid4Play;
     }
@@ -47,15 +46,7 @@ public class Board4Play {
         grid4Play.play(line,col,toolValue);
 
         // Si la grille n'est pas pleine ou si la cellule n'est pas vide, procéder à la manipulation.
-
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
-    }
-
-    public void setBoxesOnGoals(int boxesOnGoals) {
-        this.boxesOnGoals = boxesOnGoals;
-        BoardView4Play.updateGoalsReached(boxesOnGoals);
-
-
     }
 
     public static void movePlayer(Direction direction) {
@@ -82,11 +73,6 @@ public class Board4Play {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
             return;
         }
-        Integer[] boxStart = null;
-        Integer[] boxEnd = null;
-
-
-
 
         Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
         if (targetCell.hasElementOfType(Box.class)) {

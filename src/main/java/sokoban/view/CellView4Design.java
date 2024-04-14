@@ -110,7 +110,6 @@ public class CellView4Design extends StackPane {
         minWidthProperty().bind(sizeProperty);
         minHeightProperty().bind(sizeProperty);
 
-        //imageView.fitWidthProperty().bind(sizeProperty.multiply(viewModel.scaleProperty()));
 
         this.setOnMouseClicked(e -> cellViewModel4Design.play());
 

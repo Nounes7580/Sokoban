@@ -82,12 +82,6 @@ public class BoardView4Play extends BorderPane {
     }
 
 
-
-
-    public void setBoard4Play(Board4Play board) {
-        this.board4Play = board;
-    }
-
     private void initializeTotalGoals(long targetCount) {
         goalsLabel.setText("Number of goals reached: 0 of " + targetCount);
 

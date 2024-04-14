@@ -47,21 +47,6 @@ public class BoardViewModel4Play{
         return board4Play;
     }
 
-    public void movePlayer(Board4Play.Direction direction) {
-        System.out.println("ViewModel is attempting to move player: " + direction);
-        if (board4Play != null) {
-            board4Play.movePlayer(direction);
-
-            Platform.runLater(() -> {
-                // Assume there's a method in BoardView4Play to update the moves label
-                BoardView4Play.updateMovesLabel(board4Play.getMoveCount());
-            });
-
-
-        } else {
-            System.out.println("Error: board4Play is not initialized.");
-        }
-    }
 
 
     public long getTargetCount() {
