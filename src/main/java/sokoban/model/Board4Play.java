@@ -4,7 +4,10 @@ import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.*;
 import sokoban.view.BoardView4Play;
 
+
 import java.util.Arrays;
+
+import java.util.Stack;
 
 public class Board4Play {
     private static int boxesOnGoals = 0;
@@ -15,6 +18,7 @@ public class Board4Play {
     }
 
     public static Grid4Play grid4Play;
+    private static boolean lastMoveWasSuccessful = false;
     public ReadOnlyListProperty<Element> valueProperty(int line, int col) {
         return grid4Play.valueProperty(line, col);
     }
@@ -47,13 +51,20 @@ public class Board4Play {
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
+    public void setBoxesOnGoals(int boxesOnGoals) {
+        this.boxesOnGoals = boxesOnGoals;
+        BoardView4Play.updateGoalsReached(boxesOnGoals);
 
+
+    }
 
     public static void movePlayer(Direction direction) {
+
         if (boxesOnGoals == grid4Play.getTargetCount()) {
             System.out.println("All boxes are on the goals. No more moves allowed.");
             return;
         }
+
         int[] playerPosition = grid4Play.findPlayerPosition();
         if (playerPosition == null) {
             System.out.println("Player not found.");
@@ -66,10 +77,16 @@ public class Board4Play {
         int newRow = playerPosition[0] + direction.getDeltaRow();
         int newCol = playerPosition[1] + direction.getDeltaCol();
 
+
         if (!isMoveValid(newRow, newCol, direction)) {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
             return;
         }
+        Integer[] boxStart = null;
+        Integer[] boxEnd = null;
+
+
+
 
         Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
         if (targetCell.hasElementOfType(Box.class)) {
@@ -99,6 +116,7 @@ public class Board4Play {
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
                 BoardView4Play.updateGoalsReached(boxesOnGoals);
+                lastMoveWasSuccessful = true;
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
                 return;
@@ -109,16 +127,57 @@ public class Board4Play {
         // If the player is moving from a goal, keep the goal.
         if (isPlayerOnGoal) {
             grid4Play.play(playerPosition[0], playerPosition[1], new Goal());
+            lastMoveWasSuccessful = true;
         } else {
             grid4Play.play(playerPosition[0], playerPosition[1], new Ground());
+            lastMoveWasSuccessful = true;
         }
+        System.out.println(lastMoveWasSuccessful);
 
         moveCount++;
+        BoardView4Play.updateMovesLabel(moveCount);
+
+
+
     }
 
-    public int setMoveCount(int moveCount) {
-        return this.moveCount = moveCount;
+
+    public static boolean getLastMoveWasSuccessful() {
+
+        return lastMoveWasSuccessful;
+
     }
+
+
+    public void setMoveCount(int moveCount) {
+    }
+    public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
+        int[] currentPlayerPosition = grid4Play.findPlayerPosition();
+        if (currentPlayerPosition == null) return; // Si le joueur n'est pas trouvé, sortie anticipée
+
+        // Restaure la position initiale du joueur
+        Element player = createElementFromCellValue(CellValue.PLAYER);
+        Cell previousCell = grid4Play.getMatrix()[previousPosition[0]][previousPosition[1]];
+        Cell currentCell = grid4Play.getMatrix()[currentPlayerPosition[0]][currentPlayerPosition[1]];
+
+        // Si la cellule actuelle du joueur a un goal, le goal doit rester
+        boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
+
+        // Restaure la position initiale du joueur comme vide ou avec un objectif si c'était le cas
+        if (!previousCell.hasElementOfType(Box.class)) {
+            grid4Play.play(previousPosition[0], previousPosition[1], player);
+        }
+
+        // La cellule actuelle du joueur devient un goal si elle en avait un, sinon un ground
+        grid4Play.play(currentPlayerPosition[0], currentPlayerPosition[1], wasOnGoal ? new Goal() : new Ground());
+
+        // Restaure le nombre de mouvements
+        moveCount += 5;
+        BoardView4Play.updateMovesLabel(moveCount);
+    }
+
+
+
 
     public int getMoveCount() {
         return moveCount;
@@ -204,6 +263,11 @@ public class Board4Play {
         return boxesOnGoals;
     }
 
+    public void decrementGoalsFilled() {
+        boxesOnGoals--;
+    }
+
+
     public enum Direction {
         LEFT(-1, 0),
         RIGHT(1, 0),
@@ -222,8 +286,12 @@ public class Board4Play {
             return deltaCol;
         }
     }
+    public void incrementGoalsFilled() {
+        boxesOnGoals++;
+    }
 
 
 
 
 }
+

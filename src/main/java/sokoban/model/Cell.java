@@ -5,7 +5,26 @@ import javafx.collections.FXCollections;
 import sokoban.model.element.*;
 
 public abstract class Cell {
+    private int row;
+    private int column;
+    public Cell(int row, int column) {
+        this.row = row;
+        this.column = column;
+    }
+    public int[] getPosition() {
+        return new int[] {row, column};
+    }
+    public int getRow() {
+        return row;
+    }
+    public void setValue(Element element) {
 
+        clearValues();
+        addValue(element);
+    }
+    public int getColumn() {
+        return column;
+    }
     protected final ListProperty<Element> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
     public ReadOnlyListProperty<Element> getValue() {
         return toolObject;

@@ -5,7 +5,9 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Grid4Play extends Grid{
 
@@ -52,7 +54,17 @@ public class Grid4Play extends Grid{
     public void triggerGridChange() {
         gridChanged.set(!gridChanged.get());
     }
-
+    public List<Cell> getCellsContainingBoxes() {
+        List<Cell> cellsWithBoxes = new ArrayList<>();
+        for (int i = 0; i < gridWidth.get(); i++) {
+            for (int j = 0; j < gridHeight.get(); j++) {
+                if (cell4Play[i][j].hasElementOfType(Box.class)) {
+                    cellsWithBoxes.add(cell4Play[i][j]);
+                }
+            }
+        }
+        return cellsWithBoxes;
+    }
     @Override
     public int[] findPlayerPosition() {
         for (int i = 0; i < gridWidth.get(); i++) {
@@ -65,6 +77,13 @@ public class Grid4Play extends Grid{
         }
         System.out.println("Player not found.");
         return null;
+    }
+    public Element getElementAt(int row, int col) {
+        if (row >= 0 && row < gridHeight.get() && col >= 0 && col < gridWidth.get()) {
+            return cell4Play[row][col].getElementOfType(Element.class);
+        } else {
+            throw new IndexOutOfBoundsException("Indices hors des limites de la grille.");
+        }
     }
 
     @Override
