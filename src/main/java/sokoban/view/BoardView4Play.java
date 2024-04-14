@@ -30,6 +30,8 @@ import java.io.File;
 import java.util.Objects;
 import java.util.Optional;
 
+import static sokoban.model.CommandManager.*;
+
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
 
@@ -88,15 +90,21 @@ public class BoardView4Play extends BorderPane {
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
 
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getCode() == KeyCode.Z && event.isControlDown()) {
-                System.out.println("CTRL+Z pressed - Undo");
-                CommandManager.undo();
-                event.consume(); // Consommez l'événement pour éviter d'autres traitements
-            } else if (event.getCode() == KeyCode.Y && event.isControlDown()) {
-                System.out.println("CTRL+Y pressed - Redo");
-                CommandManager.redo();
-                event.consume(); // Consommez l'événement pour éviter d'autres traitements
+        scene.setOnKeyPressed(event -> {
+            if (event.isControlDown() && event.getCode() == KeyCode.Z) {
+                if (!getUndoStack().isEmpty()) {
+                    undo();
+                } else {
+                    System.out.println("Undo stack is empty");
+                }
+                event.consume();
+            } else if (event.isControlDown() && event.getCode() == KeyCode.Y) {
+                if (!getRedoStack().isEmpty()) {
+                    redo();
+                } else {
+                    System.out.println("Redo stack is empty");
+                }
+                event.consume();
             }
         });
 

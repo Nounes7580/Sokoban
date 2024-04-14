@@ -7,12 +7,13 @@ import java.util.Deque;
 import java.util.Stack;
 
 public class CommandManager {
+
     private static final Deque<Command> undoStack = new ArrayDeque<>();
     private static final Deque<Command> redoStack = new ArrayDeque<>();
     public static void executeCommand(Command command) {
-        if (command.execute()) {
-            undoStack.push(command);
-        }
+        command.execute();
+        undoStack.push(command);
+        redoStack.clear();
     }
 
     public static void undo() {
@@ -20,6 +21,7 @@ public class CommandManager {
             Command command = undoStack.pop();
             command.undo();
             redoStack.push(command);
+            System.out.println("Performed undo.");
         } else {
             System.out.println("Undo stack is empty");
         }
@@ -28,8 +30,9 @@ public class CommandManager {
     public static void redo() {
         if (!redoStack.isEmpty()) {
             Command command = redoStack.pop();
-            command.execute();
+            command.redo();
             undoStack.push(command);
+            System.out.println("Performed redo.");
         } else {
             System.out.println("Redo stack is empty");
         }

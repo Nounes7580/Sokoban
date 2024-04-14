@@ -76,6 +76,13 @@ public class Grid4Play extends Grid{
         System.out.println("Player not found.");
         return null;
     }
+    public Element getElementAt(int row, int col) {
+        if (row >= 0 && row < gridHeight.get() && col >= 0 && col < gridWidth.get()) {
+            return cell4Play[row][col].getElementOfType(Element.class);
+        } else {
+            throw new IndexOutOfBoundsException("Indices hors des limites de la grille.");
+        }
+    }
 
     @Override
     public   int getGridWidth() {

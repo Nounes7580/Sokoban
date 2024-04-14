@@ -5,10 +5,13 @@ import sokoban.model.element.Element;
 
 public class Move implements Command {
     private Grid4Play board;
-    private int startX, startY, endX, endY;
+    private final int startX;
+    private int startY;
+    private int endX;
+    private int endY;
     private Element movedElement;
 
-    
+
     public Move(Grid4Play board, int startX, int startY, int endX, int endY, Element movedElement) {
         this.board = board;
         this.startX = startX;
@@ -40,11 +43,21 @@ public class Move implements Command {
         // Optionnellement vérifier si l'annulation a réussi
     }
 
-
     private Board4Play.Direction getInverseDirection(Board4Play.Direction direction) {
-        // Calcul de la direction inverse
-        return direction; // Simplification pour l'exemple
+        switch (direction) {
+            case UP:
+                return Board4Play.Direction.DOWN;
+            case DOWN:
+                return Board4Play.Direction.UP;
+            case LEFT:
+                return Board4Play.Direction.RIGHT;
+            case RIGHT:
+                return Board4Play.Direction.LEFT;
+            default:
+                return null;
+        }
     }
+
     @Override
     public void redo() {
         execute();

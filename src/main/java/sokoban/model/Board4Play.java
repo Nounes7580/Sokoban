@@ -45,7 +45,14 @@ public class Board4Play {
         // Cette méthode ne retourne plus de CellValue car cela n'a pas de sens avec la structure de données actuelle.
     }
 
-
+    public static void executeCommand(Command command) {
+        if (command.execute()) {
+            undoStack.push((Move) command);
+            System.out.println("Command added to undo stack");
+        } else {
+            System.out.println("Command execution failed, not added to stack");
+        }
+    }
 
     public static void movePlayer(Direction direction) {
         boolean lastMoveWasSuccessful = false;
@@ -62,6 +69,7 @@ public class Board4Play {
 
         int newRow = playerPosition[0] + direction.getDeltaRow();
         int newCol = playerPosition[1] + direction.getDeltaCol();
+
 
         if (!isMoveValid(newRow, newCol, direction)) {
             System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
