@@ -41,19 +41,22 @@ public class CellViewModel4Design extends CellViewModel{
 
         System.out.println("Attempting to add: " + selectedTool.getType());
 
-
+        // Check for the current presence of a player and handle the unique rules for a player
         if (selectedTool.getType() == CellValue.PLAYER && boardViewModel.hasPlayer()) {
             System.out.println("A player is already present on the grid. Cannot add another.");
             return;
         }
+
+        // Check if adding a box, replace with a new instance (though this may be unnecessary unless the Box class contains unique states)
         if (selectedTool.getType() == CellValue.BOX) {
             Box newBox = new Box();
-            selectedTool = newBox; // Mettez à jour selectedTool avec la nouvelle instance de Box configurée
+            selectedTool = newBox; // Update selectedTool with a new Box instance
         }
 
         System.out.println("Is cell empty? " + isEmpty());
 
-        if (selectedTool.getType() != CellValue.EMPTY && isEmpty()) {
+        // Ensure we update the cell value correctly, allowing goal to combine with box/player
+        if (selectedTool.getType() != CellValue.EMPTY) {
             updateCellValue(selectedTool);
         }
     }
@@ -70,8 +73,9 @@ public class CellViewModel4Design extends CellViewModel{
     }
     @Override
     protected void updateCellValue(Element newValue) {
-        board.setCellValue(line, col, newValue);
-
+        Cell cell = board.getGrid().getMatrix()[line][col];
+        cell.addValue(newValue);  // This directly utilizes the addValue method of the Cell class
+        board.getGrid().triggerGridChange(); // Trigger grid change to update view
     }
     @Override
     public ReadOnlyListProperty<Element> valueProperty() {

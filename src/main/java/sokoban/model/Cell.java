@@ -29,28 +29,33 @@ public abstract class Cell {
      Si l'élément est de type GROUND ou WALL, la liste est d'abord vidée avant d'ajouter l'élément.
      Si l'élément est de type BOX ou PLAYER, et que la cellule contient déjà un objectif (Goal), l'objectif est maintenu et l'élément ajouté.
      Si l'élément est de type GOAL, il est ajouté à la cellule, sauf si elle contient déjà d'autres éléments spécifiques.**/
-    public void addValue(Element value){
+    public void addValue(Element value) {
+        // If the incoming element is Ground or Wall, clear the list and add only this element
         if (value.getType() == CellValue.GROUND || value.getType() == CellValue.WALL) {
             toolObject.clear();
             toolObject.add(value);
         } else if (value.getType() == CellValue.BOX || value.getType() == CellValue.PLAYER) {
-            if (toolObject.contains(new Goal())) {
+            // If a Goal already exists, add the new element without removing the Goal
+            if (hasElementOfType(Goal.class)) {
+                Element goal = getElementOfType(Goal.class);
                 toolObject.clear();
                 toolObject.add(value);
-                toolObject.add(new Goal());
+                toolObject.add(goal);
             } else {
                 toolObject.clear();
                 toolObject.add(value);
             }
         } else if (value.getType() == CellValue.GOAL) {
-            if (toolObject.contains(new Goal()) || toolObject.contains(new Player()) ||  toolObject.isEmpty()) {
-                toolObject.add(value);
-            } else {
-                toolObject.clear();
-                toolObject.add(value);
-            }
+            // If adding a Goal, check if a Box or Player is present
+            Element box = getElementOfType(Box.class);
+            Element player = getElementOfType(Player.class);
+            toolObject.clear();
+            if (box != null) toolObject.add(box);
+            if (player != null) toolObject.add(player);
+            toolObject.add(value);
         }
     }
+
     /**Retire un élément spécifique de la liste des éléments dans la cellule.**/
     public void removeValue(Element value){
         toolObject.remove(value);
