@@ -283,12 +283,12 @@ public class BoardView4Play extends BorderPane {
                     return;
             }
 
-            if (direction != null) {
+            if (boardViewModel4Play.getBoard4Play().canMove(direction)) {
 
                 Command command = new Move(boardViewModel4Play.getBoard4Play(), direction);
-                commandManager.executeCommand(command);
-                System.out.println("Moving player in direction: " + direction);
-                event.consume();
+                commandManager.executeCommand(command);  
+            } else {
+                System.out.println("Invalid move attempted.");
             }
         });
     }

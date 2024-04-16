@@ -17,6 +17,7 @@ public class Move implements Command {
 
 
 
+
 /** Initialise le déplacement avec une référence au plateau de jeu (board) et la direction dans laquelle le déplacement doit être effectué (direction).
  Enregistre la position initiale du joueur et le nombre de mouvements actuel du jeu pour permettre une annulation (undo) efficace.
  Appelle captureInitialState pour enregistrer l'état initial des boîtes qui pourraient être déplacées par ce mouvement.
@@ -48,7 +49,9 @@ public class Move implements Command {
 /** Exécutent le déplacement en appelant movePlayer sur Board4Play avec la direction donnée. redo fait la même chose car dans ce contexte, refaire un mouvement est identique à l'exécuter initialement.**/
     @Override
     public void execute() {
+        if (board.canMove(direction)) {
             Board4Play.movePlayer(direction);
+        }
         }
     @Override
     public void redo() {
