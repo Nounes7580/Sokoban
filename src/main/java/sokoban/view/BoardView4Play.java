@@ -6,33 +6,21 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import sokoban.model.Board4Play;
-import sokoban.model.Command;
 import sokoban.model.CommandManager;
-import sokoban.model.Move;
 import sokoban.model.element.*;
-import sokoban.viewmodel.BoardViewModel;
 import sokoban.viewmodel.BoardViewModel4Design;
 import sokoban.viewmodel.BoardViewModel4Play;
 
 
-import java.io.File;
 import java.util.Objects;
-import java.util.Optional;
-
-import static sokoban.model.CommandManager.*;
 
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
@@ -97,8 +85,7 @@ public class BoardView4Play extends BorderPane {
             createGrid();
         });
         scene.getRoot().requestFocus();
-        CommandManager commandManager = new CommandManager();
-        setupKeyControls(scene, commandManager);
+        setupKeyControls(scene);
 
 
         stage.show();
@@ -242,11 +229,11 @@ public class BoardView4Play extends BorderPane {
 
 
 
-    protected void setupKeyControls(Scene scene, CommandManager commandManager) {
+    protected void setupKeyControls(Scene scene) {
         System.out.println("Setting up key controls");
+        CommandManager commandManager = boardViewModel4Play.getCommandManager();
         scene.setOnKeyPressed(event -> {
             System.out.println("Key pressed: " + event.getCode());
-
 
             if (event.isControlDown()) {
                 if (event.getCode() == KeyCode.Z) {
@@ -259,40 +246,18 @@ public class BoardView4Play extends BorderPane {
                 return;
             }
 
-
-            Board4Play.Direction direction = null;
-            switch (event.getCode()) {
-                case UP:
-                case W:
-                    direction = Board4Play.Direction.UP;
-                    break;
-                case DOWN:
-                case S:
-                    direction = Board4Play.Direction.DOWN;
-                    break;
-                case LEFT:
-                case A:
-                    direction = Board4Play.Direction.LEFT;
-                    break;
-                case RIGHT:
-                case D:
-                    direction = Board4Play.Direction.RIGHT;
-                    break;
-                default:
-
-                    return;
+            BoardViewModel4Play.Direction direction = boardViewModel4Play.getDirection(event.getCode());
+            if (direction == null) {
+                return;
             }
 
             if (direction != null) {
-
-                Command command = new Move(boardViewModel4Play.getBoard4Play(), direction);
-                commandManager.executeCommand(command);
+                boardViewModel4Play.executeMove(direction);
                 System.out.println("Moving player in direction: " + direction);
                 event.consume();
             }
         });
     }
-
     private void createFinishButton() {
         Button finishButton = new Button("Finish");
 
