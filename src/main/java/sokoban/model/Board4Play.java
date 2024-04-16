@@ -3,6 +3,7 @@ package sokoban.model;
 import javafx.beans.property.ReadOnlyListProperty;
 import sokoban.model.element.*;
 import sokoban.view.BoardView4Play;
+import sokoban.viewmodel.BoardViewModel4Play;
 
 
 import java.util.Arrays;
@@ -106,10 +107,10 @@ public class Board4Play {
                 }
                 if (boxesOnGoals == grid4Play.getTargetCount()) {
 
-                    BoardView4Play.displayYouWinLabel(moveCount);
+                    BoardViewModel4Play.getBoardView4Play().displayYouWinLabel(moveCount);
                 }
                 grid4Play.addPlayerToCell(newRow, newCol);
-                BoardView4Play.updateGoalsReached(boxesOnGoals);
+                BoardViewModel4Play.getBoardView4Play().updateGoalsReached(boxesOnGoals);
                 lastMoveWasSuccessful = true;
             } else {
                 System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
@@ -129,7 +130,7 @@ public class Board4Play {
         System.out.println(lastMoveWasSuccessful);
 
         moveCount++;
-        BoardView4Play.updateMovesLabel(moveCount);
+        BoardViewModel4Play.getBoardView4Play().updateMovesLabel(moveCount);
 
 
 
@@ -195,7 +196,8 @@ public class Board4Play {
 
         // Restaure le nombre de mouvements
         moveCount += 5;
-        BoardView4Play.updateMovesLabel(moveCount);
+        BoardViewModel4Play.getBoardView4Play().updateMovesLabel(moveCount);
+
     }
 
 
