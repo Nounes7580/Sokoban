@@ -17,6 +17,7 @@ public class BoardViewModel4Play{
 
     private Board4Play board4Play;
     private Board4Design board4Design;
+    private static BoardView4Play boardView4Play;
 
     public BoardViewModel4Play(Board4Design board4Design){
      this.board4Design=board4Design;
@@ -47,6 +48,9 @@ public class BoardViewModel4Play{
         return board4Play;
     }
 
+    public static BoardView4Play getBoardView4Play() {
+        return boardView4Play;
+    }
 
 
     public long getTargetCount() {
