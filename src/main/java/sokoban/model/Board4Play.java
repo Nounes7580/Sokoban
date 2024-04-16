@@ -135,6 +135,38 @@ public class Board4Play {
 
     }
 
+    public boolean canMove(Direction direction) {
+        int[] playerPosition = grid4Play.findPlayerPosition();
+        if (playerPosition == null) {
+            System.out.println("Player not found.");
+            return false;
+        }
+
+        int newRow = playerPosition[0] + direction.getDeltaRow();
+        int newCol = playerPosition[1] + direction.getDeltaCol();
+
+
+
+        Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
+        if (targetCell.hasElementOfType(Wall.class)) {
+            return false;
+        }
+
+        if (targetCell.hasElementOfType(Box.class)) {
+            // Déterminez si la boîte peut être poussée.
+            int nextRow = newRow + direction.getDeltaRow();
+            int nextCol = newCol + direction.getDeltaCol();
+
+
+            Cell nextCell = grid4Play.getMatrix()[nextRow][nextCol];
+            // Vérifiez si la cellule derrière la boîte est libre pour la pousser
+            if (!nextCell.isEmpty() && !nextCell.hasElementOfType(Goal.class)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 
     public void setMoveCount(int moveCount) {
