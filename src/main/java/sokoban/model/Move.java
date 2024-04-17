@@ -3,6 +3,8 @@ package sokoban.model;
 
 
 import sokoban.model.element.*;
+import sokoban.view.BoardView4Play;
+import sokoban.viewmodel.BoardViewModel4Play;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,7 @@ public class Move implements Command {
     private int[] previousPosition;
     private int previousMoveCount;
     private List<BoxState> previousBoxStates = new ArrayList<>();
+    BoardView4Play boardView4Play;
 
 
 
@@ -95,6 +98,12 @@ public class Move implements Command {
 
             if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class)) {
                 board.decrementGoalsFilled();
+                BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
+
+            }
+            if (state.wasOnGoal && !currentCell.hasElementOfType(Goal.class)) {
+                board.incrementGoalsFilled();
+                BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
             }
 
         }
