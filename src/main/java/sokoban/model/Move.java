@@ -33,18 +33,20 @@ public class Move implements Command {
         }
     }
   /**  Capture l'état initial des boîtes qui seront affectées par le déplacement. Pour chaque boîte affectée par le déplacement, l'état est enregistré, y compris sa position et si elle était sur un objectif.**/
-    private void captureInitialState() {
-        int[] playerPos = board.getGrid4Play().findPlayerPosition();
-        if (playerPos != null) {
-            int newRow = playerPos[0] + direction.getDeltaRow();
-            int newCol = playerPos[1] + direction.getDeltaCol();
-            if (board.getGrid4Play().getCell(newRow, newCol).hasElementOfType(Box.class)) {
-                Box box = (Box) board.getGrid4Play().getCell(newRow, newCol).getElementOfType(Box.class);
-                boolean wasOnGoal = board.getGrid4Play().getCell(newRow, newCol).hasElementOfType(Goal.class);
-                previousBoxStates.add(new BoxState(box, new int[]{newRow, newCol}, wasOnGoal));
-            }
-        }
-    }
+  private void captureInitialState() {
+      int[] playerPos = board.getGrid4Play().findPlayerPosition();
+      if (playerPos != null) {
+          int newRow = playerPos[0] + direction.getDeltaRow();
+          int newCol = playerPos[1] + direction.getDeltaCol();
+          Cell cell = board.getGrid4Play().getCell(newRow, newCol);
+
+          if (cell.hasElementOfType(Box.class)|| cell.hasElementOfType(Goal.class)) {
+              Box box = (Box) cell.getElementOfType(Box.class);
+              boolean wasOnGoal = cell.hasElementOfType(Goal.class);
+              previousBoxStates.add(new BoxState(box, new int[]{newRow, newCol}, wasOnGoal));
+          }
+      }
+  }
 
 /** Exécutent le déplacement en appelant movePlayer sur Board4Play avec la direction donnée. redo fait la même chose car dans ce contexte, refaire un mouvement est identique à l'exécuter initialement.**/
     @Override
@@ -73,12 +75,16 @@ public class Move implements Command {
             Cell originalCell = board.getGrid4Play().getCell(state.position[0], state.position[1]);
             originalCell.setValue(state.box);
 
+
+
             if (state.wasOnGoal) {
 
                 originalCell.setValue(new Goal());
-                board.incrementGoalsFilled();
-            }
 
+            }
+            if (state.box != null) {
+                originalCell.addValue(state.box);
+            }
             if (currentCell.hasElementOfType(Goal.class)) {
 
                 currentCell.setValue(new Goal());
@@ -90,6 +96,7 @@ public class Move implements Command {
             if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class)) {
                 board.decrementGoalsFilled();
             }
+
         }
     }
    /** Une classe utilitaire pour stocker l'état d'une boîte, y compris l'élément de la boîte, sa position,
