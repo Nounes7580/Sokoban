@@ -93,10 +93,12 @@ public class Move implements Command {
                 currentCell.setValue(new Ground());
             }
 
-            if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class)) {
-                board.decrementGoalsFilled();
+            if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class) && currentCell.hasElementOfType(Box.class)) {
+                board.decrementGoalsFilled();  // Decrement only if the box is moving away from a goal it was not originally on
             }
-
+            if (state.wasOnGoal && !currentCell.hasElementOfType(Box.class)) {
+                board.incrementGoalsFilled();  // Increment if the box is supposed to be on a goal but isn't after undo
+            }
         }
     }
    /** Une classe utilitaire pour stocker l'état d'une boîte, y compris l'élément de la boîte, sa position,
