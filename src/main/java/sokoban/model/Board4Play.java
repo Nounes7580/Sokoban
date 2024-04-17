@@ -171,6 +171,7 @@ public class Board4Play {
 
 
     public void setMoveCount(int moveCount) {
+        this.moveCount = moveCount;
     }
     /** Annule le dernier mouvement du joueur, restaura la position précédente et ajuste le nombre de mouvements.
      Utilisée pour implémenter une fonctionnalité d'annulation dans le jeu.**/
