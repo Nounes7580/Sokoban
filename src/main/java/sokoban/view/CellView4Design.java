@@ -18,27 +18,37 @@ import sokoban.viewmodel.CellViewModel;
 import sokoban.viewmodel.CellViewModel4Design;
 
 public class CellView4Design extends StackPane {
+
+    // Images statiques pour les différents éléments du jeu.
     protected static final Image playerImage = new Image("player.png");
     protected static final Image boxImage = new Image("box.png");
     protected static final Image goalImage = new Image("goal.png");
     protected static final Image groundImage = new Image("ground.png");
     protected static final Image wallImage = new Image("wall.png");
 
+    // Modèle de données de la cellule et propriété de liaison pour la taille de la vue.
     protected final CellViewModel4Design cellViewModel4Design;
     protected final DoubleBinding sizeProperty;
 
+    // Affichage de l'image de fond pour chaque cellule.
     protected final ImageView backgroundImageView = new ImageView(groundImage);
     private ColorAdjust darkenEffect = new ColorAdjust();
-    private BoardViewModel4Design boardViewModel;
-
 
     private final ImageView imageView = new ImageView();
 
-
+    // Grille dans laquelle cette cellule est placée.
     protected final GridPane gridPane;
     protected int line;
     protected int col;
 
+    /**
+     * Constructeur qui initialise la vue de la cellule avec les propriétés nécessaires et configure les interactions.
+     * param cellViewModel Modèle de la cellule pour la gestion des données.
+     * param sizeProperty Propriété de liaison pour la taille de la vue.
+     * param gridPane Grille contenant cette cellule.
+     * param line Ligne de la grille où la cellule est située.
+     * param col Colonne de la grille où la cellule est située.
+     */
     public CellView4Design(CellViewModel4Design cellViewModel, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
         this.cellViewModel4Design = cellViewModel;
         this.sizeProperty = sizeProperty;
@@ -55,7 +65,9 @@ public class CellView4Design extends StackPane {
         cellViewModel4Design.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
 
-
+    /**
+     * Disposition initiale des contrôles, ajout de l'image de fond.
+     */
     protected void layoutControls() {
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
@@ -69,6 +81,10 @@ public class CellView4Design extends StackPane {
         updateView(cellViewModel4Design.valueProperty());
     }
 
+    /**
+     * Met à jour l'affichage de la cellule en fonction des éléments qu'elle contient.
+     * param list Liste observable des éléments dans la cellule.
+     */
     protected void updateView(ObservableList<Element> list) {
         getChildren().clear();
         getChildren().add(backgroundImageView);
@@ -77,6 +93,10 @@ public class CellView4Design extends StackPane {
         }
     }
 
+    /**
+     * Ajoute une image à la vue en fonction du type de cellule.
+     * param cellValue Type de la cellule.
+     */
     protected void addImageViewForCellValue(CellValue cellValue) {
         Image image = switch (cellValue) {
             case PLAYER -> playerImage;
@@ -90,19 +110,29 @@ public class CellView4Design extends StackPane {
         }
     }
 
+    /**
+     * Ajoute une ImageView à la cellule.
+     * param image Image à ajouter.
+     */
     protected void addImageView(Image image) {
         ImageView imageView = new ImageView(image);
         configureImageView(imageView);
         getChildren().add(imageView);
     }
 
+    /**
+     * Configure les propriétés d'une ImageView.
+     * param imageView L'ImageView à configurer.
+     */
     protected void configureImageView(ImageView imageView) {
         imageView.fitWidthProperty().bind(this.widthProperty());
         imageView.fitHeightProperty().bind(this.heightProperty());
         imageView.setPreserveRatio(true);
     }
 
-
+    /**
+     * Configure les propriétés de liaison et les événements.
+     */
     protected void configureBindings() {
         backgroundImageView.fitWidthProperty().bind(sizeProperty);
         backgroundImageView.fitHeightProperty().bind(sizeProperty);
@@ -130,7 +160,9 @@ public class CellView4Design extends StackPane {
         });
     }
 
-
+    /**
+     * Configure les événements de souris pour ajouter ou supprimer des objets.
+     */
     protected void setupMouseEvents() {
         this.setOnMousePressed(event -> {
             if (event.isPrimaryButtonDown()) {
@@ -172,7 +204,12 @@ public class CellView4Design extends StackPane {
 
 
 
-
+    /**
+     * Gère les changements d'état de survol de la souris.
+     * param obs Observable.
+     * param oldVal Ancienne valeur.
+     * param newVal Nouvelle valeur.
+     */
     protected void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
         if (!newVal)
             cellViewModel4Design.resetScale();

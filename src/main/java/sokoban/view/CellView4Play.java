@@ -24,15 +24,19 @@ import sokoban.viewmodel.CellViewModel4Play;
 import javafx.scene.text.Font;
 
 public class CellView4Play extends StackPane {
+
+    // Définition des images statiques utilisées pour représenter différents éléments dans la cellule.
     protected static final Image playerImage = new Image("player.png");
     protected static final Image boxImage = new Image("box.png");
     protected static final Image goalImage = new Image("goal.png");
     protected static final Image groundImage = new Image("ground.png");
     protected static final Image wallImage = new Image("wall.png");
 
+    // Modèle de données pour la cellule et propriétés de liaison pour la dimension de l'affichage.
     protected final CellViewModel4Play cellViewModel4Play;
     protected final DoubleBinding sizeProperty;
 
+    // Image de fond pour chaque cellule et effet visuel pour le survol.
     protected final ImageView backgroundImageView = new ImageView(groundImage);
     protected ColorAdjust darkenEffect = new ColorAdjust();
 
@@ -40,6 +44,16 @@ public class CellView4Play extends StackPane {
     protected final GridPane gridPane;
     protected int line;
     protected int col;
+
+
+    /**
+     * Constructeur qui initialise la cellule avec ses dépendances et configure son apparence et comportement.
+     * param cellViewModel4Play Modèle de données de la cellule.
+     * param sizeProperty Propriété de liaison pour la taille de la cellule.
+     * param gridPane Grille contenant cette cellule.
+     * param line Ligne de la grille où la cellule est située.
+     * param col Colonne de la grille où la cellule est située.
+     */
     CellView4Play(CellViewModel4Play cellViewModel4Play, DoubleBinding sizeProperty, GridPane gridPane, int line, int col) {
         this. cellViewModel4Play = cellViewModel4Play;
         this.sizeProperty = sizeProperty;
@@ -54,7 +68,9 @@ public class CellView4Play extends StackPane {
 
         cellViewModel4Play.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
     }
-
+    /**
+     * Configure les éléments visuels de base de la cellule, notamment l'image de fond.
+     */
     protected void layoutControls() {
         backgroundImageView.setPreserveRatio(false);
         backgroundImageView.setSmooth(true);
@@ -67,14 +83,20 @@ public class CellView4Play extends StackPane {
         cellViewModel4Play.valueProperty().addListener((obs, oldVal, newVal) -> updateView(newVal));
         updateView(cellViewModel4Play.valueProperty());
     }
-
+    /**
+     * Ajoute une ImageView à la cellule.
+     * param image Image à ajouter.
+     */
     protected void addImageView(Image image) {
         ImageView imageView = new ImageView(image);
         configureImageView(imageView);
         getChildren().add(imageView);
     }
 
-
+    /**
+     * Met à jour la vue de la cellule en fonction des éléments qu'elle contient.
+     * param list Liste observable des éléments dans la cellule.
+     */
     protected void updateView(ObservableList<Element> list) {
         System.out.println("Updating view for cell at (" + line + ", " + col + ") with elements: " + list);
         getChildren().clear();
@@ -119,7 +141,10 @@ public class CellView4Play extends StackPane {
 
     }
 
-
+    /**
+     * Configure les propriétés d'une ImageView, notamment la liaison de sa taille.
+     * param imageView L'ImageView à configurer.
+     */
     protected void configureImageView(ImageView imageView) {
         imageView.fitWidthProperty().bind(this.widthProperty());
         imageView.fitHeightProperty().bind(this.heightProperty());
@@ -127,17 +152,19 @@ public class CellView4Play extends StackPane {
         System.out.println("Image view size: " + imageView.getFitWidth() + "x" + imageView.getFitHeight());
     }
 
+    /**
+     * Configure les propriétés de liaison et les réactions aux interactions.
+     */
     protected void configureBindings() {
         backgroundImageView.fitWidthProperty().bind(sizeProperty);
         backgroundImageView.fitHeightProperty().bind(sizeProperty);
         minWidthProperty().bind(sizeProperty);
         minHeightProperty().bind(sizeProperty);
 
-        this.setOnMouseClicked(e -> cellViewModel4Play.play());
 
         cellViewModel4Play.valueProperty().addListener((obs, old, newVal) -> updateView( newVal));
 
-        hoverProperty().addListener(this::hoverChanged);
+
 
 
         hoverProperty().addListener((obs, wasHovered, isNowHovered) -> {
@@ -156,9 +183,11 @@ public class CellView4Play extends StackPane {
 
 
 
+    /**
+     * Réaction aux changements d'état de survol de la souris, ajustant la mise à l'échelle de l'élément visuel.
+     * param obs L'observable qui a changé.
+     * param oldVal Ancienne valeur de l'état de survol.
+     * param newVal Nouvelle valeur de l'état de survol.
+     */
 
-    protected void hoverChanged(ObservableValue<? extends Boolean> obs, Boolean oldVal, Boolean newVal) {
-        if (!newVal)
-            cellViewModel4Play.resetScale();
-    }
 }

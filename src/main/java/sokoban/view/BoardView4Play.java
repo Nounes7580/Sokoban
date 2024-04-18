@@ -25,7 +25,7 @@ import java.util.Objects;
 public class BoardView4Play extends BorderPane {
     private final BoardViewModel4Play boardViewModel4Play;
 
-
+    // Labels statiques pour l'affichage des scores et des objectifs.
     private final Label scoreTitleLabel = new Label("Score");
     private static final Label movesLabel = new Label("Number of moves played: 0");
     private static final Label goalsLabel = new Label("Number of goals reached: 0 of X"); // X will be dynamically set
@@ -34,7 +34,6 @@ public class BoardView4Play extends BorderPane {
 
     private final Label validationLabel = new Label();
     private final VBox toolBar = new VBox();
-    //private final Label goalsLabel = new Label("Number of boxes : x");
 
     private final Label headerLabel = new Label("");
 
@@ -43,7 +42,13 @@ public class BoardView4Play extends BorderPane {
     private final HBox playFinishContainer = new HBox();
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
-    private Board4Play board4Play;
+
+    /**
+     * Constructeur qui initialise la vue avec les propriétés de la partie en cours, les objectifs, et prépare l'interface utilisateur.
+     * param primaryStage Le stage principal sur lequel la scène sera placée.
+     * param boardViewModel4Play Le modèle de données de jeu.
+     */
+
     public BoardView4Play(Stage primaryStage, BoardViewModel4Play boardViewModel4Play) {
 
 
@@ -61,7 +66,10 @@ public class BoardView4Play extends BorderPane {
 
     }
 
-
+    /**
+     * Affiche le label "You Win" avec le nombre de mouvements effectués.
+     * param moveCount Nombre de mouvements effectués pour gagner.
+     */
     public static void displayYouWinLabel(int moveCount) {
         moveCount++;
         youWinLabel.setText("You win! " + moveCount + " moves, congratulations!");
@@ -69,12 +77,19 @@ public class BoardView4Play extends BorderPane {
         youWinLabel.setVisible(true);
     }
 
-
+    /**
+     * Initialise l'affichage du nombre total d'objectifs à atteindre.
+     * param targetCount Nombre total d'objectifs.
+     */
     private void initializeTotalGoals(long targetCount) {
         goalsLabel.setText("Number of goals reached: 0 of " + targetCount);
 
     }
 
+    /**
+     * Prépare et affiche la scène, configurant les feuilles de style et les propriétés initiales de la fenêtre.
+     * param stage Le stage sur lequel la scène sera placée.
+     */
     public void start(Stage stage) {
         Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
@@ -97,6 +112,9 @@ public class BoardView4Play extends BorderPane {
 
     }
 
+    /**
+     * Crée la grille de jeu en fonction des dimensions calculées et la place au centre de la vue.
+     */
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
@@ -141,18 +159,30 @@ public class BoardView4Play extends BorderPane {
             }
         });
     }
+
+    /**
+     * Met à jour le label affichant le nombre de mouvements joués.
+     * param moveCount Nombre de mouvements joués.
+     */
     public static void updateMovesLabel(int moveCount) {
 
         movesLabel.setText("Number of moves played: " + moveCount);
     }
 
+    /**
+     * Met à jour le label affichant le nombre d'objectifs atteints.
+     * param goalsReached Nombre d'objectifs actuellement atteints.
+     */
     public static void updateGoalsReached(int goalsReached) {
         String currentText = goalsLabel.getText();
         String newText = currentText.replaceFirst("\\d+(?= of)", String.valueOf(goalsReached));
         goalsLabel.setText(newText);
     }
 
-
+    /**
+     * Crée l'en-tête de l'interface utilisateur, configurant les propriétés de liaison pour les étiquettes.
+     * return VBox contenant l'en-tête.
+     */
     private VBox createHeader() {
         scoreTitleLabel.getStyleClass().add("score-title");
         movesLabel.getStyleClass().add("moves-label");
@@ -170,23 +200,40 @@ public class BoardView4Play extends BorderPane {
         return headerContainer;
     }
 
+    /**
+     * Retourne la largeur actuelle de la barre d'outils.
+     * Cette méthode est utilisée pour calculer l'espace disponible pour la grille de jeu en ajustant les dimensions de la grille en fonction de la largeur de la barre d'outils.
+     * return La largeur de la barre d'outils.
+     */
 
     protected double getToolbarWidth() {
         return toolBar.getWidth();
 
     }
 
-
+    /**
+     * Retourne la hauteur actuelle du conteneur supérieur.
+     * Cette mesure est utilisée pour ajuster la hauteur de la grille de jeu en prenant en compte la hauteur occupée par le conteneur supérieur.
+     * return La hauteur du conteneur supérieur.
+     */
     protected double getTopContainerHeight() {
         return topContainer.getHeight();
     }
 
-
+    /**
+     * Retourne la hauteur du conteneur contenant le bouton de fin de partie.
+     * Cette mesure est nécessaire pour ajuster correctement la hauteur de la grille de jeu, en assurant que tout l'espace disponible est utilisé efficacement.
+     * return La hauteur du conteneur du bouton de fin de partie.
+     */
     protected double getPlayButtonContainerHeight() {
         return playFinishContainer.getHeight();
     }
 
-
+    /**
+     * Configure les composants principaux de l'interface utilisateur, tels que la barre d'outils et l'en-tête, et les ajoute à la partie supérieure de la vue.
+     * Cette méthode est appelée lors de l'initialisation de la vue pour organiser correctement tous les composants principaux.
+     * param stage Le stage principal utilisé pour la configuration initiale.
+     */
     private void configMainComponents(Stage stage) {
 
         initializeToolBar(stage);
@@ -194,7 +241,10 @@ public class BoardView4Play extends BorderPane {
         this.setTop(topContainer);
     }
 
-
+    /**
+     * Initialise la barre d'outils avec les éléments interactifs pour la modification de la grille.
+     * param primaryStage Le stage principal pour contexte.
+     */
     private void initializeToolBar(Stage primaryStage) {
         // Définit l'alignement des outils à l'intérieur de la VBox
         toolBar.setAlignment(Pos.CENTER);
@@ -209,6 +259,11 @@ public class BoardView4Play extends BorderPane {
         addToolToBar("/goal.png", new Goal());
     }
 
+    /**
+     * Ajoute un élément à la barre d'outils en tant que bouton cliquable.
+     * param imagePath Chemin de l'image représentant l'outil.
+     * param toolType Type de l'élément à ajouter.
+     */
     private void addToolToBar(String imagePath, Element toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
         imageView.setPreserveRatio(true);
@@ -228,7 +283,10 @@ public class BoardView4Play extends BorderPane {
 
 
 
-
+    /**
+     * Configure les contrôles clavier pour la scène, permettant le contrôle du jeu via le clavier.
+     * param scene La scène pour laquelle les contrôles clavier sont configurés.
+     */
     protected void setupKeyControls(Scene scene) {
         System.out.println("Setting up key controls");
         CommandManager commandManager = boardViewModel4Play.getCommandManager();
@@ -260,6 +318,10 @@ public class BoardView4Play extends BorderPane {
             }
         });
     }
+
+    /**
+     * Crée le bouton de fin de partie et configure son action pour fermer la fenêtre et réinitialiser le compteur de mouvements.
+     */
     private void createFinishButton() {
         Button finishButton = new Button("Finish");
 
