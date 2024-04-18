@@ -68,16 +68,22 @@ public class Move implements Command {
 
         board.undoMovePlayer(previousPosition, previousMoveCount);
 
+        if (previousPosition != null && board.getGrid4Play().getCell(previousPosition[0], previousPosition[1]).hasElementOfType(Goal.class)) {
+            board.getGrid4Play().getCell(previousPosition[0], previousPosition[1]).addValue(new Goal());
+
+        }
 
         for (BoxState state : previousBoxStates) {
-
+            if (board.getGoalsReached() == board.getGrid4Play().getTargetCount()) {
+                System.out.println("Game is finished, no more undos allowed for boxes.");
+                return; // Empêcher l'annulation si le jeu est fini.
+            }
             int boxCurrentRow = state.position[0] + direction.getDeltaRow();
             int boxCurrentCol = state.position[1] + direction.getDeltaCol();
             Cell currentCell = board.getGrid4Play().getCell(boxCurrentRow, boxCurrentCol);
 
             Cell originalCell = board.getGrid4Play().getCell(state.position[0], state.position[1]);
             originalCell.setValue(state.box);
-
 
 
             if (state.wasOnGoal) {
@@ -102,12 +108,13 @@ public class Move implements Command {
                 BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
 
             }
-            if (state.wasOnGoal && !currentCell.hasElementOfType(Goal.class)) {
+            if (state.wasOnGoal && !currentCell.hasElementOfType(Goal.class) ) {
                 board.incrementGoalsFilled();
                 BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
 
             }
         }
+
     }
    /** Une classe utilitaire pour stocker l'état d'une boîte, y compris l'élément de la boîte, sa position,
     et si elle était sur un objectif au début du mouvement. Ceci est crucial pour pouvoir annuler les mouvements de boîtes correctement.**/

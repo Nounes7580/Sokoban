@@ -176,6 +176,11 @@ public class Board4Play {
     /** Annule le dernier mouvement du joueur, restaura la position précédente et ajuste le nombre de mouvements.
      Utilisée pour implémenter une fonctionnalité d'annulation dans le jeu.**/
     public void undoMovePlayer(int[] previousPosition, int previousMoveCount) {
+        if (boxesOnGoals == grid4Play.getTargetCount()) {
+            return; // Arrête l'exécution si le jeu est déjà fini.
+        }  System.out.println("Game is finished, no more moves allowed.");
+
+
         int[] currentPlayerPosition = grid4Play.findPlayerPosition();
         if (currentPlayerPosition == null) return;
 
@@ -187,7 +192,9 @@ public class Board4Play {
 
         boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
 
-
+        if (wasOnGoal) {
+            decrementGoalsFilled();
+        }
         if (!previousCell.hasElementOfType(Box.class)) {
             grid4Play.play(previousPosition[0], previousPosition[1], player);
         }

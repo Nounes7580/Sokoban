@@ -16,7 +16,9 @@ public abstract class Cell {
     /** Définit la valeur de la cellule en effaçant toutes les valeurs précédentes avant d'ajouter le nouvel élément. Cette méthode est utile pour remplacer complètement le contenu de la cellule. **/
     public void setValue(Element element) {
         clearValues();
-        addValue(element);
+        if (element != null) {
+            addValue(element);
+        }
     }
     protected final ListProperty<Element> toolObject = new SimpleListProperty<>(FXCollections.observableArrayList());
     /** Retourne une propriété de liste en lecture seule (ReadOnlyListProperty) qui contient tous les éléments (comme des boîtes, des joueurs, des murs) présents dans la cellule.**/
