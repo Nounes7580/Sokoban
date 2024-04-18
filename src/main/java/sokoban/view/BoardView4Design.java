@@ -327,7 +327,7 @@ public class BoardView4Design extends BorderPane {
             alert.getButtonTypes().setAll(buttonTypeYes, buttonTypeNo, buttonTypeCancel);
 
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == buttonTypeYes) {
+            if (result.get() == buttonTypeYes && boardDesignViewModel.isGridChanged()) {
 
                 handleSaveAs(new Stage());
                 requestNewGridDimensions();
