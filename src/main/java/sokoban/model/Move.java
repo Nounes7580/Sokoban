@@ -71,6 +71,7 @@ public class Move implements Command {
         if (previousPosition != null && board.getGrid4Play().getCell(previousPosition[0], previousPosition[1]).hasElementOfType(Goal.class)) {
             board.getGrid4Play().getCell(previousPosition[0], previousPosition[1]).addValue(new Goal());
 
+
         }
 
         for (BoxState state : previousBoxStates) {
@@ -102,16 +103,17 @@ public class Move implements Command {
                 currentCell.setValue(new Ground());
             }
 
-
             if (!state.wasOnGoal && currentCell.hasElementOfType(Goal.class)) {
-                board.decrementGoalsFilled();
-                BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
-
+                if (state.box instanceof Box) { // S'assure que c'est une boîte
+                    board.decrementGoalsFilled();
+                    BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
+                }
             }
-            if (state.wasOnGoal && !currentCell.hasElementOfType(Goal.class) ) {
-                board.incrementGoalsFilled();
-                BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
-
+            if (state.wasOnGoal && !currentCell.hasElementOfType(Goal.class)) {
+                if (state.box instanceof Box) { // S'assure que c'est une boîte
+                    board.incrementGoalsFilled();
+                    BoardViewModel4Play.getBoardView4Play().updateGoalsReached(board.getGoalsReached());
+                }
             }
         }
 

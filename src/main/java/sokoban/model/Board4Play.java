@@ -192,9 +192,7 @@ public class Board4Play {
 
         boolean wasOnGoal = currentCell.hasElementOfType(Goal.class);
 
-        if (wasOnGoal) {
-            decrementGoalsFilled();
-        }
+
         if (!previousCell.hasElementOfType(Box.class)) {
             grid4Play.play(previousPosition[0], previousPosition[1], player);
         }
