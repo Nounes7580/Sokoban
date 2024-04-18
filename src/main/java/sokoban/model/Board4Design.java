@@ -16,6 +16,8 @@ import java.util.List;
 
 public class Board4Design  {
 
+
+
     public Grid4Design grid4Design;
     protected final BooleanProperty boardUpdated = new SimpleBooleanProperty(false);
 
@@ -94,6 +96,7 @@ public class Board4Design  {
             grid4Design.play(line, col, toolValue);
             filledCellsCount.set(calculateFilledCells());
         }
+        isGridChanged().set(true);
 
     }
    /** Définit la valeur d'une cellule spécifique dans la grille, si la position est valide et si la grille n'est pas pleine ou la cellule n'est pas vide. **/
@@ -201,6 +204,9 @@ public class Board4Design  {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    public BooleanProperty isGridChanged(){
+        return grid4Design.gridChanged;
     }
 
 }

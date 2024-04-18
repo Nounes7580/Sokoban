@@ -16,7 +16,7 @@ public abstract class Grid {
     protected final IntegerProperty gridHeight = new SimpleIntegerProperty();
 
 
-    protected BooleanProperty gridChanged = new SimpleBooleanProperty();
+    protected BooleanProperty gridChanged = new SimpleBooleanProperty(false);
 
 
 

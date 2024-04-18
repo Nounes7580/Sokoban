@@ -45,6 +45,7 @@ public class BoardView4Design extends BorderPane {
 
 
         this.boardDesignViewModel = boardViewModel;
+        primaryStage.setTitle("Sokoban");
         start(primaryStage);
 
         createPlayButton();
@@ -62,6 +63,14 @@ public class BoardView4Design extends BorderPane {
     }
 
     public void start(Stage stage) {
+        boardDesignViewModel.isGridChangedProperty().addListener((observable,oldValue,newValue)-> {
+            if(newValue){
+                stage.setTitle("Sokoban(*)");
+            }else {
+                stage.setTitle("Sokoban");
+            }
+        });
+
         Scene scene = new Scene(this, SCENE_MIN_WIDTH, SCENE_MIN_HEIGHT);
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
@@ -120,6 +129,8 @@ public class BoardView4Design extends BorderPane {
 
 
     private VBox createHeader() {
+
+
         headerLabel.textProperty().bind(Bindings.createStringBinding(() ->
                         "Number of filled cells: " + boardDesignViewModel.filledCellsCountProperty().get() + " of " + boardDesignViewModel.maxFilledCells(),
                 boardDesignViewModel.filledCellsCountProperty(),

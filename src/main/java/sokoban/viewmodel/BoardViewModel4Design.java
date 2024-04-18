@@ -4,6 +4,7 @@ import javafx.beans.Observable;
 import javafx.beans.binding.LongBinding;
 import javafx.beans.property.*;
 import sokoban.model.Board4Design;
+import sokoban.model.Grid;
 import sokoban.model.element.Element;
 
 import java.io.File;
@@ -11,6 +12,8 @@ import java.io.File;
 
 
 public class BoardViewModel4Design extends BoardViewModel{
+
+
     private final GridViewModel4Design gridViewModel;
 
 
@@ -127,5 +130,8 @@ public class BoardViewModel4Design extends BoardViewModel{
         return selectedTool.get();
     }
 
+    public ReadOnlyBooleanProperty isGridChangedProperty(){
+        return board.isGridChanged();
+    }
 
 }
