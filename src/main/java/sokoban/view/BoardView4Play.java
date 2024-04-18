@@ -57,6 +57,7 @@ public class BoardView4Play extends BorderPane {
         updateGoalsReached(boardViewModel4Play.getGoalsReached());
         start(primaryStage);
         createFinishButton();
+        //createReplay();
         youWinLabel.setVisible(false);
 
         createHeader();
@@ -349,6 +350,28 @@ public class BoardView4Play extends BorderPane {
 
         setBottom(playFinishContainer);
     }
+
+    /*private void createReplay(){
+        Button ReplayButton = new Button("Replay");
+        ReplayButton.setOnAction(event -> {
+
+            Stage gameStage = (Stage) this.getScene().getWindow();
+            BoardView4Play boardView4Play = new BoardView4Play(gameStage, new BoardViewModel4Play(boardViewModel4Play.getBoard()));
+            Scene scene = new Scene(boardView4Play);
+            gameStage.setScene(scene);
+            gameStage.show();
+
+        });
+
+        playFinishContainer.getChildren().add(ReplayButton);
+        playFinishContainer.setAlignment(Pos.CENTER);
+        playFinishContainer.setPadding(new Insets(0, 0, 10, 0));
+
+
+        setBottom(playFinishContainer);
+        }
+
+     */
 
 
 

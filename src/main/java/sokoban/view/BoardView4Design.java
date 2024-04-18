@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import sokoban.model.Board4Design;
 import sokoban.model.Board4Play;
 import sokoban.model.element.*;
 import sokoban.viewmodel.BoardViewModel;
@@ -41,6 +42,7 @@ public class BoardView4Design extends BorderPane {
     private final VBox topContainer = new VBox();
 
     private final HBox playButtonContainer = new HBox();
+
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
     /**
@@ -54,7 +56,7 @@ public class BoardView4Design extends BorderPane {
         this.boardDesignViewModel = boardViewModel;
         primaryStage.setTitle("Sokoban");
         start(primaryStage);
-
+        //createResetButton(primaryStage);
         createPlayButton();
         setLeft(toolBar);
         createHeader();
@@ -269,6 +271,24 @@ public class BoardView4Design extends BorderPane {
         playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
         setBottom(playButtonContainer);
     }
+
+    /*private void createResetButton(Stage primaryStage) {
+        Button resetButton = new Button("Reset");
+        resetButton.setOnAction(event -> {
+
+            Board4Design board = new Board4Design(boardDesignViewModel.getGridWidth(), boardDesignViewModel.getGridHeight());
+            BoardViewModel4Design vm = new BoardViewModel4Design(board);
+            new BoardView4Design(primaryStage, vm);
+        });
+
+
+        playButtonContainer.getChildren().add(resetButton);
+        playButtonContainer.setAlignment(Pos.CENTER_RIGHT);
+        playButtonContainer.setPadding(new Insets(0, 0, 10, 0));
+        setBottom(playButtonContainer);
+    }
+
+     */
 
     /**
      * Affiche directement la fenêtre de jeu. Elle est lié avec la méthode juste au dessus
