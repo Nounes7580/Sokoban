@@ -27,6 +27,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class BoardView4Design extends BorderPane {
+
+
+    // Initialisation des composants de l'interface utilisateur
     private final BoardViewModel4Design boardDesignViewModel;
 
     private final HBox headerBox = new HBox();
@@ -40,7 +43,11 @@ public class BoardView4Design extends BorderPane {
     private final HBox playButtonContainer = new HBox();
     private static final int SCENE_MIN_WIDTH = 700;
     private static final int SCENE_MIN_HEIGHT = 600;
-
+    /**
+     * Constructeur qui initialise la vue, configure les propriétés et écouteurs, et lance les composants initiaux.
+     * param primaryStage Le stage principal sur lequel la scène sera placée.
+     * param boardViewModel Le modèle de données lié à cette vue.
+     */
     public BoardView4Design(Stage primaryStage, BoardViewModel4Design boardViewModel) {
 
 
@@ -53,6 +60,7 @@ public class BoardView4Design extends BorderPane {
         createHeader();
         configMainComponents(primaryStage);
 
+        // Écouteur pour réinitialiser la grille quand nécessaire
         boardViewModel.gridResetProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal) {
                 createGrid();
@@ -61,6 +69,11 @@ public class BoardView4Design extends BorderPane {
         });
 
     }
+
+    /**
+     * Initialise la scène, y applique une feuille de style, et configure les contrôles clavier et les propriétés de la fenêtre.
+     * param stage Le stage sur lequel la scène sera placée.
+     */
 
     public void start(Stage stage) {
         boardDesignViewModel.isGridChangedProperty().addListener((observable,oldValue,newValue)-> {
@@ -75,10 +88,7 @@ public class BoardView4Design extends BorderPane {
         String cssFile = Objects.requireNonNull(getClass().getResource("/styles.css")).toExternalForm();
         scene.getStylesheets().add(cssFile);
 
-
-
         stage.setScene(scene);
-        setupKeyControls(stage.getScene());
 
         stage.show();
         stage.setMinHeight(stage.getHeight());
@@ -86,6 +96,10 @@ public class BoardView4Design extends BorderPane {
 
         Platform.runLater(this::createGrid);
     }
+
+    /**
+     * Crée et configure la grille de conception en calculant les dimensions nécessaires et en appliquant les propriétés de liaison.
+     */
     protected void createGrid() {
         if (getCenter() != null) {
             ((GridPane) getCenter()).getChildren().clear();
@@ -127,6 +141,10 @@ public class BoardView4Design extends BorderPane {
 
     }
 
+    /**
+     * Crée l'en-tête de l'interface utilisateur, configurant les propriétés de liaison pour les étiquettes.
+     * return Retourne le conteneur VBox contenant les étiquettes de l'en-tête.
+     */
 
     private VBox createHeader() {
 
@@ -156,28 +174,43 @@ public class BoardView4Design extends BorderPane {
         return headerContainer;
     }
 
-
+    /**
+     * Retourne la largeur actuelle de la barre d'outils.
+     * Cette méthode est utile pour calculer l'espace disponible pour d'autres composants.
+     * @return La largeur de la barre d'outils.
+     */
 
     protected double getToolbarWidth() {
         return toolBar.getWidth();
 
     }
 
-
+    /**
+     * Retourne la hauteur actuelle du conteneur supérieur.
+     * Utilisé pour ajuster la disposition des autres composants dans la vue.
+     * @return La hauteur du conteneur supérieur.
+     */
     protected double getTopContainerHeight() {
         return topContainer.getHeight();
     }
 
-
+    /**
+     * Retourne la hauteur du conteneur contenant le bouton de jeu.
+     * Cette mesure est nécessaire pour ajuster le reste de l'interface utilisateur en conséquence.
+     * @return La hauteur du conteneur du bouton de jeu.
+     */
     protected double getPlayButtonContainerHeight() {
         return playButtonContainer.getHeight();
     }
 
 
-    protected void setupKeyControls(Scene scene) {
-        //pas de controle clavier pour l'editeur
-    }
 
+
+    /**
+     * Configure les composants principaux de l'interface utilisateur, comme la barre d'outils, le menu et l'en-tête.
+     * Cette méthode est appelée lors de l'initialisation de la vue pour organiser les composants.
+     * @param stage Le stage principal utilisé pour la configuration initiale.
+     */
     private void configMainComponents(Stage stage) {
         initializeToolBar(stage);
         Label validationLabel = new Label();
@@ -187,6 +220,10 @@ public class BoardView4Design extends BorderPane {
         topContainer.getChildren().addAll(menuBar, createHeader());
         this.setTop(topContainer);
     }
+
+    /**
+     * Crée le bouton de jeu et configure son action. Affiche une boîte de dialogue pour sauvegarder avant de jouer.
+     */
     private void createPlayButton() {
         Button playButton = new Button("Play");
         playButton.setOnAction(event -> {
@@ -233,6 +270,9 @@ public class BoardView4Design extends BorderPane {
         setBottom(playButtonContainer);
     }
 
+    /**
+     * Affiche directement la fenêtre de jeu. Elle est lié avec la méthode juste au dessus
+     */
     private void showGameWindowDirectly() {
         Stage gameStage = (Stage) this.getScene().getWindow();
         BoardView4Play boardView4Play = new BoardView4Play(gameStage, new BoardViewModel4Play(boardDesignViewModel.getBoard()));
@@ -241,13 +281,10 @@ public class BoardView4Design extends BorderPane {
         gameStage.show();
     }
 
-
-
-
-
-
-
-
+    /**
+     * Initialise la barre d'outils avec les éléments interactifs pour la modification de la grille.
+     * param primaryStage Le stage principal pour contexte.
+     */
 
     private void initializeToolBar(Stage primaryStage) {
 
@@ -262,6 +299,12 @@ public class BoardView4Design extends BorderPane {
         addToolToBar("/box.png", new Box());
         addToolToBar("/goal.png", new Goal());
     }
+
+    /**
+     * Ajoute un élément à la barre d'outils en tant que bouton cliquable.
+     * param imagePath Chemin de l'image représentant l'outil.
+     * param toolType Type de l'élément à ajouter.
+     */
 
     private void addToolToBar(String imagePath, Element toolType) {
         ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream(imagePath)));
@@ -282,11 +325,18 @@ public class BoardView4Design extends BorderPane {
     }
 
 
-
+    /**
+     * Sélectionne un outil de la barre d'outils et met à jour les surlignages.
+     * param tool L'outil à sélectionner.
+     */
     private void selectTool(Element tool) {
         boardDesignViewModel.setSelectedTool(tool);
         updateToolHighlights();
     }
+
+    /**
+     * Met à jour les surlignages sur les outils de la barre d'outils pour refléter l'outil sélectionné.
+     */
 
     private void updateToolHighlights() {
         for (Node child : toolBar.getChildren()) {
@@ -301,6 +351,11 @@ public class BoardView4Design extends BorderPane {
             }
         }
     }
+
+    /**
+     * Initialise le menu principal du jeu avec les options de fichier.
+     * param primaryStage Le stage principal pour contexte.
+     */
     private void initializeMenu(Stage primaryStage) {
 
         Menu fileMenu = new Menu("File");
@@ -312,6 +367,7 @@ public class BoardView4Design extends BorderPane {
         MenuItem exitItem = new MenuItem("Exit");
 
 
+        // Ajout des actions aux éléments de menu
         fileMenu.getItems().addAll(newItem, openItem, saveAsItem, exitItem);
 
 
@@ -323,6 +379,10 @@ public class BoardView4Design extends BorderPane {
 
         menuBar.getMenus().add(fileMenu);
     }
+
+    /**
+     * Gère l'action de créer un nouveau projet Sokoban, avec confirmation pour sauvegarder les changements si nécessaire.
+     */
 
     private void handleNew() {
         if (boardDesignViewModel.isGridChanged()) {
@@ -351,12 +411,15 @@ public class BoardView4Design extends BorderPane {
         }
     }
 
-
+    /**
+     * Demande les dimensions pour un nouveau plateau de jeu et les valide.
+     */
     private void requestNewGridDimensions() {
         Dialog<Pair<Integer, Integer>> dialog = new Dialog<>();
         dialog.setTitle("Sokoban");
         dialog.setHeaderText("Give new game dimensions");
 
+        // Configuration de l'interface pour saisir les dimensions
         GridPane gridPane = new GridPane();
         gridPane.setHgap(10);
         gridPane.setVgap(10);
@@ -380,7 +443,7 @@ public class BoardView4Design extends BorderPane {
 
         Node okButton = createDialogButtons(dialog);
 
-
+        // Configuration de l'interface pour saisir les dimensions
         widthField.textProperty().addListener((observable, oldValue, newValue) ->
                 validateDimensionInput(newValue, widthErrorLabel, "Width must be at least 10.", okButton, heightField)
         );
@@ -415,6 +478,10 @@ public class BoardView4Design extends BorderPane {
         });
     }
 
+    /**
+     * Crée des champs de texte qui n'acceptent que des nombres.
+     * return TextField modifié pour accepter uniquement des entrées numériques.
+     */
     private TextField createNumericTextField() {
         return new TextField() {
             @Override public void replaceText(int start, int end, String text) {
@@ -431,6 +498,12 @@ public class BoardView4Design extends BorderPane {
         };
     }
 
+
+    /**
+     * Crée une étiquette pour les messages d'erreur de validation.
+     * param errorMessage Le message d'erreur à afficher.
+     * return Label configuré pour l'affichage d'erreurs.
+     */
     private Label createErrorLabel(String errorMessage) {
         Label errorLabel = new Label();
         errorLabel.setTextFill(Color.RED);
@@ -438,6 +511,11 @@ public class BoardView4Design extends BorderPane {
         return errorLabel;
     }
 
+    /**
+     * Crée les boutons pour un dialogue avec validation des dimensions.
+     * param dialog Le dialogue auquel les boutons seront ajoutés.
+     * return Le bouton OK configuré pour être désactivé initialement.
+     */
     private Node createDialogButtons(Dialog<Pair<Integer, Integer>> dialog) {
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         Node okButton = dialog.getDialogPane().lookupButton(ButtonType.OK
@@ -447,6 +525,14 @@ public class BoardView4Design extends BorderPane {
         return okButton;
     }
 
+    /**
+     * Valide les entrées de dimensions et met à jour les messages d'erreur et l'état du bouton OK.
+     * param newValue La nouvelle valeur saisie par l'utilisateur.
+     * param errorLabel L'étiquette d'erreur associée au champ de texte.
+     * param errorMessage Le message d'erreur à afficher si la validation échoue.
+     * param okButton Le bouton OK à activer/désactiver basé sur la validité de l'entrée.
+     * param otherField L'autre champ de texte à considérer pour la validation globale.
+     */
     private void validateDimensionInput(String newValue, Label errorLabel, String errorMessage, Node okButton, TextField otherField) {
         if (!newValue.isEmpty()) {
             try {
@@ -468,7 +554,10 @@ public class BoardView4Design extends BorderPane {
 
 
 
-
+    /**
+     * Ouvre un dialogue de fichier pour charger un niveau de jeu existant depuis un fichier.
+     * param primaryStage Le stage principal utilisé pour afficher la boîte de dialogue.
+     */
 
     private void handleOpen(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
@@ -483,6 +572,10 @@ public class BoardView4Design extends BorderPane {
 
     }
 
+    /**
+     * Ouvre un dialogue de fichier pour sauvegarder le niveau actuel dans un fichier.
+     * @param primaryStage Le stage principal utilisé pour afficher la boîte de dialogue.
+     */
     private void handleSaveAs(Stage primaryStage) {
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Sokoban files (*.xsb)", "*.xsb");

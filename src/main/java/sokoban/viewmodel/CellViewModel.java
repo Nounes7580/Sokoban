@@ -21,8 +21,7 @@ public abstract class CellViewModel {
     protected final Board4Design board;
 
     private final SimpleDoubleProperty scale = new SimpleDoubleProperty(DEFAULT_SCALE);
-    private final BooleanBinding mayIncrementScale = scale.lessThan(1 - EPSILON);
-    private final BooleanBinding mayDecrementScale = scale.greaterThan(0.1 + EPSILON);
+
 
 
     public CellViewModel(int line, int col, Board4Design board) {
@@ -32,8 +31,6 @@ public abstract class CellViewModel {
     }
 
     protected abstract void setBoardViewModel(BoardViewModel4Design boardViewModel);
-
-    public abstract void play();
 
     public abstract void addObject();
 
@@ -55,7 +52,6 @@ public abstract class CellViewModel {
 
     public abstract void  resetScale();
 
-    public abstract Element getSelectedTool();
 
 
 
