@@ -14,6 +14,7 @@ import java.util.Arrays;
 public class Grid4Design extends Grid{
     protected LongBinding filledCellsCount;
     private static int boxCount = 1;
+    //    private static int goalCount = 1;
     protected Cell4Design[][] cell4Design;
 /** Initialise la grille avec les dimensions spécifiées (width et height).
  Crée un tableau bidimensionnel de Cell4Design pour stocker les cellules de la grille.
@@ -54,6 +55,7 @@ public class Grid4Design extends Grid{
         this.gridHeight.set(newHeight);
         this.cell4Design = new Cell4Design[newWidth][newHeight];
         boxCount = 1;
+        //goalCount = 1;
         initializeCells();
         triggerGridChange();
     }
@@ -203,6 +205,21 @@ public class Grid4Design extends Grid{
         System.out.println("box"+boxCount);
         return boxCount++;
     }
+    /*
+    public static int incrementGoalCount(){
+    System.out.println("goal"+goalCount);
+    return goalCount++;
+}
+
+     */
+
+    /*
+    public static void decrementGoalCount(){
+    if(goalCount>1){
+        goalCount--;
+    }
+   }
+     */
 
 
 

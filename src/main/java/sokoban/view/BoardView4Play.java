@@ -351,28 +351,49 @@ public class BoardView4Play extends BorderPane {
         setBottom(playFinishContainer);
     }
 
-    /*private void createReplay(){
-        Button ReplayButton = new Button("Replay");
-        ReplayButton.setOnAction(event -> {
+    /*
+    private void createControlButtons() {
+    // Création du bouton Finish
+    Button finishButton = new Button("Finish");
+    finishButton.setOnAction(event -> {
+        boardViewModel4Play.getBoard4Play().setMoveCount(0);
+        BoardView4Play.updateMovesLabel(0);
+        Stage currentStage = (Stage) this.getScene().getWindow();
+        currentStage.close();
+        // Supposons que vous souhaitez réouvrir une certaine vue ou faire quelque chose de spécifique après la fermeture
+        Stage stage = new Stage();
+        new BoardView4Design(stage, new BoardViewModel4Design(boardViewModel4Play.getBoard()));
+    });
 
-            Stage gameStage = (Stage) this.getScene().getWindow();
-            BoardView4Play boardView4Play = new BoardView4Play(gameStage, new BoardViewModel4Play(boardViewModel4Play.getBoard()));
-            Scene scene = new Scene(boardView4Play);
-            gameStage.setScene(scene);
-            gameStage.show();
+    // Création du bouton Numbering Target
+    Button numberingTargetButton = new Button("Numbering Target");
+    numberingTargetButton.setOnAction(event -> {
+        boardViewModel4Play.renumberGoals(); // Renumerotation des goals
+        refreshGrid(); // Rafraîchissement de la grille
+        int currentMoves = boardViewModel4Play.getBoard4Play().getMoveCount();
+        boardViewModel4Play.getBoard4Play().setMoveCount(currentMoves + 10); // Coût de 10 mouvements
+        updateMovesLabel(boardViewModel4Play.getBoard4Play().getMoveCount());
+    });
 
-        });
+    // Ajout des boutons à un conteneur HBox pour un alignement horizontal
+    HBox buttonContainer = new HBox(10); // Espacement de 10 pixels entre les boutons
+    buttonContainer.setAlignment(Pos.CENTER);
+    buttonContainer.getChildren().addAll(finishButton, numberingTargetButton);
 
-        playFinishContainer.getChildren().add(ReplayButton);
-        playFinishContainer.setAlignment(Pos.CENTER);
-        playFinishContainer.setPadding(new Insets(0, 0, 10, 0));
-
-
-        setBottom(playFinishContainer);
-        }
+    // Ajout du conteneur de boutons à la vue
+    setBottom(buttonContainer);
+}
 
      */
 
+   /*
+   private void refreshGrid() {
+    GridPane grid = (GridPane) getCenter();
+    grid.getChildren().clear();  // Supprime tous les éléments visuels
+    createGrid();
+}
+
+    */
 
 
 }

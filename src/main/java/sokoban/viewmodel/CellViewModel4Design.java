@@ -74,6 +74,14 @@ public class CellViewModel4Design extends CellViewModel{
             Box newBox = new Box();
             selectedTool = newBox; // Update selectedTool with a new Box instance
         }
+        /*
+            if (selectedTool.getType() == CellValue.GOAL) {
+        Goal newGoal = new Goal();
+        selectedTool = newGoal; // Update selectedTool with a new Box instance
+    }
+
+
+         */
 
         System.out.println("Is cell empty? " + isEmpty());
 
@@ -92,7 +100,11 @@ public class CellViewModel4Design extends CellViewModel{
             Cell cell = board.getGrid().getMatrix()[line][col];
             if (cell.getValue().stream().anyMatch(e -> e instanceof Box)) {
                 Grid4Design.decrementBoxCount(); // Decrement the box count
-            }
+            }/*
+            else if(cell.getValue().stream().anyMatch(e -> e instanceof Goal)){
+            Grid4Design.decrementGoalCount();
+        }
+            */
             cell.clearValues();
             board.getGrid().triggerGridChange(); // cela a permis la mise a jour lors de la suppression lors du drag
         }

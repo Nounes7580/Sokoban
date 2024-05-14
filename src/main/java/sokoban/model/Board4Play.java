@@ -135,6 +135,92 @@ public class Board4Play {
 
 
     }
+    /*
+    public static void movePlayer(Direction direction) {
+
+    if (boxesOnGoals == grid4Play.getTargetCount()) {
+        System.out.println("All boxes are on the goals. No more moves allowed.");
+        return;
+    }
+
+    int[] playerPosition = grid4Play.findPlayerPosition();
+    if (playerPosition == null) {
+        System.out.println("Player not found.");
+        return;
+    }
+
+    Cell oldCell = grid4Play.getMatrix()[playerPosition[0]][playerPosition[1]];
+    boolean isPlayerOnGoal = oldCell.hasElementOfType(Goal.class);
+    Goal existingGoal = null;
+    if (isPlayerOnGoal) {
+        existingGoal = (Goal) oldCell.getElementOfType(Goal.class);
+    }
+    int newRow = playerPosition[0] + direction.getDeltaRow();
+    int newCol = playerPosition[1] + direction.getDeltaCol();
+
+
+    if (!isMoveValid(newRow, newCol, direction)) {
+        System.out.println("Move to " + newRow + ", " + newCol + " is invalid.");
+        return;
+    }
+
+    Cell targetCell = grid4Play.getMatrix()[newRow][newCol];
+    if (targetCell.hasElementOfType(Box.class)) {
+        int boxNewRow = newRow + direction.getDeltaRow();
+        int boxNewCol = newCol + direction.getDeltaCol();
+
+        Box box = (Box) targetCell.getElementOfType(Box.class);
+        boolean isBoxOnGoal = targetCell.hasElementOfType(Goal.class);
+        Goal goalInOldCell = isBoxOnGoal ? (Goal) targetCell.getElementOfType(Goal.class) : null;
+        boolean willBoxBeOnGoal = grid4Play.getMatrix()[boxNewRow][boxNewCol].hasElementOfType(Goal.class);
+        Goal goalInNewCell = willBoxBeOnGoal ? (Goal) grid4Play.getMatrix()[boxNewRow][boxNewCol].getElementOfType(Goal.class) : null;
+
+        if (isPositionValid(boxNewRow, boxNewCol)) {
+            // Retrieve the existing Box object from the targetCell
+
+            // Déplace la boîte vers la nouvelle cellule
+            grid4Play.play(boxNewRow, boxNewCol, box);
+            if (goalInNewCell != null && box.getId() == goalInNewCell.getId()) {
+                boxesOnGoals++; // Incrémentez si les IDs correspondent
+            }
+            if (isBoxOnGoal && !willBoxBeOnGoal && goalInOldCell != null && box.getId() == goalInOldCell.getId()) {
+                boxesOnGoals--; // Décrémentez si la boîte quitte un goal avec le même ID
+            }
+            if (!isBoxOnGoal) {
+                grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.EMPTY));
+            }
+            if (boxesOnGoals == grid4Play.getTargetCount()) {
+
+                BoardViewModel4Play.getBoardView4Play().displayYouWinLabel(moveCount);
+            }
+            grid4Play.addPlayerToCell(newRow, newCol);
+            BoardViewModel4Play.getBoardView4Play().updateGoalsReached(boxesOnGoals);
+            lastMoveWasSuccessful = true;
+        } else {
+            System.out.println("Invalid move: Box cannot be moved to (" + boxNewRow + ", " + boxNewCol + ")");
+            return;
+        }
+    } else {
+        grid4Play.play(newRow, newCol, createElementFromCellValue(CellValue.PLAYER));
+    }
+    // If the player is moving from a goal, keep the goal.
+    if (isPlayerOnGoal) {
+        grid4Play.play(playerPosition[0], playerPosition[1], existingGoal);
+
+    } else {
+        grid4Play.play(playerPosition[0], playerPosition[1], createElementFromCellValue(CellValue.GROUND));
+
+    }
+    System.out.println(lastMoveWasSuccessful);
+
+    moveCount++;
+    BoardViewModel4Play.getBoardView4Play().updateMovesLabel(moveCount);
+
+
+
+}
+
+     */
 
     public boolean canMove(Direction direction) {
         int[] playerPosition = grid4Play.findPlayerPosition();

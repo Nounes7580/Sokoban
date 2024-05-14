@@ -126,6 +126,19 @@ public class CellView4Play extends StackPane {
                 case GOAL:
                     System.out.println("Adding goal image to cell at (" + line + ", " + col + ")");
                     addImageView(goalImage);
+                    /*
+                                    Goal goal = (Goal) value;
+                if (goal.getId() == 0) {
+                    int newId = Grid4Design.incrementGoalCount();
+                    goal.setId(newId);
+                }
+                Label labelGoal = new Label(String.valueOf(goal.getId()));
+                labelGoal.setFont(new Font("Arial", 10));
+                labelGoal.setTextFill(Color.BLACK);
+               // labelGoal.setStyle("-fx-background-color: white; -fx-padding: 5px;");
+                getChildren().add(labelGoal);
+
+                     */
                     break;
                     case WALL:
 
